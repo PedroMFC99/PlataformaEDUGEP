@@ -38,7 +38,7 @@
                 <div class="card-body text-center">
                     <h5 class="card-title">@folder.Name</h5>
                     <p class="card-text">Data de criação: @folder.CreationDate.ToString("dd/MM/yyyy")</p>
-                    <p class="card-text">Criado por: @folder.User?.FullName</p> <!-- Add this line -->
+                        <p class="card-text">Criado por: Professor(a) @folder.User?.FullName</p> <!-- Add this line -->
                     <a href="@Url.Action("Details", new { id = folder.FolderId })" class="btn btn-secondary">Abrir</a>
                 </div>
             </div>
