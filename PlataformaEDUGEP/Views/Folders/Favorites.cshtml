@@ -18,8 +18,12 @@
     {
         <div class="col-md-4 mb-4">
             <div class="card position-relative">
+
                 <div class="position-absolute top-0 start-0 m-2">
+
                     <form asp-action="ToggleLikeFavorites" method="post">
+                            <!-- Visibility Icon -->
+                            <i class="@(folder.IsHidden ? "fas fa-eye-slash" : "fas fa-eye") me-2" title="@(folder.IsHidden ? "Visível apenas para professores" : "Visível para todos")"></i>
                         <input type="hidden" name="folderId" value="@folder.FolderId" />
                         <button type="submit" class="btn btn-light btn-sm">
                             <i class="@((folderLikeStatus[folder.FolderId]) ? "fas" : "far") fa-minus"></i>
