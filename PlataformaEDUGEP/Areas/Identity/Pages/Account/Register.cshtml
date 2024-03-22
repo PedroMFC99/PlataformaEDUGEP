@@ -1,0 +1,81 @@
+﻿@page
+@model RegisterModel
+
+@{
+    ViewData["Title"] = "Registo";
+}
+
+<h1 class="text-center" style="color:#001DB3;">@ViewData["Title"]</h1>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <h2 class="text-center">Criar uma nova conta.</h2>
+                <hr />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.FullName" class="form-control" autocomplete="name" aria-required="true" />
+                    <label asp-for="Input.FullName">Nome Completo</label>
+                    <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+                    <label asp-for="Input.Email">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" />
+                    <label asp-for="Input.Password">Palavra-passe</label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
+                    <label asp-for="Input.ConfirmPassword">Confirmar Palavra-passe</label>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Input.UserType" class="form-label"></label>
+                    <select asp-for="Input.UserType" class="form-control">
+                        <option value="">Selecionar</option>
+                        <option value="Teacher">Professor</option>
+                        <option value="Student">Estudante</option>
+                    </select>
+                    <span asp-validation-for="Input.UserType" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3" id="specialCodeSection" style="display:none;">
+                    <label asp-for="Input.SpecialCode" class="form-label"></label>
+                    <input asp-for="Input.SpecialCode" class="form-control" />
+                    <span asp-validation-for="Input.SpecialCode" class="text-danger"></span>
+                </div>
+
+                <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Registar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            // Function to toggle visibility based on UserType selection
+            function toggleSpecialCodeSection() {
+                if ($('select[name="Input.UserType"]').val() == "Teacher") {
+                    $('#specialCodeSection').show();
+                } else {
+                    $('#specialCodeSection').hide();
+                }
+            }
+
+            // Initialize visibility on page load
+            toggleSpecialCodeSection();
+
+            // Update visibility on UserType selection change
+            $('select[name="Input.UserType"]').change(toggleSpecialCodeSection);
+        });
+    </script>
+}
+

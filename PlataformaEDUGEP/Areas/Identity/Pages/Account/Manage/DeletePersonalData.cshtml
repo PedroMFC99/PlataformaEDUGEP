@@ -1,0 +1,72 @@
+﻿@page
+@model DeletePersonalDataModel
+@{
+    ViewData["Title"] = "Apagar a minha conta";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+}
+
+<h3 class="text-center" style="color:#001DB3;">@ViewData["Title"]</h3>
+
+<div class="alert alert-warning" role="alert">
+    <p>
+        <strong>Atenção: Apagar a sua conta tem efeitos permanentes, portanto não poderá recuperá-la.</strong>
+    </p>
+</div>
+
+<div>
+    <form id="delete-user" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        @if (Model.RequirePassword)
+        {
+            <div class="form-floating">
+                <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
+                <label asp-for="Input.Password" class="form-label"></label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+        }
+        <button class="w-100 btn btn-lg btn-danger" type="button" id="delete-account-btn">Apagar a minha conta</button>
+    </form>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Ação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem a certeza que deseja apagar a sua conta? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="delete-confirm">Apagar Conta</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('delete-account-btn').addEventListener('click', function () {
+            var passwordInput = document.getElementById('Input_Password');
+            if (!passwordInput.value) {
+                // Trigger validation message for password input
+                passwordInput.setCustomValidity('Introduza a sua palavra-passe.');
+                passwordInput.reportValidity();
+            } else {
+                // Clear any custom validity message set previously
+                passwordInput.setCustomValidity('');
+                // Show the modal since the password input is not empty
+                var deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+                deleteModal.show();
+            }
+        });
+
+        document.getElementById('delete-confirm').addEventListener('click', function () {
+            document.getElementById('delete-user').submit();
+        });
+    </script>
+}

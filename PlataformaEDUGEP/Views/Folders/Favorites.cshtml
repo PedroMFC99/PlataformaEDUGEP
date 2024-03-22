@@ -1,0 +1,48 @@
+﻿@model IEnumerable<PlataformaEDUGEP.Models.Folder>
+@{
+    ViewData["Title"] = "As minhas pastas favoritas";
+    var folderLikeStatus = ViewBag.FolderLikeStatus as Dictionary<int, bool>;
+    ViewBag.Title = "Favorites";
+}
+
+<h1>Pastas favoritas</h1>
+
+@if (!String.IsNullOrEmpty(ViewBag.NoFavoritesMessage))
+{
+    <div class="alert alert-info">
+        @ViewBag.NoFavoritesMessage
+    </div>
+} else {
+<div class="row">
+    @foreach (var folder in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card position-relative">
+                <div class="position-absolute top-0 start-0 m-2">
+                    <form asp-action="ToggleLikeFavorites" method="post">
+                        <input type="hidden" name="folderId" value="@folder.FolderId" />
+                        <button type="submit" class="btn btn-light btn-sm">
+                            <i class="@((folderLikeStatus[folder.FolderId]) ? "fas" : "far") fa-minus"></i>
+                        </button>
+                    </form>
+                </div>
+
+                @if (User.IsInRole("Teacher"))
+                {
+                    <div class="position-absolute top-0 end-0 m-2">
+                        <a href="@Url.Action("Edit", new { id = folder.FolderId })" class="btn btn-primary mx-1 btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                        <a href="@Url.Action("Delete", new { id = folder.FolderId })" class="btn btn-danger mx-1 btn-sm"><i class="fas fa-trash"></i></a>
+                    </div>
+                }
+
+                <div class="card-body text-center">
+                    <h5 class="card-title">@folder.Name</h5>
+                    <p class="card-text">Data de criação: @folder.CreationDate.ToString("dd/MM/yyyy")</p>
+                    <p class="card-text">Criado por: @folder.User?.FullName</p> <!-- Add this line -->
+                    <a href="@Url.Action("Details", new { id = folder.FolderId })" class="btn btn-secondary">Abrir</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+}

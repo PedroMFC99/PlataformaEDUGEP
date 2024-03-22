@@ -1,0 +1,56 @@
+﻿@model PlataformaEDUGEP.Models.Folder
+
+@{
+    ViewData["Title"] = "Editar";
+}
+
+<div class="container">
+    <h4 class="text-center">
+        <a asp-action="Index" class="btn btn-link">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        Editar pasta
+    </h4>
+    <hr />
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="FolderId" />
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="CreationDate" class="control-label"></label>
+                    <input asp-for="CreationDate" class="form-control" disabled />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ModificationDate" class="control-label"></label>
+                    <input asp-for="ModificationDate" class="form-control" disabled />
+                </div>
+
+                <div class="form-group">
+                    <div class="form-check">
+                        <input asp-for="IsHidden" class="form-check-input" />
+                        <label asp-for="IsHidden" class="form-check-label">Esconder pasta?</label>
+                    </div>
+                </div>
+
+                <div class="form-group text-center">
+                    <input type="submit" value="Guardar alterações" class="btn btn-primary mt-5" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        <partial name="_ValidationScriptsPartial" />
+    }
+}

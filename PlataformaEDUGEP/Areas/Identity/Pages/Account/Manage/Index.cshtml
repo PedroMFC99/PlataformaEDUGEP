@@ -1,0 +1,46 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Perfil";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+
+<h3 class="text-center" style="color:#001DB3;">@ViewData["Title"]</h3>
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Adjust the column size as needed -->
+            <form id="profile-form" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Username" class="form-control" disabled />
+                    <label asp-for="Username" class="form-label">Email</label>
+                </div>
+                <!-- Add form field for FullName -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.FullName" class="form-control" />
+                    <label asp-for="Input.FullName" class="form-label">Nome Completo</label>
+                    <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.PhoneNumber" class="form-control" type="tel" pattern="\d{9}" maxlength="9" title="Por favor, insira um número de telefone com exatamente nove dígitos." />
+                    <label asp-for="Input.PhoneNumber" class="form-label">Número de telefone</label>
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                </div>
+                <!-- Add form field for AboutMe -->
+                <div class="form-floating mb-3">
+                    <textarea asp-for="Input.AboutMe" class="form-control" style="height: 100px"></textarea>
+                    <label asp-for="Input.AboutMe" class="form-label">Sobre mim</label>
+                    <span asp-validation-for="Input.AboutMe" class="text-danger"></span>
+                </div>
+                <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Guardar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

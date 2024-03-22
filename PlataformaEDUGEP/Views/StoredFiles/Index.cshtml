@@ -1,0 +1,47 @@
+﻿@model IEnumerable<PlataformaEDUGEP.Models.StoredFile>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StoredFileName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UploadDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Folder)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StoredFileName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UploadDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Folder.Name)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.StoredFileId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.StoredFileId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.StoredFileId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

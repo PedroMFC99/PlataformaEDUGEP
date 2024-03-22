@@ -1,0 +1,177 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<style>
+    .theme-slider-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 1px;
+    }
+
+    .theme-switch {
+        position: relative;
+        display: inline-block;
+        width: 40px; /* Reduced from 60px */
+        height: 22px; /* Reduced from 34px */
+        margin: 0 10px;
+    }
+
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 22px; /* Adjusted for smaller height */
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; /* Reduced from 26px */
+            width: 18px; /* Reduced from 26px */
+            left: 2px; /* Adjusted for smaller slider */
+            bottom: 2px; /* Adjusted for smaller slider */
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+        transform: translateX(18px); /* Adjusted for smaller slider width */
+    }
+
+    .slider.round {
+        border-radius: 22px;
+    }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+    .fa-sun {
+        color: orange; /* Sun icon always yellow */
+    }
+
+    .fa-moon.light-mode {
+        color: black; /* Moon icon color in light mode */
+    }
+
+    .fa-moon.dark-mode {
+        color: white; /* Moon icon color in dark mode */
+    }
+
+
+
+</style>
+
+<ul class="navbar-nav">
+    <!-- Theme toggle slider for all users -->
+    <li class="nav-item mt-2">
+        <div class="theme-slider-container">
+            <span class="fas fa-sun"></span> <!-- Sun icon -->
+            <label class="theme-switch" for="theme-slider">
+                <input type="checkbox" id="theme-slider" class="theme-slider" />
+                <div class="slider round"></div>
+            </label>
+            <span class="fas fa-moon"></span> <!-- Moon icon -->
+        </div>
+    </li>
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        ApplicationUser currentUser = await UserManager.FindByEmailAsync(User.Identity.Name);
+        string displayName = currentUser?.FullName ?? "User";
+
+        var roles = await UserManager.GetRolesAsync(currentUser);
+        var isTeacher = roles.Contains("Teacher");
+        var isStudent = roles.Contains("Student");
+
+        <!-- Favorites link -->
+        <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Folders" asp-action="Favorites" style="color: orangered;">
+                <i class="fas fa-star"></i> Favoritos
+            </a>
+        </li>
+
+        <!-- User-specific links -->
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                @if (isTeacher)
+                {
+                    <i class="fas fa-chalkboard-teacher"></i>
+                }
+                else if (isStudent)
+                {
+                    <i class="fas fa-user-graduate"></i>
+                }
+                Olá, @displayName!
+            </a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                <button type="submit" class="nav-link btn btn-link text-dark">Sair</button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <!-- Non-authenticated user links -->
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Register">Registo</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        </li>
+    }
+</ul>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const themeSlider = document.getElementById('theme-slider');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        const moonIcon = document.querySelector('.fa-moon'); // Get the moon icon
+
+        // Initialize the slider, the theme, and the icon styles correctly
+        document.body.setAttribute('data-bs-theme', currentTheme);
+        themeSlider.checked = currentTheme === 'dark';
+        updateIconStyles(currentTheme); // Call this function to set initial icon styles
+
+        themeSlider.addEventListener('change', function () {
+            const isDarkMode = themeSlider.checked;
+            let newTheme = isDarkMode ? 'dark' : 'light';
+            document.body.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIconStyles(newTheme); // Update icon styles based on the new theme
+        });
+
+        function updateIconStyles(theme) {
+            if (theme === 'dark') {
+                moonIcon.classList.remove('light-mode');
+                moonIcon.classList.add('dark-mode');
+            } else {
+                moonIcon.classList.remove('dark-mode');
+                moonIcon.classList.add('light-mode');
+            }
+        }
+    });
+</script>

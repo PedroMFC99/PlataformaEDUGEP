@@ -1,0 +1,115 @@
+﻿@model IEnumerable<PlataformaEDUGEP.Models.Folder>
+
+@{
+    ViewData["Title"] = "Pastas";
+    var folderLikeStatus = ViewBag.FolderLikeStatus as Dictionary<int, bool>;
+}
+
+<h1>Pastas</h1>
+
+<div class="mb-3">
+    @using (Html.BeginForm("Index", "Folders", FormMethod.Get, new { @class = "form-inline" }))
+    {
+        <div class="input-group mb-2">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1"><i class="fas fa-search fa-2x"></i></span>
+            </div>
+            @Html.TextBox("searchString", ViewBag.CurrentFilter as string, new { @class = "form-control", @placeholder = "Introduza o nome de uma pasta..." })
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary fs-5 p-2" type="submit">Procurar</button>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="mb-3">
+    @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter as string))
+    {
+        <a asp-action="Index" asp-route-searchString="" asp-route-sortOrder="" class="btn btn-secondary mr-3">
+            <i class="fas fa-times"></i> Limpar filtros
+        </a>
+    }
+
+    <span class="mr-3 align-self-center"><strong>Ordenar:</strong></span>
+    @Html.ActionLink("Nome ", "Index", new { sortOrder = ViewBag.NameSortParm, searchString = ViewBag.CurrentFilter }) @(ViewBag.NameSortParm == "name_desc" ? "↑" : "↓")
+    @Html.ActionLink("Data de Criação ", "Index", new { sortOrder = ViewBag.DateSortParm, searchString = ViewBag.CurrentFilter }) @(ViewBag.DateSortParm == "date_desc" ? "↓" : "↑")
+</div>
+
+<!-- Conditional Add Button for Teacher Role -->
+@if (User.IsInRole("Teacher"))
+{
+    <div class="d-flex justify-content-end mb-3">
+        <a asp-action="Create" class="btn btn-success"><i class="fas fa-plus"></i></a>
+    </div>
+}
+
+<!-- Display the no results message if no folders are found -->
+@if (!Model.Any())
+{
+    if (ViewBag.NoResultsFound != null)
+    {
+        <div class="alert alert-info" role="alert">
+            @ViewBag.NoResultsFound
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            Não existem pastas para mostrar.
+        </div>
+    }
+}
+else
+{
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card position-relative">
+                    <div class="position-absolute top-0 start-0 m-2 d-flex align-items-center">
+                        <!-- Visibility Icon -->
+                        <i class="@(item.IsHidden ? "fas fa-eye-slash" : "fas fa-eye") me-2" title="@(item.IsHidden ? "Visível apenas para professores" : "Visível para todos")"></i>
+
+                        <!-- Like Button Form -->
+                        @if (folderLikeStatus.ContainsKey(item.FolderId) && folderLikeStatus[item.FolderId])
+                        {
+                            <form asp-action="ToggleLike" method="post" class="me-2">
+                                <input type="hidden" name="folderId" value="@item.FolderId" />
+                                <button type="submit" class="btn btn-light btn-sm">
+                                    <i class="fas fa-heart text-danger"></i>
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="ToggleLike" method="post" class="me-2">
+                                <input type="hidden" name="folderId" value="@item.FolderId" />
+                                <button type="submit" class="btn btn-light btn-sm">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </form>
+                        }
+                    </div>
+
+                    @if (User.IsInRole("Teacher"))
+                    {
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <a href="@Url.Action("Edit", "Folders", new { id = item.FolderId })" class="btn btn-primary mx-1 btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                            <a href="@Url.Action("Delete", "Folders", new { id = item.FolderId })" class="btn btn-danger mx-1 btn-sm"><i class="fas fa-trash"></i></a>
+                        </div>
+                    }
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
+                        <p class="card-text">Data de criação: @item.CreationDate.ToString("dd/MM/yyyy")</p>
+                        <p class="card-text">Criado por: Professor(a) @item.User?.FullName</p> <!-- Add this line -->
+                        <a href="@Url.Action("Details", "Folders", new { id = item.FolderId })" class="btn btn-secondary">Abrir</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

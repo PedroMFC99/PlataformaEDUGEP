@@ -1,0 +1,18 @@
+﻿@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "Acesso proibido";
+}
+
+<div class="container">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-md-8 text-center">
+            <header>
+                <h1 class="text-danger">@ViewData["Title"]</h1>
+                <!-- Inserting the stop icon -->
+                <div><i class="fas fa-stop-circle fa-10x text-danger mt-5"></i></div>
+                <p class="text-danger mt-5">Não tem privilégios para aceder a esta funcionalidade.</p>
+            </header>
+        </div>
+    </div>
+</div>
