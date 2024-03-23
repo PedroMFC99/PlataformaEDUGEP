@@ -103,9 +103,9 @@ namespace PlataformaEDUGEP.Controllers
 
         // GET: Folders/Create
         [Authorize(Roles = "Teacher")]
-        public IActionResult Create()
+        public IActionResult CreateModal()
         {
-            return View();
+            return PartialView("_CreatePartial");
         }
 
         // POST: Folders/Create
@@ -115,7 +115,7 @@ namespace PlataformaEDUGEP.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> Create([Bind("FolderId,Name")] Folder folder)
+        public async Task<IActionResult> Create([Bind("FolderId,Name,IsHidden")] Folder folder)
         {
             if (ModelState.IsValid)
             {
@@ -134,6 +134,7 @@ namespace PlataformaEDUGEP.Controllers
         }
 
         // GET: Folders/Edit/5
+        // GET: Folders/Edit/5
         [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -147,8 +148,15 @@ namespace PlataformaEDUGEP.Controllers
             {
                 return NotFound();
             }
+            // Check if the request is for a partial view to be loaded in a modal
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_EditPartial", folder);
+            }
+
             return View(folder);
         }
+
 
         // POST: Folders/Edit/5
         [HttpPost]
@@ -165,15 +173,31 @@ namespace PlataformaEDUGEP.Controllers
             {
                 try
                 {
+                    if (string.IsNullOrWhiteSpace(folder.Name))
+                    {
+                        ModelState.AddModelError("Name", "O nome da pasta não pode estar vazio.");
+                        // Set the CreationDate and ModificationDate in ModelState to retain their values
+                        ModelState.AddModelError("CreationDate", folder.CreationDate.ToString());
+                        ModelState.AddModelError("ModificationDate", folder.ModificationDate.ToString());
+                        return View(folder);
+                    }
+
                     var existingFolder = await _context.Folder.FirstOrDefaultAsync(f => f.FolderId == id);
                     if (existingFolder == null)
                     {
                         return NotFound();
                     }
 
+                    // Update folder properties
                     existingFolder.Name = folder.Name;
-                    existingFolder.IsHidden = folder.IsHidden; // Update IsHidden property
+                    existingFolder.IsHidden = folder.IsHidden;
                     existingFolder.ModificationDate = DateTime.Now;
+
+                    // Don't update CreationDate if the folder already exists
+                    if (existingFolder.CreationDate == default(DateTime))
+                    {
+                        existingFolder.CreationDate = DateTime.Now;
+                    }
 
                     _context.Update(existingFolder);
                     await _context.SaveChangesAsync();
@@ -193,6 +217,11 @@ namespace PlataformaEDUGEP.Controllers
             }
             return View(folder);
         }
+
+
+
+
+
 
 
 
@@ -332,34 +361,6 @@ namespace PlataformaEDUGEP.Controllers
 
             return View(folderList);
         }
-
-
-        // Add a method to handle adding tags to folders
-        //[HttpPost]
-        //[Authorize(Roles = "Teacher")]
-        //public async Task<IActionResult> AddTagToFolder(int folderId, string tagName)
-        //{
-        //    // Find or create the tag
-        //    var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Name == tagName);
-        //    if (tag == null)
-        //    {
-        //        tag = new Tag { Name = tagName };
-        //        _context.Tags.Add(tag);
-        //        await _context.SaveChangesAsync(); // Save the tag to get an Id for it
-        //    }
-
-        //    // Add the relationship if it doesn't exist
-        //    var folderTagExists = await _context.FolderTags
-        //        .AnyAsync(ft => ft.FolderId == folderId && ft.TagId == tag.TagId);
-        //    if (!folderTagExists)
-        //    {
-        //        var folderTag = new FolderTag { FolderId = folderId, TagId = tag.TagId };
-        //        _context.FolderTags.Add(folderTag);
-        //        await _context.SaveChangesAsync();
-        //    }
-
-        //    return RedirectToAction(nameof(Details), new { id = folderId });
-        //}
 
     }
 }

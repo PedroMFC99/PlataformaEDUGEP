@@ -35,11 +35,11 @@
     @Html.ActionLink("Data de Criação ", "Index", new { sortOrder = ViewBag.DateSortParm, searchString = ViewBag.CurrentFilter }) @(ViewBag.DateSortParm == "date_desc" ? "↓" : "↑")
 </div>
 
-<!-- Conditional Add Button for Teacher Role -->
+<!-- Trigger Button for Create Modal -->
 @if (User.IsInRole("Teacher"))
 {
     <div class="d-flex justify-content-end mb-3">
-        <a asp-action="Create" class="btn btn-success"><i class="fas fa-plus"></i></a>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createFolderModal"><i class="fas fa-plus"></i></button>
     </div>
 }
 
@@ -96,7 +96,7 @@ else
                         <div class="position-absolute top-0 end-0 m-2">
                             <!-- Trigger for Edit Modal -->
                             <button class="btn btn-primary mx-1 btn-sm edit-folder-btn" data-id="@item.FolderId" data-bs-toggle="modal" data-bs-target="#editFolderModal"><i class="fas fa-pencil-alt"></i></button>
-                            <a href="@Url.Action("Delete", "Folders", new { id = item.FolderId })" class="btn btn-danger mx-1 btn-sm"><i class="fas fa-trash"></i></a>
+                            <button class="btn btn-danger mx-1 btn-sm delete-folder-btn" data-id="@item.FolderId" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i class="fas fa-trash"></i></button>
                         </div>
                     }
                     <div class="card-body text-center">
@@ -111,6 +111,21 @@ else
     </div>
 }
 
+<!-- Create Folder Modal -->
+<div class="modal fade" id="createFolderModal" tabindex="-1" aria-labelledby="createFolderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createFolderModalLabel">Criar Pasta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- The form will be loaded here via JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Edit Folder Modal -->
 <div class="modal fade" id="editFolderModal" tabindex="-1" aria-labelledby="editFolderModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -121,6 +136,25 @@ else
             </div>
             <div class="modal-body">
                 <!-- The form and inputs will be loaded here via JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Folder Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteFolderModalLabel">Apagar Pasta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem a certeza que deseja apagar esta pasta? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger btn-delete-confirm">Apagar Pasta</button>
             </div>
         </div>
     </div>
@@ -141,37 +175,77 @@ else
                 });
             });
 
-            // Handle form submission using AJAX
-            $('#editFolderForm').submit(function (event) {
-                event.preventDefault(); // Prevent default form submission
+            // AJAX submission for Edit
+            $(document).on('submit', '#editFolderForm', function (event) {
+                event.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    success: function (response) {
+                        $('#editFolderModal').modal('hide');
+                        location.reload(); // Reload the page to reflect the changes
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error updating folder: ", xhr.responseText);
+                    }
+                });
+            });
 
-                var folderName = $('#Name').val().trim();
-                if (folderName === '') {
-                    $('#nameErrorMessage').text('Por favor, introduza um nome.');
-                } else {
-                    var form = $(this);
-                    $.ajax({
-                        type: form.attr('method'),
-                        url: form.attr('action'),
-                        data: form.serialize(),
-                        success: function (response) {
-                            // Handle success response
-                            $('#editFolderModal').modal('hide');
-                            // Optionally, you can reload the page or update content here
-                        },
-                        error: function (xhr, status, error) {
-                            // Handle error response
-                            console.log(xhr.responseText);
-                        }
-                    });
-                }
+            // Event handler for opening the create modal
+            $('#createFolderModal').on('show.bs.modal', function () {
+                var url = '@Url.Action("CreateModal", "Folders")';
+                $.get(url, function (data) {
+                    $('#createFolderModal .modal-body').html(data);
+                });
+            });
+
+            // AJAX submission for Create
+            $(document).on('submit', '#createFolderForm', function (event) {
+                event.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Create", "Folders")',
+                    data: form.serialize(),
+                    success: function (response) {
+                        $('#createFolderModal').modal('hide');
+                        location.reload(); // Reload the page to show the new folder
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error creating folder: ", xhr.responseText);
+                    }
+                });
+            });
+
+            // Event handler for delete confirmation
+            $('.delete-folder-btn').click(function () {
+                var folderId = $(this).data('id');
+                $('#confirmDeleteModal').data('id', folderId);
+                $('#confirmDeleteModal').modal('show');
+            });
+
+            // AJAX submission for Delete
+            $('#confirmDeleteModal').on('click', '.btn-delete-confirm', function () {
+                var folderId = $('#confirmDeleteModal').data('id');
+                $.ajax({
+                    type: 'POST',
+                    url: '/Folders/Delete/' + folderId,
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    success: function (response) {
+                        $('#confirmDeleteModal').modal('hide');
+                        location.reload(); // Reload the page to reflect the deletion
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error deleting folder: ", xhr.responseText);
+                    }
+                });
             });
         });
-
-
-
-
     </script>
 }
+
+
 
 
