@@ -94,7 +94,8 @@ else
                     @if (User.IsInRole("Teacher"))
                     {
                         <div class="position-absolute top-0 end-0 m-2">
-                            <a href="@Url.Action("Edit", "Folders", new { id = item.FolderId })" class="btn btn-primary mx-1 btn-sm"><i class="fas fa-pencil-alt"></i></a>
+                            <!-- Trigger for Edit Modal -->
+                            <button class="btn btn-primary mx-1 btn-sm edit-folder-btn" data-id="@item.FolderId" data-bs-toggle="modal" data-bs-target="#editFolderModal"><i class="fas fa-pencil-alt"></i></button>
                             <a href="@Url.Action("Delete", "Folders", new { id = item.FolderId })" class="btn btn-danger mx-1 btn-sm"><i class="fas fa-trash"></i></a>
                         </div>
                     }
@@ -110,6 +111,67 @@ else
     </div>
 }
 
+<!-- Edit Folder Modal -->
+<div class="modal fade" id="editFolderModal" tabindex="-1" aria-labelledby="editFolderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editFolderModalLabel">Editar Pasta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- The form and inputs will be loaded here via JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            // Load Edit Form into Modal
+            $('.edit-folder-btn').click(function () {
+                var folderId = $(this).data('id');
+                var url = '/Folders/Edit/' + folderId;
+                $.get(url, function (data) {
+                    $('#editFolderModal .modal-body').html(data);
+                    $('#editFolderModal').modal('show');
+                });
+            });
+
+            // Handle form submission using AJAX
+            $('#editFolderForm').submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                var folderName = $('#Name').val().trim();
+                if (folderName === '') {
+                    $('#nameErrorMessage').text('Por favor, introduza um nome.');
+                } else {
+                    var form = $(this);
+                    $.ajax({
+                        type: form.attr('method'),
+                        url: form.attr('action'),
+                        data: form.serialize(),
+                        success: function (response) {
+                            // Handle success response
+                            $('#editFolderModal').modal('hide');
+                            // Optionally, you can reload the page or update content here
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle error response
+                            console.log(xhr.responseText);
+                        }
+                    });
+                }
+            });
+        });
+
+
+
+
+    </script>
 }
+
+
