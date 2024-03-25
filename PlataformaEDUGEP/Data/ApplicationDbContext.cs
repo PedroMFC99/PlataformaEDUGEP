@@ -13,6 +13,7 @@ namespace PlataformaEDUGEP.Data
         public DbSet<Folder>? Folder { get; set; }
         public DbSet<StoredFile>? StoredFile { get; set; }
         public DbSet<FolderLike> FolderLikes { get; set; }
+        public DbSet<FolderAudit> FolderAudits { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

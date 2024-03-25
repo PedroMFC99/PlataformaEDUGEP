@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PlataformaEDUGEP;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
+using PlataformaEDUGEP.Services;
 using WebPWrecover.Services;
 using static System.Formats.Asn1.AsnWriter;
 
@@ -20,8 +21,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.S
     .AddDefaultUI()
     .AddDefaultTokenProviders();
 
-
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IFolderAuditService, FolderAuditService>();
 
 builder.Services.Configure<IdentityOptions>(opts => {
     opts.Lockout.AllowedForNewUsers = true;

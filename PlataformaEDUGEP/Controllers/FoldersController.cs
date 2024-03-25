@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
+using PlataformaEDUGEP.Services;
 
 namespace PlataformaEDUGEP.Controllers
 {
@@ -16,11 +17,13 @@ namespace PlataformaEDUGEP.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IFolderAuditService _folderAuditService;
 
-        public FoldersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public FoldersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IFolderAuditService folderAuditService)
         {
             _context = context;
             _userManager = userManager;
+            _folderAuditService = folderAuditService;
         }
 
         [Authorize]
@@ -128,10 +131,15 @@ namespace PlataformaEDUGEP.Controllers
 
                 _context.Add(folder);
                 await _context.SaveChangesAsync();
+
+                // Now that the folder has been saved, it has an ID. We can log the action.
+                await _folderAuditService.LogAuditAsync(userId, "Criação", folder.FolderId, folder.Name);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(folder);
         }
+
 
         // GET: Folders/Edit/5
         // GET: Folders/Edit/5
@@ -173,34 +181,19 @@ namespace PlataformaEDUGEP.Controllers
             {
                 try
                 {
-                    if (string.IsNullOrWhiteSpace(folder.Name))
-                    {
-                        ModelState.AddModelError("Name", "O nome da pasta não pode estar vazio.");
-                        // Set the CreationDate and ModificationDate in ModelState to retain their values
-                        ModelState.AddModelError("CreationDate", folder.CreationDate.ToString());
-                        ModelState.AddModelError("ModificationDate", folder.ModificationDate.ToString());
-                        return View(folder);
-                    }
-
-                    var existingFolder = await _context.Folder.FirstOrDefaultAsync(f => f.FolderId == id);
+                    var userId = _userManager.GetUserId(User);
+                    var existingFolder = await _context.Folder.AsNoTracking().FirstOrDefaultAsync(f => f.FolderId == id);
                     if (existingFolder == null)
                     {
                         return NotFound();
                     }
 
-                    // Update folder properties
-                    existingFolder.Name = folder.Name;
-                    existingFolder.IsHidden = folder.IsHidden;
-                    existingFolder.ModificationDate = DateTime.Now;
-
-                    // Don't update CreationDate if the folder already exists
-                    if (existingFolder.CreationDate == default(DateTime))
-                    {
-                        existingFolder.CreationDate = DateTime.Now;
-                    }
-
-                    _context.Update(existingFolder);
+                    folder.ModificationDate = DateTime.Now; // Update ModificationDate to now
+                    _context.Update(folder);
                     await _context.SaveChangesAsync();
+
+                    // Log the edit action after successfully saving changes
+                    await _folderAuditService.LogAuditAsync(userId, "Edição", folder.FolderId, folder.Name);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -217,12 +210,6 @@ namespace PlataformaEDUGEP.Controllers
             }
             return View(folder);
         }
-
-
-
-
-
-
 
 
         // GET: Folders/Delete/5
@@ -250,19 +237,23 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Folder == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Folder'  is null.");
-            }
             var folder = await _context.Folder.FindAsync(id);
-            if (folder != null)
+            if (folder == null)
             {
-                _context.Folder.Remove(folder);
+                return NotFound();
             }
 
+            var userId = _userManager.GetUserId(User);
+
+            // Log the delete action before actually removing the folder
+            await _folderAuditService.LogAuditAsync(userId, "Exclusão", folder.FolderId, folder.Name);
+
+            _context.Folder.Remove(folder);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
+
         [Authorize]
         private bool FolderExists(int id)
         {
@@ -361,6 +352,26 @@ namespace PlataformaEDUGEP.Controllers
 
             return View(folderList);
         }
+
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> AuditLog()
+        {
+            var audits = await (from audit in _context.FolderAudits
+                                join user in _context.Users on audit.UserId equals user.Id
+                                orderby audit.ActionTimestamp descending
+                                select new FolderAuditViewModel
+                                {
+                                    FolderAuditId = audit.FolderAuditId,
+                                    UserName = user.FullName, // Now using the FullName
+                                    ActionType = audit.ActionType,
+                                    ActionTimestamp = audit.ActionTimestamp,
+                                    FolderId = audit.FolderId,
+                                    FolderName = audit.FolderName
+                                }).ToListAsync();
+            return View(audits);
+        }
+
+
 
     }
 }

@@ -1,0 +1,29 @@
+﻿@model IEnumerable<PlataformaEDUGEP.Models.FolderAuditViewModel>
+
+@{
+    ViewData["Title"] = "Audit Log";
+}
+
+<h2>Audit Log</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Utilizador</th>
+            <th>Tipo de ação realizada</th>
+            <th>Nome da Pasta</th>
+            <th>Hora</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var log in Model)
+        {
+            <tr>
+                <td>@log.UserName</td>
+                <td>@log.ActionType</td>
+                <td>@log.FolderName</td>
+                <td>@log.ActionTimestamp</td>
+            </tr>
+        }
+    </tbody>
+</table>
