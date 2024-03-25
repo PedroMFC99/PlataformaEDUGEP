@@ -6,24 +6,64 @@
 
 <h2>Audit Log</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Utilizador</th>
-            <th>Tipo de ação realizada</th>
-            <th>Nome da Pasta</th>
-            <th>Hora</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var log in Model)
-        {
-            <tr>
-                <td>@log.UserName</td>
-                <td>@log.ActionType</td>
-                <td>@log.FolderName</td>
-                <td>@log.ActionTimestamp</td>
-            </tr>
+@{
+    var currentFilterUser = ViewData["CurrentFilterUser"]?.ToString();
+    var currentFilterAction = ViewData["CurrentFilterAction"]?.ToString();
+    var currentFilterFolderName = ViewData["CurrentFilterFolderName"]?.ToString();
+    var currentSort = ViewData["CurrentSort"]?.ToString();
+}
+
+<form class="my-2 my-lg-0">
+    <div class="d-flex flex-row">
+        <input class="form-control mr-2" type="search" oninput="updateAuditLog()" placeholder="Utilizador" aria-label="Search User" name="searchUser" value="@currentFilterUser">
+        <input class="form-control mr-2" type="search" oninput="updateAuditLog()" placeholder="Tipo de ação" aria-label="Search Action" name="searchAction" value="@currentFilterAction">
+        <input class="form-control mr-2" type="search" oninput="updateAuditLog()" placeholder="Nome da Pasta" aria-label="Search Folder Name" name="searchFolderName" value="@currentFilterFolderName">
+    </div>
+</form>
+
+
+<div class="mt-2 d-flex align-items-center">
+    <button id="clearFiltersButton" onclick="clearFilters()" class="btn btn-secondary mr-2" style="display: none;">Limpar filtros</button>
+    <b class="ms-lg-2">Ordenar:</b>
+    <a asp-action="AuditLog" asp-route-sortOrder="@(currentSort == "time_asc" ? "time_desc" : "time_asc")" class="ms-lg-2" >
+        Hora
+        <i class="fas @(currentSort == "time_asc" ? "fa-arrow-up" : "fa-arrow-down")"></i>
+    </a>
+</div>
+
+<div id="audit-log-table">
+    @Html.Partial("_AuditLogTablePartial", Model)
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function clearFilters() {
+            $("input[name='searchUser']").val('');
+            $("input[name='searchAction']").val('');
+            $("input[name='searchFolderName']").val('');
+            $("#clearFiltersButton").hide(); // Hide the "Limpar filtros" button
+            updateAuditLog('', '', ''); // Call with empty values to reset
         }
-    </tbody>
-</table>
+
+        function updateAuditLog(searchUser = null, searchAction = null, searchFolderName = null) {
+            searchUser = searchUser !== null ? searchUser : $("input[name='searchUser']").val();
+            searchAction = searchAction !== null ? searchAction : $("input[name='searchAction']").val();
+            searchFolderName = searchFolderName !== null ? searchFolderName : $("input[name='searchFolderName']").val();
+
+            // Determine if any search input has a value
+            if (searchUser.length > 0 || searchAction.length > 0 || searchFolderName.length > 0) {
+                $("#clearFiltersButton").show(); // Show the "Limpar filtros" button
+            } else {
+                $("#clearFiltersButton").hide(); // Hide the "Limpar filtros" button
+            }
+
+            // Perform the AJAX request
+            $.get('@Url.Action("AuditLog", "Folders")', { searchUser: searchUser, searchAction: searchAction, searchFolderName: searchFolderName }, function (data) {
+                $('#audit-log-table').html(data);
+            });
+        }
+    </script>
+
+}

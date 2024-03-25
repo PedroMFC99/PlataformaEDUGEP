@@ -354,22 +354,63 @@ namespace PlataformaEDUGEP.Controllers
         }
 
         [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> AuditLog()
+        public async Task<IActionResult> AuditLog(string searchUser = "", string searchAction = "", string searchFolderName = "", string sortOrder = "")
         {
-            var audits = await (from audit in _context.FolderAudits
-                                join user in _context.Users on audit.UserId equals user.Id
-                                orderby audit.ActionTimestamp descending
-                                select new FolderAuditViewModel
-                                {
-                                    FolderAuditId = audit.FolderAuditId,
-                                    UserName = user.FullName, // Now using the FullName
-                                    ActionType = audit.ActionType,
-                                    ActionTimestamp = audit.ActionTimestamp,
-                                    FolderId = audit.FolderId,
-                                    FolderName = audit.FolderName
-                                }).ToListAsync();
+            ViewData["CurrentFilterUser"] = searchUser;
+            ViewData["CurrentFilterAction"] = searchAction;
+            ViewData["CurrentFilterFolderName"] = searchFolderName;
+            ViewData["CurrentSort"] = sortOrder;
+
+            var auditsQuery = from audit in _context.FolderAudits
+                              join user in _context.Users on audit.UserId equals user.Id
+                              select new FolderAuditViewModel
+                              {
+                                  FolderAuditId = audit.FolderAuditId,
+                                  UserName = user.FullName, // Using the FullName
+                                  ActionType = audit.ActionType,
+                                  ActionTimestamp = audit.ActionTimestamp,
+                                  FolderId = audit.FolderId,
+                                  FolderName = audit.FolderName
+                              };
+
+            if (!String.IsNullOrEmpty(searchUser))
+            {
+                auditsQuery = auditsQuery.Where(a => a.UserName.Contains(searchUser));
+            }
+            if (!String.IsNullOrEmpty(searchAction))
+            {
+                auditsQuery = auditsQuery.Where(a => a.ActionType.Contains(searchAction));
+            }
+            if (!String.IsNullOrEmpty(searchFolderName))
+            {
+                auditsQuery = auditsQuery.Where(a => a.FolderName.Contains(searchFolderName));
+            }
+
+            switch (sortOrder)
+            {
+                case "time_asc":
+                    auditsQuery = auditsQuery.OrderBy(a => a.ActionTimestamp);
+                    break;
+                case "time_desc":
+                    auditsQuery = auditsQuery.OrderByDescending(a => a.ActionTimestamp);
+                    break;
+                default:
+                    auditsQuery = auditsQuery.OrderByDescending(a => a.ActionTimestamp); // Default sorting
+                    break;
+            }
+
+            var audits = await auditsQuery.ToListAsync();
+
+            // Check if the request is an AJAX request
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                // Return the partial view for AJAX requests
+                return PartialView("_AuditLogTablePartial", audits);
+            }
+
             return View(audits);
         }
+
 
 
 
