@@ -26,5 +26,9 @@ namespace PlataformaEDUGEP.Models
         public virtual ICollection<StoredFile> StoredFiles { get; set; } = new List<StoredFile>();
 
         public virtual ICollection<FolderLike> Likes { get; set; } = new List<FolderLike>();
+
+        // Add this inside your Folder class
+        public virtual ICollection<Tag> Tags { get; set; } = new List<Tag>();
+
     }
 }

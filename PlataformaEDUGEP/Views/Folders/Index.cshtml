@@ -102,7 +102,14 @@ else
                     <div class="card-body text-center">
                         <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
                         <p class="card-text">Data de criação: @item.CreationDate.ToString("dd/MM/yyyy")</p>
-                        <p class="card-text">Criado por: Professor(a) @item.User?.FullName</p> <!-- Add this line -->
+                        <p class="card-text">Criado por: Professor(a) @item.User?.FullName</p>
+                        <p class="card-text">
+                            Tags:
+                            @foreach (var tag in item.Tags)
+                            {
+                                <span class="badge bg-info">@tag.Name</span>
+                            }
+                        </p>
                         <a href="@Url.Action("Details", "Folders", new { id = item.FolderId })" class="btn btn-secondary">Abrir</a>
                     </div>
                 </div>

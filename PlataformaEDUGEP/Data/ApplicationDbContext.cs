@@ -15,6 +15,8 @@ namespace PlataformaEDUGEP.Data
         public DbSet<FolderLike> FolderLikes { get; set; }
         public DbSet<FolderAudit> FolderAudits { get; set; }
 
+        public DbSet<Tag> Tags { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -32,6 +34,12 @@ namespace PlataformaEDUGEP.Data
                 .HasOne(fl => fl.Folder)
                 .WithMany(f => f.Likes)
                 .HasForeignKey(fl => fl.FolderId);
+
+            // Configure the many-to-many relationship between Folder and Tag
+            modelBuilder.Entity<Folder>()
+                .HasMany(f => f.Tags)
+                .WithMany(t => t.Folders)
+                .UsingEntity(j => j.ToTable("FolderTags")); // This creates a join table named FolderTags
         }
 
 

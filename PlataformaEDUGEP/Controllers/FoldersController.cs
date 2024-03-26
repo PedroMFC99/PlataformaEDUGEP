@@ -35,7 +35,7 @@ namespace PlataformaEDUGEP.Controllers
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
             ViewBag.CurrentFilter = searchString;
 
-            var folders = _context.Folder.Include(f => f.User).AsQueryable();
+            var folders = _context.Folder.Include(f => f.User).Include(f => f.Tags).AsQueryable();
 
             if (!User.IsInRole("Teacher") && !User.IsInRole("Admin"))
             {
@@ -108,8 +108,10 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Teacher, Admin")]
         public IActionResult CreateModal()
         {
-            return PartialView("_CreatePartial");
+            ViewBag.TagItems = new SelectList(_context.Tags, "TagId", "Name");
+            return PartialView("_CreatePartial", new Folder());
         }
+
 
         // POST: Folders/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -118,7 +120,7 @@ namespace PlataformaEDUGEP.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher, Admin")]
-        public async Task<IActionResult> Create([Bind("FolderId,Name,IsHidden")] Folder folder)
+        public async Task<IActionResult> Create([Bind("FolderId,Name,IsHidden")] Folder folder, [FromForm] int[] SelectedTagIds)
         {
             if (ModelState.IsValid)
             {
@@ -129,6 +131,24 @@ namespace PlataformaEDUGEP.Controllers
                 folder.CreationDate = DateTime.Now;
                 folder.ModificationDate = DateTime.Now;
 
+                // Before adding the folder, associate it with selected tags
+                if (SelectedTagIds != null && SelectedTagIds.Length > 0)
+                {
+                    // Retrieve the tags from the database based on the selected IDs
+                    var tagsToAssociate = await _context.Tags
+                        .Where(tag => SelectedTagIds.Contains(tag.TagId))
+                        .ToListAsync();
+
+                    // Initialize the Tags collection if null to avoid NullReferenceException
+                    folder.Tags = new List<Tag>();
+
+                    // Add each tag to the Folder's Tags collection
+                    foreach (var tag in tagsToAssociate)
+                    {
+                        folder.Tags.Add(tag);
+                    }
+                }
+
                 _context.Add(folder);
                 await _context.SaveChangesAsync();
 
@@ -137,8 +157,14 @@ namespace PlataformaEDUGEP.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+
+            // If the model state is not valid, or if we need to return to the form for any reason,
+            // ensure the Tags list is repopulated for the form to render correctly.
+            ViewBag.TagItems = new SelectList(await _context.Tags.ToListAsync(), "TagId", "Name");
+
             return View(folder);
         }
+
 
 
         // GET: Folders/Edit/5
