@@ -65,7 +65,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             var user = await _userManager.FindByEmailAsync(Input.Email);
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+                ModelState.AddModelError(string.Empty, "Verificação de email enviada. Por favor, verifique o seu email.");
                 return Page();
             }
 

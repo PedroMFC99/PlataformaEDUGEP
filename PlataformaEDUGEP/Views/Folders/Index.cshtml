@@ -36,7 +36,7 @@
 </div>
 
 <!-- Trigger Button for Create Modal -->
-@if (User.IsInRole("Teacher"))
+@if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
 {
     <div class="d-flex justify-content-end mb-3">
         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createFolderModal"><i class="fas fa-plus"></i></button>
@@ -91,7 +91,7 @@ else
                         }
                     </div>
 
-                    @if (User.IsInRole("Teacher"))
+                    @if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
                     {
                         <div class="position-absolute top-0 end-0 m-2">
                             <!-- Trigger for Edit Modal -->

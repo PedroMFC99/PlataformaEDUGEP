@@ -40,8 +40,8 @@
                             </li>
                         }
 
-                        <!-- Additional link for users authenticated as Teacher -->
-                        @if (User.Identity.IsAuthenticated && User.IsInRole("Teacher"))
+                        <!-- Additional link for users authenticated as Admin -->
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Folders" asp-action="AuditLog">Registo de ocorrências</a>

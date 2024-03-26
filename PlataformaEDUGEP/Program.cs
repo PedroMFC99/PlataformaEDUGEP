@@ -6,7 +6,6 @@ using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
 using PlataformaEDUGEP.Services;
 using WebPWrecover.Services;
-using static System.Formats.Asn1.AsnWriter;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +43,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // Add this to handle 404 errors specificall
     app.UseStatusCodePagesWithReExecute("/Home/Error404");
     app.UseHsts();
 }
@@ -65,7 +63,12 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
 
-await Configurations.CreateStartingRoles(scope.ServiceProvider);
+// Access IConfiguration from the service provider
+var configuration = services.GetRequiredService<IConfiguration>();
+
+// Modify this line to pass configuration to CreateStartingRoles
+await Configurations.CreateStartingRoles(services, configuration);
 
 app.Run();

@@ -29,11 +29,40 @@
         Hora
         <i class="fas @(currentSort == "time_asc" ? "fa-arrow-up" : "fa-arrow-down")"></i>
     </a>
+
+    <form asp-action="ClearAuditLog" asp-controller="Folders" method="post" class="ms-lg-3">
+        @Html.AntiForgeryToken()
+        <!-- Button to trigger modal -->
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+            Resetar registo de ocorrências
+        </button>
+    </form>
+
 </div>
 
 <div id="audit-log-table">
     @Html.Partial("_AuditLogTablePartial", Model)
 </div>
+
+<!-- Delete Audit Log Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteFolderModalLabel">Apagar Registo de Auditoria</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem a certeza que deseja apagar todo o registo de ocorrências? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="clearAuditLog()">Apagar Tudo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -62,6 +91,29 @@
             // Perform the AJAX request
             $.get('@Url.Action("AuditLog", "Folders")', { searchUser: searchUser, searchAction: searchAction, searchFolderName: searchFolderName }, function (data) {
                 $('#audit-log-table').html(data);
+            });
+        }
+
+        function clearAuditLog() {
+            if (!confirm('Tem a certeza que deseja apagar todo o registo de auditoria? Esta ação não pode ser desfeita.')) {
+                return; // Exit if the user cancels
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ClearAuditLog", "Folders")',
+                beforeSend: function (xhr) {
+                    var token = $('input[name="__RequestVerificationToken"]').val(); // Ensure you are fetching the token correctly.
+                    xhr.setRequestHeader("RequestVerificationToken", token); // Set the token in the request header.
+                },
+                success: function (response) {
+                    $('#confirmDeleteModal').modal('hide');
+                    alert("Registo de auditoria apagado com sucesso."); // Notify user
+                    location.reload(); // Reload the page to reflect changes
+                },
+                error: function (xhr, status, error) {
+                    alert("Erro ao apagar registo de auditoria.");
+                }
             });
         }
     </script>

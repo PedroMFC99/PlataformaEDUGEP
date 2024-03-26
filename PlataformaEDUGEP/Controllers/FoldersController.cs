@@ -37,7 +37,7 @@ namespace PlataformaEDUGEP.Controllers
 
             var folders = _context.Folder.Include(f => f.User).AsQueryable();
 
-            if (!User.IsInRole("Teacher"))
+            if (!User.IsInRole("Teacher") && !User.IsInRole("Admin"))
             {
                 folders = folders.Where(f => !f.IsHidden);
             }
@@ -105,7 +105,7 @@ namespace PlataformaEDUGEP.Controllers
 
 
         // GET: Folders/Create
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher, Admin")]
         public IActionResult CreateModal()
         {
             return PartialView("_CreatePartial");
@@ -117,7 +117,7 @@ namespace PlataformaEDUGEP.Controllers
         // POST: Folders/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher, Admin")]
         public async Task<IActionResult> Create([Bind("FolderId,Name,IsHidden")] Folder folder)
         {
             if (ModelState.IsValid)
@@ -143,7 +143,7 @@ namespace PlataformaEDUGEP.Controllers
 
         // GET: Folders/Edit/5
         // GET: Folders/Edit/5
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher, Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Folder == null)
@@ -167,9 +167,10 @@ namespace PlataformaEDUGEP.Controllers
 
 
         // POST: Folders/Edit/5
+        // POST: Folders/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher, Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("FolderId,Name,IsHidden")] Folder folder)
         {
             if (id != folder.FolderId)
@@ -181,19 +182,23 @@ namespace PlataformaEDUGEP.Controllers
             {
                 try
                 {
-                    var userId = _userManager.GetUserId(User);
                     var existingFolder = await _context.Folder.AsNoTracking().FirstOrDefaultAsync(f => f.FolderId == id);
                     if (existingFolder == null)
                     {
                         return NotFound();
                     }
 
-                    folder.ModificationDate = DateTime.Now; // Update ModificationDate to now
+                    // Preserve the original CreationDate
+                    folder.CreationDate = existingFolder.CreationDate;
+
+                    // Update ModificationDate to now
+                    folder.ModificationDate = DateTime.Now;
+
                     _context.Update(folder);
                     await _context.SaveChangesAsync();
 
                     // Log the edit action after successfully saving changes
-                    await _folderAuditService.LogAuditAsync(userId, "Edição", folder.FolderId, folder.Name);
+                    await _folderAuditService.LogAuditAsync(_userManager.GetUserId(User), "Edição", folder.FolderId, folder.Name);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -213,7 +218,7 @@ namespace PlataformaEDUGEP.Controllers
 
 
         // GET: Folders/Delete/5
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher, Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Folder == null)
@@ -234,7 +239,7 @@ namespace PlataformaEDUGEP.Controllers
         // POST: Folders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher, Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var folder = await _context.Folder.FindAsync(id);
@@ -319,6 +324,7 @@ namespace PlataformaEDUGEP.Controllers
         {
             var userId = _userManager.GetUserId(User); // Get current user ID
             var userIsTeacher = User.IsInRole("Teacher");
+            var userIsAdmin = User.IsInRole("Admin");
 
             var userLikes = _context.FolderLikes
                                     .Where(fl => fl.UserId == userId)
@@ -328,7 +334,7 @@ namespace PlataformaEDUGEP.Controllers
                                     .AsQueryable(); // Ensure this query remains IQueryable for further filtering
 
             // Filter out hidden folders for non-teachers
-            if (!userIsTeacher)
+            if (!userIsTeacher && !userIsAdmin)
             {
                 userLikes = userLikes.Where(f => !f.IsHidden);
             }
@@ -353,7 +359,7 @@ namespace PlataformaEDUGEP.Controllers
             return View(folderList);
         }
 
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AuditLog(string searchUser = "", string searchAction = "", string searchFolderName = "", string sortOrder = "")
         {
             ViewData["CurrentFilterUser"] = searchUser;
@@ -411,8 +417,17 @@ namespace PlataformaEDUGEP.Controllers
             return View(audits);
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Admin")] // Ensure only admins can perform this action
+        public async Task<IActionResult> ClearAuditLog()
+        {
+            var allAudits = _context.FolderAudits.ToList();
+            _context.FolderAudits.RemoveRange(allAudits);
+            await _context.SaveChangesAsync();
 
-
+            // You can return a simple JSON result indicating success or redirect as needed
+            return Json(new { success = true, message = "Audit log cleared successfully." });
+        }
 
     }
 }
