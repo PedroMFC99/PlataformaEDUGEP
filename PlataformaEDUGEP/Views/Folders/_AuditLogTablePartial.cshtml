@@ -1,23 +1,31 @@
 ﻿@model IEnumerable<PlataformaEDUGEP.Models.FolderAuditViewModel>
 
-<table class="table mt-3">
-    <thead>
+<style>
+    .custom-black-border td,
+    .custom-black-border th {
+        border: 1px solid black;
+    }
+</style>
+
+<table class="table mt-3 table-bordered custom-black-border">
+    <thead class="table-primary">
         <tr>
-            <th>Utilizador</th>
-            <th>Tipo de ação realizada</th>
-            <th>Nome da Pasta</th>
-            <th>Hora</th>
+            <th class="text-center">Utilizador</th>
+            <th class="text-center">Tipo de ação realizada</th>
+            <th class="text-center">Nome da Pasta</th>
+            <th class="text-center">Hora</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var log in Model)
         {
             <tr>
-                <td>@log.UserName</td>
-                <td>@log.ActionType</td>
-                <td>@log.FolderName</td>
-                <td>@log.ActionTimestamp</td>
+                <td class="text-center">@log.UserName</td>
+                <td class="text-center">@log.ActionType</td>
+                <td class="text-center">@log.FolderName</td>
+                <td class="text-center">@log.ActionTimestamp</td>
             </tr>
         }
     </tbody>
 </table>
+
