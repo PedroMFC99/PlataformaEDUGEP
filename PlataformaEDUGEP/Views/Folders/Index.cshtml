@@ -3,9 +3,11 @@
 @{
     ViewData["Title"] = "Pastas";
     var folderLikeStatus = ViewBag.FolderLikeStatus as Dictionary<int, bool>;
+    var allTags = ViewBag.AllTags as SelectList;
+    var selectedTagIds = ViewBag.SelectedTagIds as int[]; // For retaining selected tags
 }
 
-<h1>Pastas</h1>
+    <h1>Pastas</h1>
 
 <div class="mb-3">
     @using (Html.BeginForm("Index", "Folders", FormMethod.Get, new { @class = "form-inline" }))
@@ -19,20 +21,26 @@
                 <button class="btn btn-outline-secondary fs-5 p-2" type="submit">Procurar</button>
             </div>
         </div>
-    }
-</div>
 
-<div class="mb-3">
-    @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter as string))
+        <!-- Tag Filtering Setup -->
+        <div class="form-group">
+            <label for="selectedTagIds">Tags</label>
+            @Html.ListBox("selectedTagIds", allTags, new { @class = "form-control", @multiple = "multiple" })
+        </div>
+
+        <div class="mb-3">
+            <span class="mr-3 align-self-center"><strong>Ordenar:</strong></span>
+            <button name="sortOrder" value="@ViewBag.NameSortParm" type="submit" class="btn btn-link">Nome @(ViewBag.NameSortParm == "name_desc" ? "↓" : "↑")</button>
+            <button name="sortOrder" value="@ViewBag.DateSortParm" type="submit" class="btn btn-link">Data de Criação @(ViewBag.DateSortParm == "date_desc" ? "↓" : "↑")</button>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(ViewBag.CurrentFilter as string) || (selectedTagIds != null && selectedTagIds.Length > 0))
     {
-        <a asp-action="Index" asp-route-searchString="" asp-route-sortOrder="" class="btn btn-secondary mr-3">
+        <a asp-action="Index" asp-route-searchString="" asp-route-sortOrder="" asp-route-selectedTagIds="" class="btn btn-secondary mr-3">
             <i class="fas fa-times"></i> Limpar filtros
         </a>
     }
-
-    <span class="mr-3 align-self-center"><strong>Ordenar:</strong></span>
-    @Html.ActionLink("Nome ", "Index", new { sortOrder = ViewBag.NameSortParm, searchString = ViewBag.CurrentFilter }) @(ViewBag.NameSortParm == "name_desc" ? "↑" : "↓")
-    @Html.ActionLink("Data de Criação ", "Index", new { sortOrder = ViewBag.DateSortParm, searchString = ViewBag.CurrentFilter }) @(ViewBag.DateSortParm == "date_desc" ? "↓" : "↑")
 </div>
 
 <!-- Trigger Button for Create Modal -->

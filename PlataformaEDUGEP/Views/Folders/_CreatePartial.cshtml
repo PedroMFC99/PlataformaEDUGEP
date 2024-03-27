@@ -5,12 +5,12 @@
 
     <div class="form-group">
         <label asp-for="Name" class="control-label"></label>
-        <input asp-for="Name" class="form-control" />
+        <input asp-for="Name" class="form-control" required />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="IsHidden" class="control-label"></label>
+        <label asp-for="IsHidden" class="control-label">Pasta escondida?</label>
         <input asp-for="IsHidden" />
     </div>
 

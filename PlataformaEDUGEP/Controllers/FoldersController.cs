@@ -27,13 +27,17 @@ namespace PlataformaEDUGEP.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index(string searchString, string sortOrder)
+        public async Task<IActionResult> Index(string searchString, string sortOrder, int[] selectedTagIds)
         {
             var userId = _userManager.GetUserId(User);
 
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
             ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
             ViewBag.CurrentFilter = searchString;
+            ViewBag.SelectedTagIds = selectedTagIds; // Added for tag filtering
+
+            // Ensure Tags SelectList is always passed to the view for the filter dropdown
+            ViewBag.AllTags = new SelectList(await _context.Tags.ToListAsync(), "TagId", "Name");
 
             var folders = _context.Folder.Include(f => f.User).Include(f => f.Tags).AsQueryable();
 
@@ -45,6 +49,12 @@ namespace PlataformaEDUGEP.Controllers
             if (!String.IsNullOrEmpty(searchString))
             {
                 folders = folders.Where(s => s.Name.Contains(searchString));
+            }
+
+            // Adjusted Tag filtering logic for AND condition
+            if (selectedTagIds != null && selectedTagIds.Length > 0)
+            {
+                folders = folders.Where(f => f.Tags.Count(t => selectedTagIds.Contains(t.TagId)) == selectedTagIds.Length);
             }
 
             switch (sortOrder)
@@ -75,10 +85,6 @@ namespace PlataformaEDUGEP.Controllers
 
             return View(folderList);
         }
-
-
-
-
 
 
         // GET: Folders/Details/5
@@ -166,8 +172,6 @@ namespace PlataformaEDUGEP.Controllers
         }
 
 
-
-        // GET: Folders/Edit/5
         // GET: Folders/Edit/5
         [Authorize(Roles = "Teacher, Admin")]
         public async Task<IActionResult> Edit(int? id)
@@ -191,8 +195,6 @@ namespace PlataformaEDUGEP.Controllers
             return View(folder);
         }
 
-
-        // POST: Folders/Edit/5
         // POST: Folders/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -241,6 +243,7 @@ namespace PlataformaEDUGEP.Controllers
             }
             return View(folder);
         }
+
 
 
         // GET: Folders/Delete/5
