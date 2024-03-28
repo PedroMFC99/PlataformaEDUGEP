@@ -87,6 +87,22 @@ namespace PlataformaEDUGEP.Controllers
         }
 
 
+        [HttpGet]
+        public async Task<IActionResult> GetTags(string searchTerm)
+        {
+            var tagsQuery = _context.Tags.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                tagsQuery = tagsQuery.Where(t => t.Name.Contains(searchTerm));
+            }
+
+            var tags = await tagsQuery.Select(tag => new { id = tag.TagId, text = tag.Name }).ToListAsync();
+
+            return Json(new { results = tags });
+        }
+
+
         // GET: Folders/Details/5
         [Authorize]
         public async Task<IActionResult> Details(int? id)

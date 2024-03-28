@@ -25,7 +25,8 @@
         <!-- Tag Filtering Setup -->
         <div class="form-group">
             <label for="selectedTagIds">Tags</label>
-            @Html.ListBox("selectedTagIds", allTags, new { @class = "form-control", @multiple = "multiple" })
+            @Html.ListBox("selectedTagIds", allTags, new { @class = "form-control select2-searchable", @multiple = "multiple" })
+
         </div>
 
         <div class="mb-3">
@@ -259,6 +260,32 @@ else
             });
         });
     </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.select2-searchable').select2({
+                placeholder: "Selecionar etiquetas",
+                allowClear: true,
+                ajax: {
+                    url: '@Url.Action("GetTags", "Folders")', // Adjust the URL as needed
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            searchTerm: params.term // search term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results
+                        };
+                    },
+                    cache: true
+                }
+            });
+        });
+    </script>
+
 }
 
 
