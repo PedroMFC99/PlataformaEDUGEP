@@ -188,7 +188,6 @@ namespace PlataformaEDUGEP.Controllers
         }
 
 
-        // GET: Folders/Edit/5
         [Authorize(Roles = "Teacher, Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -197,11 +196,14 @@ namespace PlataformaEDUGEP.Controllers
                 return NotFound();
             }
 
-            var folder = await _context.Folder.FindAsync(id);
+            var folder = await _context.Folder.Include(f => f.Tags).FirstOrDefaultAsync(m => m.FolderId == id);
             if (folder == null)
             {
                 return NotFound();
             }
+            ViewBag.TagItems = new SelectList(_context.Tags, "TagId", "Name"); // All tags for Select2
+            ViewBag.SelectedTags = folder.Tags.Select(t => t.TagId).ToList(); // IDs of selected tags
+
             // Check if the request is for a partial view to be loaded in a modal
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
@@ -211,11 +213,10 @@ namespace PlataformaEDUGEP.Controllers
             return View(folder);
         }
 
-        // POST: Folders/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher, Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("FolderId,Name,IsHidden")] Folder folder)
+        public async Task<IActionResult> Edit(int id, [Bind("FolderId,Name,IsHidden")] Folder folder, [FromForm] int[] SelectedTagIds)
         {
             if (id != folder.FolderId)
             {
@@ -226,19 +227,26 @@ namespace PlataformaEDUGEP.Controllers
             {
                 try
                 {
-                    var existingFolder = await _context.Folder.AsNoTracking().FirstOrDefaultAsync(f => f.FolderId == id);
-                    if (existingFolder == null)
+                    var folderToUpdate = await _context.Folder.Include(f => f.Tags).FirstOrDefaultAsync(f => f.FolderId == id);
+
+                    if (folderToUpdate == null)
                     {
                         return NotFound();
                     }
 
-                    // Preserve the original CreationDate
-                    folder.CreationDate = existingFolder.CreationDate;
+                    folderToUpdate.Name = folder.Name;
+                    folderToUpdate.IsHidden = folder.IsHidden;
+                    // Update the ModificationDate to now
+                    folderToUpdate.ModificationDate = DateTime.Now;
 
-                    // Update ModificationDate to now
-                    folder.ModificationDate = DateTime.Now;
+                    // Update tags
+                    folderToUpdate.Tags.Clear();
+                    var selectedTags = _context.Tags.Where(t => SelectedTagIds.Contains(t.TagId)).ToList();
+                    foreach (var tag in selectedTags)
+                    {
+                        folderToUpdate.Tags.Add(tag);
+                    }
 
-                    _context.Update(folder);
                     await _context.SaveChangesAsync();
 
                     // Log the edit action after successfully saving changes
@@ -259,6 +267,7 @@ namespace PlataformaEDUGEP.Controllers
             }
             return View(folder);
         }
+
 
 
 

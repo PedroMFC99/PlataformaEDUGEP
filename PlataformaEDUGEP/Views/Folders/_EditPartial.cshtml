@@ -27,7 +27,23 @@
         </div>
     </div>
 
-</div>
+    <div class="form-group">
+    <label for="selectedTagIds">Tags</label>
+    
+    <select class="form-control select2-tags" id="selectedTagIds" name="SelectedTagIds" multiple="multiple">
+    @{
+        var selectedTags = ViewBag.SelectedTags as List<int>;
+        var tagItems = ViewBag.TagItems as SelectList;
+
+        foreach (var tag in tagItems)
+        {
+            bool isSelected = selectedTags != null && selectedTags.Contains(Convert.ToInt32(tag.Value));
+            <!option value="@tag.Value" @(isSelected ? "selected" : "")>@tag.Text</!option>
+        }
+    }
+    </select>
+    </div>
+
 
 
     <div class="form-group">
@@ -36,6 +52,8 @@
 </form>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
     <script>
         $(document).ready(function () {
             $('#editFolderForm').submit(function (event) {
@@ -64,5 +82,31 @@
             });
         });
     </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.select2-tags').select2({
+                placeholder: "Selecionar etiquetas",
+                allowClear: true,
+                ajax: {
+                    url: '@Url.Action("GetTags", "Folders")', // Adjust the URL as needed
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            searchTerm: params.term // search term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results
+                        };
+                    },
+                    cache: true
+                }
+            });
+        });
+    </script>
+
 }
 
