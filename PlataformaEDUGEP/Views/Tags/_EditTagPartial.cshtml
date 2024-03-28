@@ -1,0 +1,17 @@
+﻿@model PlataformaEDUGEP.Models.Tag
+
+<form asp-action="Edit" method="post" id="editTagForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="TagId" />
+
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <input type="submit" value="Save changes" class="btn btn-primary" />
+    </div>
+</form>

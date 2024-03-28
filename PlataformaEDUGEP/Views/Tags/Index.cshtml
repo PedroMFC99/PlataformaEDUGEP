@@ -1,35 +1,143 @@
 ﻿@model IEnumerable<PlataformaEDUGEP.Models.Tag>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Tags";
 }
 
-<h1>Index</h1>
+<h1>Etiquetas</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+<!-- Create Tag Button -->
+<button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTagModal">Criar nova etiqueta</button>
+
+<style>
+    .custom-black-border td,
+    .custom-black-border th {
+        border: 1px solid black;
+    }
+</style>
+
+<table class="table mt-3 table-bordered custom-black-border">
+    <thead class="table-primary">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
+            <th class="text-center">
+                @Html.DisplayNameFor(model => model.First().Name)
             </th>
-            <th></th>
+            <th class="text-center">Ações</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.TagId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.TagId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.TagId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="text-center">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td class="text-center">
+                    <!-- Edit Button with FontAwesome Icon -->
+                    <a href="javascript:void(0)" class="btn btn-primary mx-1 btn-sm edit-tag-btn" data-id="@item.TagId" data-bs-toggle="modal" data-bs-target="#editTagModal">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <!-- The rest of your buttons like Delete can remain the same -->
+                    <a asp-action="Delete" asp-route-id="@item.TagId" class="btn btn-sm btn-danger">Remover</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+<!-- Create Tag Modal -->
+<div class="modal fade" id="createTagModal" tabindex="-1" aria-labelledby="createTagModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createTagModalLabel">Criar Nova Etiqueta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- The form will be loaded here via JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Tag Modal -->
+<div class="modal fade" id="editTagModal" tabindex="-1" aria-labelledby="editTagModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTagModalLabel">Edit Tag</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Edit form will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            $('#createTagModal').on('show.bs.modal', function (e) {
+                var url = '@Url.Action("Create", "Tags")'; // Adjust the URL as necessary
+                $.get(url, function (data) {
+                    $('#createTagModal .modal-body').html(data);
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            $(document).on('submit', '#createTagForm', function (e) {
+                e.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    success: function (response) {
+                        // Handle success, e.g., close modal, refresh tags list
+                        $('#createTagModal').modal('hide');
+                        location.reload(); // Simple way to refresh the tags list
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error
+                        console.error("Error creating tag: ", xhr.responseText);
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function () {
+            // Load Edit Form into Modal
+            $('.edit-tag-btn').click(function () {
+                var tagId = $(this).data('id');
+                var url = '@Url.Action("Edit", "Tags")/' + tagId;
+                $.get(url, function (data) {
+                    $('#editTagModal .modal-body').html(data);
+                });
+            });
+
+            // AJAX submission for Edit Form
+            $(document).on('submit', '#editTagForm', function (e) {
+                e.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    success: function (response) {
+                        $('#editTagModal').modal('hide');
+                        location.reload(); // Or update the UI as needed
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error editing tag: ", xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+
+}

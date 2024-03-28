@@ -53,6 +53,10 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
+            if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_CreateTagPartial"); // Return partial view for AJAX requests
+            }
             return View();
         }
 
@@ -87,8 +91,15 @@ namespace PlataformaEDUGEP.Controllers
             {
                 return NotFound();
             }
+
+            if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_EditTagPartial", tag); // Return partial view for AJAX requests
+            }
+
             return View(tag);
         }
+
 
         // POST: Tags/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
