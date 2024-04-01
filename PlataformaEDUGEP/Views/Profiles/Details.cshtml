@@ -10,12 +10,13 @@
                 </div>
                 <div class="card-body">
                     <div class="row mb-3">
-                        <div class="col-md-4">
-                            <!-- Default profile picture -->
-                            <img src="@Url.Content("~/images/default-profile-pic.png")" alt="Profile Picture" class="img-thumbnail">
+                        <div class="col-md-4 text-center">
+                            <!-- Default profile picture with rounded-circle class, black border added -->
+                            <img src="@Url.Content("~/images/default-profile-pic.png")" alt="Profile Picture" class="rounded-circle" style="width: 150px; height: 150px; object-fit: cover; border: 2px solid black;">
                         </div>
                         <div class="col-md-8">
                             <h3>@Model.FullName</h3>
+                            <p><strong>Papel:</strong> @ViewBag.RoleLabel</p>
                             <p><strong>Email:</strong> @Model.Email</p>
                             <p><strong>Telefone:</strong> @Model.PhoneNumber</p>
                             <p><strong>Acerca de mim:</strong> @Model.AboutMe</p>
@@ -23,8 +24,7 @@
                     </div>
                 </div>
 
-                <!-- Check if the user is not a student before showing "Pastas Criadas" section -->
-                @if (!User.IsInRole("Student"))
+                @if (!ViewBag.IsStudent)
                 {
                     <div class="card-footer bg-light">
                         <h4 class="text-center mt-2"><i class="fas fa-folder-open"></i> Pastas Criadas</h4>
@@ -43,7 +43,6 @@
                 <div class="card-footer text-center">
                     @if (User.Identity.IsAuthenticated && User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == Model.Id)
                     {
-                        <!-- Edit Profile Button -->
                         <a href="@Url.Content("~/Identity/Account/Manage")" class="btn btn-primary">Editar Perfil</a>
                     }
                 </div>
@@ -55,3 +54,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+

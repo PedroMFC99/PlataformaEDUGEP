@@ -31,7 +31,6 @@ namespace PlataformaEDUGEP.Controllers
         }
 
         // GET: Profiles/Details/5
-        // GET: Profiles/Details/5
         public async Task<IActionResult> Details(string? id)
         {
             if (id == null)
@@ -44,6 +43,16 @@ namespace PlataformaEDUGEP.Controllers
             {
                 return NotFound();
             }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            var isStudent = roles.Contains("Student");
+
+            string roleLabel = roles.Contains("Admin") ? "Administrador" :
+                               roles.Contains("Teacher") ? "Professor" :
+                               roles.Contains("Student") ? "Estudante" : "Desconhecido";
+
+            ViewBag.RoleLabel = roleLabel;
+            ViewBag.IsStudent = isStudent;
 
             // Check if the currently authenticated user is a Teacher or Admin
             var currentUser = await _userManager.GetUserAsync(User);
@@ -60,6 +69,7 @@ namespace PlataformaEDUGEP.Controllers
 
             return View(user);
         }
+
 
 
         // GET: Profiles/Create
