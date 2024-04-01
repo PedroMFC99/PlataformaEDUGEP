@@ -265,6 +265,17 @@ else
         $(document).ready(function () {
             $('.select2-searchable').select2({
                 placeholder: "Selecionar etiquetas",
+                language: {
+                    noResults: function () {
+                        return "Nenhuma etiqueta associada";
+                    },
+                    searching: function () {
+                        return "A procurar..."; // Custom message for searching
+                    }
+                },
+                escapeMarkup: function (markup) {
+                    return markup;
+                },
                 allowClear: true,
                 ajax: {
                     url: '@Url.Action("GetTags", "Folders")', // Adjust the URL as needed
