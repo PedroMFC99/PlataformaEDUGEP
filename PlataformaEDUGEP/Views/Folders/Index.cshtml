@@ -111,7 +111,13 @@ else
                     <div class="card-body text-center">
                         <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name)</h5>
                         <p class="card-text">Data de criação: @item.CreationDate.ToString("dd/MM/yyyy")</p>
-                        <p class="card-text">Criado por: Professor(a) @item.User?.FullName</p>
+
+                        <p class="card-text">
+                            Criado por: Professor(a)
+                            @Html.ActionLink(item.User?.FullName, "Details", "Profiles", new { id = item.User?.Id }, new { @class = "creator-link" })
+                        </p>
+
+
                         <p class="card-text">
                             Etiquetas:
                             @foreach (var tag in item.Tags)

@@ -44,7 +44,10 @@
                 <div class="card-body text-center">
                     <h5 class="card-title">@folder.Name</h5>
                     <p class="card-text">Data de criação: @folder.CreationDate.ToString("dd/MM/yyyy")</p>
-                    <p class="card-text">Criado por: Professor(a) @folder.User?.FullName</p> <!-- Add this line -->
+                    <p class="card-text">
+                         Criado por: Professor(a)
+                         @Html.ActionLink(folder.User?.FullName, "Details", "Profiles", new { id = folder.User?.Id }, new { @class = "creator-link" })
+                    </p>
 
                         <!-- Display tags -->
                         <p class="card-text">

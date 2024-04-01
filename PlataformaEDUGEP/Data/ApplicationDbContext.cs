@@ -17,6 +17,8 @@ namespace PlataformaEDUGEP.Data
 
         public DbSet<Tag> Tags { get; set; }
 
+        public DbSet<Profile>? Profile { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -41,7 +43,6 @@ namespace PlataformaEDUGEP.Data
                 .WithMany(t => t.Folders)
                 .UsingEntity(j => j.ToTable("FolderTags")); // This creates a join table named FolderTags
         }
-
 
     }
 }
