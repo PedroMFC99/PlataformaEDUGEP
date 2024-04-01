@@ -113,8 +113,9 @@ namespace PlataformaEDUGEP.Controllers
             }
 
             var folder = await _context.Folder
-                .Include(f => f.StoredFiles) // This includes the files in the folder.
-                .Include(f => f.User) // Make sure to include this line if it's not already there.
+                .Include(f => f.StoredFiles)
+                .Include(f => f.User)
+                .Include(f => f.Tags) // Make sure to include the tags.
                 .FirstOrDefaultAsync(m => m.FolderId == id);
             if (folder == null)
             {

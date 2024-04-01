@@ -24,7 +24,7 @@
 
         <!-- Tag Filtering Setup -->
         <div class="form-group">
-            <label for="selectedTagIds">Tags</label>
+            <label for="selectedTagIds">Etiquetas</label>
             @Html.ListBox("selectedTagIds", allTags, new { @class = "form-control select2-searchable", @multiple = "multiple" })
 
         </div>
@@ -113,7 +113,7 @@ else
                         <p class="card-text">Data de criação: @item.CreationDate.ToString("dd/MM/yyyy")</p>
                         <p class="card-text">Criado por: Professor(a) @item.User?.FullName</p>
                         <p class="card-text">
-                            Tags:
+                            Etiquetas:
                             @foreach (var tag in item.Tags)
                             {
                                 <span class="badge bg-info">@tag.Name</span>

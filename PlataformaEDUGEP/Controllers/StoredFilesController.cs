@@ -51,7 +51,7 @@ namespace PlataformaEDUGEP.Controllers
         }
 
         // GET: StoredFiles/Create
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Admin, Teacher")]
         public IActionResult Create(int? folderId)
         {
             // Use folderId as needed to pre-select the folder in your view
@@ -69,7 +69,7 @@ namespace PlataformaEDUGEP.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> Create([Bind("StoredFileName,FolderId")] StoredFile storedFile, IFormFile fileData)
         {
             if (fileData == null || fileData.Length == 0)
@@ -104,7 +104,7 @@ namespace PlataformaEDUGEP.Controllers
 
 
         // GET: StoredFiles/Edit/5
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.StoredFile == null)
@@ -126,7 +126,7 @@ namespace PlataformaEDUGEP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> Edit(int id, [Bind("StoredFileId,StoredFileName,UploadDate,FolderId")] StoredFile storedFile)
         {
             if (id != storedFile.StoredFileId)
@@ -159,7 +159,7 @@ namespace PlataformaEDUGEP.Controllers
         }
 
         // GET: StoredFiles/Delete/5
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.StoredFile == null)
@@ -181,7 +181,7 @@ namespace PlataformaEDUGEP.Controllers
         // POST: StoredFiles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.StoredFile == null)
