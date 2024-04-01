@@ -16,3 +16,7 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.select2-container--open {
+    z-index: 999999 !important; /* Use a high value to ensure it's above other elements */
+}

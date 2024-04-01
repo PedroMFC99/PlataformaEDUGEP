@@ -4,14 +4,14 @@
     @Html.AntiForgeryToken()
 
     <div class="form-group">
-        <label asp-for="Name" class="control-label"></label>
+        <label asp-for="Name" class="control-label">Nome da etiqueta</label>
         <input asp-for="Name" class="form-control" required/>
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <input type="submit" value="Create" class="btn btn-primary" />
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        <input type="submit" value="Criar" class="btn btn-primary" />
     </div>
 </form>
 

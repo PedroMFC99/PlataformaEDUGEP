@@ -201,17 +201,13 @@ namespace PlataformaEDUGEP.Controllers
             {
                 return NotFound();
             }
+
             ViewBag.TagItems = new SelectList(_context.Tags, "TagId", "Name"); // All tags for Select2
             ViewBag.SelectedTags = folder.Tags.Select(t => t.TagId).ToList(); // IDs of selected tags
 
-            // Check if the request is for a partial view to be loaded in a modal
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return PartialView("_EditPartial", folder);
-            }
-
-            return View(folder);
+            return PartialView("_EditPartial", folder);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

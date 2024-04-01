@@ -90,37 +90,125 @@
 
     <script>
         $(document).ready(function () {
-            $('.select2-multiple').select2({
+            // Initialize Select2 for filter search in Index view
+            $('#filterTagSelect').select2({
+                placeholder: "Search Tags for Filtering",
                 ajax: {
-                    url: '/your-endpoint-to-get-tags',
+                    url: '/Folders/GetTags', // Endpoint for fetching tags
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {
                         return {
-                            q: params.term, // search term
-                            page: params.page
+                            searchTerm: params.term // Search term
                         };
                     },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-
+                    processResults: function (data) {
                         return {
-                            results: data.items,
-                            pagination: {
-                                more: (params.page * 30) < data.total_count
-                            }
+                            results: data.results
                         };
                     },
                     cache: true
-                },
-                placeholder: 'Search for a tag',
-                minimumInputLength: 1,
-                templateResult: formatRepo, // Optional: Formatting function for the display of the search results
-                templateSelection: formatRepoSelection // Optional: Formatting function for the selection rendering
+                }
             });
 
+            // Initialize Select2 for the Create Modal
+            $('#createTagSelect').select2({
+                placeholder: "Select Tags for the Folder",
+                ajax: {
+                    url: '/Folders/GetTags', // Potentially the same endpoint as above
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            searchTerm: params.term // Search term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results
+                        };
+                    },
+                    cache: true
+                }
+            });
+
+            // Assuming the Create Modal is dynamically loaded
+            $('#createFolderModal').on('shown.bs.modal', function () {
+                // Re-initialize Select2 in case the modal content was dynamically loaded
+                $('#createTagSelect').select2({
+                    // Initialization options as above
+                });
+            });
         });
+
+
+        /// Important logic used in create modal form
+        $(document).ready(function () {
+            $('#createFolderModal').on('shown.bs.modal', function () {
+                // Initialize Select2 for the dynamically loaded select element in the create form
+                $('#tagSelect').select2({
+                    dropdownParent: $('#createFolderModal'), // Ensures dropdown is appended to the modal
+                    placeholder: "Select Tags",
+                    width: '100%', // Matches the Select2 input width to the parent container
+                    ajax: {
+                        url: '/Folders/GetTags', // Endpoint to fetch tags
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                searchTerm: params.term // Search term for the query
+                            };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: data.results // Data processing
+                            };
+                        },
+                        cache: true
+                    }
+                }).on("select2:open", function (e) {
+                    // Ensures the select element is visible when Select2 is opened
+                    $(this).css('display', 'block');
+                });
+            });
+        });
+
+
+        $(document).ready(function () {
+            $('#editFolderModal').on('shown.bs.modal', function () {
+                // Initialize Select2 for the dynamically loaded select element
+                $('#editTagSelect').select2({
+                    dropdownParent: $('#editFolderModal'), // Appends the dropdown to the modal
+                    placeholder: "Select Tags",
+                    width: '100%', // Ensures the Select2 input width matches the parent container
+                    ajax: {
+                        url: '/Folders/GetTags', // Make sure this endpoint returns the data in the correct format
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                searchTerm: params.term // Search term
+                            };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: data.results
+                            };
+                        },
+                        cache: true
+                    }
+                }).on("select2:open", function (e) {
+                    // Show the select element when Select2 is opened
+                    $(this).css('display', 'block');
+                });
+            });
+        });
+
+
+
     </script>
+
+
 
     @await RenderSectionAsync("Scripts", required: false)
 

@@ -29,8 +29,8 @@
 
     <div class="form-group">
     <label for="selectedTagIds">Tags</label>
-    
-    <select class="form-control select2-tags" id="selectedTagIds" name="SelectedTagIds" multiple="multiple">
+
+        <select class="form-control select2-tags" id="editTagSelect" name="SelectedTagIds" multiple="multiple" style="display: none;">
     @{
         var selectedTags = ViewBag.SelectedTags as List<int>;
         var tagItems = ViewBag.TagItems as SelectList;
@@ -54,59 +54,4 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
-    <script>
-        $(document).ready(function () {
-            $('#editFolderForm').submit(function (event) {
-                event.preventDefault(); // Prevent default form submission
-
-                var folderName = $('#folderName').val().trim();
-                if (folderName === '') {
-                    $('#folderName').siblings('.text-danger').text('Por favor, introduza um nome.');
-                } else {
-                    var form = $(this);
-                    $.ajax({
-                        type: form.attr('method'),
-                        url: form.attr('action'),
-                        data: form.serialize(),
-                        success: function (response) {
-                            // Handle success response
-                            $('#editFolderModal').modal('hide');
-                            // Optionally, you can reload the page or update content here
-                        },
-                        error: function (xhr, status, error) {
-                            // Handle error response
-                            console.log(xhr.responseText);
-                        }
-                    });
-                }
-            });
-        });
-    </script>
-
-    <script>
-        $(document).ready(function () {
-            $('.select2-tags').select2({
-                placeholder: "Selecionar etiquetas",
-                allowClear: true,
-                ajax: {
-                    url: '@Url.Action("GetTags", "Folders")', // Adjust the URL as needed
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            searchTerm: params.term // search term
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data.results
-                        };
-                    },
-                    cache: true
-                }
-            });
-        });
-    </script>
-
 }
-

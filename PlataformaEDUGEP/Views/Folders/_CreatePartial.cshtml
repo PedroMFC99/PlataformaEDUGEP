@@ -16,10 +16,15 @@
 
     <div class="form-group">
         <label for="tagSelect">Tags</label>
-        <select id="tagSelect" asp-items="@(new SelectList(ViewBag.TagItems, "Value", "Text"))" class="form-control" multiple="multiple" name="SelectedTagIds"></select>
+        <!-- Add a specific ID or class for Select2 initialization -->
+        <select id="tagSelect" asp-items="@(new SelectList(ViewBag.TagItems, "Value", "Text"))" class="form-control select2-tag-select" multiple="multiple" name="SelectedTagIds" style="display: none;"></select>
     </div>
 
     <div class="form-group">
         <input type="submit" value="Create" class="btn btn-primary" />
     </div>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
