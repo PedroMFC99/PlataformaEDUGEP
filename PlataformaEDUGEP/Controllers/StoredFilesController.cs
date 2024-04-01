@@ -15,11 +15,13 @@ namespace PlataformaEDUGEP.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _env;
 
-        public StoredFilesController(ApplicationDbContext context, IConfiguration configuration)
+        public StoredFilesController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment env)
         {
             _context = context;
             _configuration = configuration;
+            _env = env;
         }
 
         // GET: StoredFiles
@@ -79,16 +81,16 @@ namespace PlataformaEDUGEP.Controllers
 
             if (ModelState.IsValid)
             {
-                var uploadsFolderPath = _configuration.GetValue<string>("FileStorage:UploadsFolderPath");
-                var fileName = Path.GetFileName(fileData.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), uploadsFolderPath, fileName);
+                var uploadsFolderPath = Path.Combine(_env.WebRootPath, _configuration.GetValue<string>("FileStorage:UploadsFolderPath"));
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(fileData.FileName);
+                var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await fileData.CopyToAsync(stream);
                 }
 
-                storedFile.StoredFileName = fileName; // Consider saving filePath if you need to retrieve it later
+                storedFile.StoredFileName = uniqueFileName; // Consider saving filePath if you need to retrieve it later
                 storedFile.UploadDate = DateTime.Now;
 
                 _context.Add(storedFile);
