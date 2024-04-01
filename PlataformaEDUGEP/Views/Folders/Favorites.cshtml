@@ -31,22 +31,144 @@
                     </form>
                 </div>
 
-                @if (User.IsInRole("Teacher"))
-                {
-                    <div class="position-absolute top-0 end-0 m-2">
-                        <a href="@Url.Action("Edit", new { id = folder.FolderId })" class="btn btn-primary mx-1 btn-sm"><i class="fas fa-pencil-alt"></i></a>
-                        <a href="@Url.Action("Delete", new { id = folder.FolderId })" class="btn btn-danger mx-1 btn-sm"><i class="fas fa-trash"></i></a>
-                    </div>
-                }
+                    @if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
+                    {
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <!-- Trigger for Edit Modal -->
+                            <button class="btn btn-primary mx-1 btn-sm edit-folder-btn" data-id="@folder.FolderId" data-bs-toggle="modal" data-bs-target="#editFolderModal"><i class="fas fa-pencil-alt"></i></button>
+                            <!-- Trigger for Delete Modal -->
+                            <button class="btn btn-danger mx-1 btn-sm delete-folder-btn" data-id="@folder.FolderId" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal"><i class="fas fa-trash"></i></button>
+                        </div>
+                    }
 
                 <div class="card-body text-center">
                     <h5 class="card-title">@folder.Name</h5>
                     <p class="card-text">Data de criação: @folder.CreationDate.ToString("dd/MM/yyyy")</p>
-                        <p class="card-text">Criado por: Professor(a) @folder.User?.FullName</p> <!-- Add this line -->
+                    <p class="card-text">Criado por: Professor(a) @folder.User?.FullName</p> <!-- Add this line -->
+
+                        <!-- Display tags -->
+                        <p class="card-text">
+                            Etiquetas:
+                            @if (folder.Tags.Any())
+                            {
+                                @foreach (var tag in folder.Tags)
+                                {
+                                    <span class="badge bg-info">@tag.Name</span>
+                                }
+                            }
+                            else
+                            {
+                                <span>Nenhuma etiqueta associada</span>
+                            }
+                        </p>
+
                     <a href="@Url.Action("Details", new { id = folder.FolderId })" class="btn btn-secondary">Abrir</a>
                 </div>
             </div>
         </div>
     }
 </div>
+}
+
+<!-- Edit Folder Modal -->
+<div class="modal fade" id="editFolderModal" tabindex="-1" aria-labelledby="editFolderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editFolderModalLabel">Editar Pasta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- The form will be loaded here via JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Delete Folder Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza de que deseja excluir esta pasta? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <form method="POST">
+                    @Html.AntiForgeryToken()
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Edit button handling
+        $('.edit-folder-btn').click(function () {
+            var folderId = $(this).data('id');
+            var url = '/Folders/Edit/' + folderId;
+            $.get(url, function (data) {
+                $('#editFolderModal .modal-body').html(data);
+                $('#editFolderModal').modal('show');
+            });
+        });
+
+        $(document).on('submit', '#editFolderForm', function (event) {
+            event.preventDefault();
+            var form = $(this);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function (response) {
+                    $('#editFolderModal').modal('hide');
+                    // Replace the generic reload with a specific call to the Favorites page
+                    window.location.href = '/Folders/Favorites';
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error updating folder: ", xhr.responseText);
+                }
+            });
+        });
+
+        // Delete button handling
+        $('.delete-folder-btn').click(function () {
+            var folderId = $(this).data('id');
+            // Set the action for the form dynamically based on the folder ID
+            $('#confirmDeleteModal form').attr('action', '/Folders/DeleteFromFavorites/' + folderId);
+            $('#confirmDeleteModal').modal('show');
+        });
+
+        // AJAX submission for Delete from Favorites
+        $('#confirmDeleteModal').on('click', '.btn-delete-confirm', function () {
+            var folderId = $('#confirmDeleteModal').data('id');
+            $.ajax({
+                type: 'POST',
+                url: '/Folders/DeleteFromFavorites/' + folderId,
+                headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                success: function (response) {
+                    $('#confirmDeleteModal').modal('hide');
+                    // Refresh the Favorites page to reflect the deletion
+                    window.location.href = '/Folders/Favorites';
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error deleting folder: ", xhr.responseText);
+                }
+            });
+        });
+
+
+
+    </script>
+
 }

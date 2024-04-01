@@ -378,11 +378,13 @@ namespace PlataformaEDUGEP.Controllers
             var userIsAdmin = User.IsInRole("Admin");
 
             var userLikes = _context.FolderLikes
-                                    .Where(fl => fl.UserId == userId)
-                                    .Include(fl => fl.Folder)
-                                    .ThenInclude(folder => folder.User)
-                                    .Select(fl => fl.Folder)
-                                    .AsQueryable(); // Ensure this query remains IQueryable for further filtering
+                        .Where(fl => fl.UserId == userId)
+                        .Include(fl => fl.Folder)
+                            .ThenInclude(folder => folder.User)
+                        .Include(fl => fl.Folder) // Include the Folder to then include the Tags
+                            .ThenInclude(folder => folder.Tags) // This is crucial
+                        .Select(fl => fl.Folder)
+                        .AsQueryable();
 
             // Filter out hidden folders for non-teachers
             if (!userIsTeacher && !userIsAdmin)
@@ -409,6 +411,51 @@ namespace PlataformaEDUGEP.Controllers
 
             return View(folderList);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher, Admin")]
+        public async Task<IActionResult> DeleteFromFavorites(int id)
+        {
+            var folder = await _context.Folder.FindAsync(id);
+            if (folder != null)
+            {
+                var userId = _userManager.GetUserId(User); // Assuming you're tracking which user is performing the action
+
+                // Log the delete action before actually removing the folder
+                await _folderAuditService.LogAuditAsync(userId, "Exclusão", folder.FolderId, folder.Name);
+
+                _context.Folder.Remove(folder);
+                await _context.SaveChangesAsync();
+
+                // Additional logging after successful deletion could be placed here if needed
+            }
+
+            // Redirect back to the Favorites page
+            return RedirectToAction("Favorites");
+        }
+
+
+        [HttpPost, ActionName("DeleteConfirmed")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher, Admin")]
+        public async Task<IActionResult> DeleteConfirmedFavorites(int id)
+        {
+            var folder = await _context.Folder.FindAsync(id);
+            if (folder == null)
+            {
+                return NotFound();
+            }
+
+            _context.Folder.Remove(folder);
+            await _context.SaveChangesAsync();
+
+            // Optionally, log the deletion here if you have audit logging in place.
+
+            // Redirect to the Favorites page instead of the Index page
+            return RedirectToAction(nameof(Favorites));
+        }
+
 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AuditLog(string searchUser = "", string searchAction = "", string searchFolderName = "", string sortOrder = "")
