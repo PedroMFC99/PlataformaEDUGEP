@@ -25,10 +25,12 @@
 <div class="mt-2 d-flex align-items-center">
     <button id="clearFiltersButton" onclick="clearFilters()" class="btn btn-secondary mr-2" style="display: none;">Limpar filtros</button>
     <b class="ms-lg-2">Ordenar:</b>
-    <a asp-action="AuditLog" asp-route-sortOrder="@(currentSort == "time_asc" ? "time_desc" : "time_asc")" class="ms-lg-2" >
-        Hora
-        <i class="fas @(currentSort == "time_asc" ? "fa-arrow-up" : "fa-arrow-down")"></i>
+
+    <!-- Adjust the initial data-sort-order and icon class to match the default sort order -->
+    <a href="#" id="sortOrderLink" data-sort-order="time_desc" class="ms-lg-2">
+        Hora <i class="fas fa-arrow-down"></i> <!-- Default is desc so show arrow down -->
     </a>
+
 
     <form asp-action="ClearAuditLog" asp-controller="Folders" method="post" class="ms-lg-3">
         @Html.AntiForgeryToken()
@@ -76,21 +78,59 @@
             updateAuditLog('', '', ''); // Call with empty values to reset
         }
 
-        function updateAuditLog(searchUser = null, searchAction = null, searchFolderName = null) {
-            searchUser = searchUser !== null ? searchUser : $("input[name='searchUser']").val();
-            searchAction = searchAction !== null ? searchAction : $("input[name='searchAction']").val();
-            searchFolderName = searchFolderName !== null ? searchFolderName : $("input[name='searchFolderName']").val();
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById('sortOrderLink').addEventListener('click', function (e) {
+                e.preventDefault(); // Prevent the default link action
 
-            // Determine if any search input has a value
+                // Determine the current sort order and calculate the new sort order
+                var currentSortOrder = this.getAttribute('data-sort-order');
+                var newSortOrder = currentSortOrder === 'time_desc' ? 'time_asc' : 'time_desc';
+
+                // Update the data-sort-order attribute to the new sort order BEFORE calling updateAuditLog
+                this.setAttribute('data-sort-order', newSortOrder);
+
+                // Update the icon to reflect the new sort order immediately
+                updateSortIcon(newSortOrder);
+
+                // Now call updateAuditLog with the new sort order
+                updateAuditLog(null, null, null, newSortOrder);
+            });
+        });
+
+        function updateSortIcon(sortOrder) {
+            var iconElement = document.querySelector('#sortOrderLink i');
+            if (iconElement) {
+                // Reset the icon classes
+                iconElement.classList.remove('fa-arrow-up', 'fa-arrow-down');
+                // Apply the correct class based on the new sort order
+                var iconClass = sortOrder === 'time_desc' ? 'fa-arrow-down' : 'fa-arrow-up';
+                iconElement.classList.add(iconClass);
+            }
+        }
+
+        // Ensure the updateAuditLog function properly handles the sortOrder parameter and correctly refreshes the content
+        function updateAuditLog(searchUser, searchAction, searchFolderName, sortOrder) {
+            searchUser = searchUser || $("input[name='searchUser']").val();
+            searchAction = searchAction || $("input[name='searchAction']").val();
+            searchFolderName = searchFolderName || $("input[name='searchFolderName']").val();
+
+            // Show the clear filters button if any of the inputs have a value
             if (searchUser.length > 0 || searchAction.length > 0 || searchFolderName.length > 0) {
-                $("#clearFiltersButton").show(); // Show the "Limpar filtros" button
+                $("#clearFiltersButton").show();
             } else {
-                $("#clearFiltersButton").hide(); // Hide the "Limpar filtros" button
+                $("#clearFiltersButton").hide();
             }
 
-            // Perform the AJAX request
-            $.get('@Url.Action("AuditLog", "Folders")', { searchUser: searchUser, searchAction: searchAction, searchFolderName: searchFolderName }, function (data) {
+            $.get('@Url.Action("AuditLog", "Folders")', {
+                searchUser: searchUser,
+                searchAction: searchAction,
+                searchFolderName: searchFolderName,
+                sortOrder: sortOrder
+            }, function (data) {
                 $('#audit-log-table').html(data);
+                // No need to update the input values here since they're already being maintained
+            }).fail(function () {
+                console.error("Failed to fetch data"); // Error handling
             });
         }
 
