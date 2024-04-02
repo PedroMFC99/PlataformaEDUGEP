@@ -269,6 +269,7 @@ else
 
     <script>
         $(document).ready(function () {
+            // Initialize Select2 on elements with the class 'select2-searchable'
             $('.select2-searchable').select2({
                 placeholder: "Selecionar etiquetas",
                 language: {
@@ -276,7 +277,7 @@ else
                         return "Nenhuma etiqueta associada";
                     },
                     searching: function () {
-                        return "A procurar..."; // Custom message for searching
+                        return "A procurar...";
                     }
                 },
                 escapeMarkup: function (markup) {
@@ -300,8 +301,15 @@ else
                     cache: true
                 }
             });
+
+            // After initializing Select2, set visibility back to visible for these elements
+            // to avoid the flicker effect.
+            $('.select2-searchable').css('visibility', 'visible');
+
+            // The rest of your document.ready function goes here...
         });
     </script>
+
 
 }
 
