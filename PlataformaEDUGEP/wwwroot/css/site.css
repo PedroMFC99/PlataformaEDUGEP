@@ -25,3 +25,8 @@ body {
     visibility: hidden;
 }
 
+#wrapper {
+    min-height: 120px; /* Adjust the value to prevent layout shift */
+}
+
+
