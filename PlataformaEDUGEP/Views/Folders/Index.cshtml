@@ -117,9 +117,15 @@ else
 
                         <p class="card-text">
                             Criado por: Professor(a)
-                            @Html.ActionLink(item.User?.FullName, "Details", "Profiles", new { id = item.User?.Id }, new { @class = "creator-link" })
+                            @if (item.User != null)
+                            {
+                                @Html.ActionLink(item.User.FullName, "Details", "Profiles", new { id = item.User.Id }, new { @class = "creator-link" })
+                            }
+                            else
+                            {
+                                <span>[Unknown User]</span>
+                            }
                         </p>
-
 
                         <p class="card-text">
                             Etiquetas:
