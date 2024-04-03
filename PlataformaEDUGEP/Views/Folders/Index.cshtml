@@ -10,16 +10,19 @@
     <h1>Pastas</h1>
 
 <div class="mb-3">
-    @using (Html.BeginForm("Index", "Folders", FormMethod.Get, new { @class = "form-inline" }))
+    @using (Html.BeginForm("Index", "Folders", FormMethod.Get, new { @class = "form-inline search-container" }))
     {
         <div class="input-group mb-2">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1"><i class="fas fa-search fa-2x"></i></span>
             </div>
-            @Html.TextBox("searchString", ViewBag.CurrentFilter as string, new { @class = "form-control", @type = "search", @placeholder = "Introduza o nome de uma pasta..." })
+            @Html.TextBox("searchString", ViewBag.CurrentFilter as string, new { @class = "form-control search-input", @type = "search", @placeholder = "Introduza o nome de uma pasta..." })
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary fs-5 p-2" type="submit">Procurar</button>
             </div>
+        </div>
+        <div id="searchResultsDropdown" class="search-results-dropdown" style="display: none;">
+            <!-- Search results will be appended here -->
         </div>
 
         <!-- Tag Filtering Setup -->
@@ -310,7 +313,50 @@ else
         });
     </script>
 
+    <script>
+        $(document).ready(function () {
+            // Trigger search operation when the user types in the search box
+            $('.search-input').on('input', function () {
+                var searchTerm = $(this).val();
 
+                // Only proceed if the searchTerm is not empty and is more than 2 characters
+                if (searchTerm.length > 1) {
+                    $.ajax({
+                        url: '@Url.Action("SearchFolders", "Folders")', // Adjust the URL as needed
+                        type: 'GET',
+                        data: { searchString: searchTerm },
+                        success: function (data) {
+                            $('#searchResultsDropdown').empty().show();
+                            if (data.length > 0) {
+                                data.forEach(function (folder) {
+                                    $('#searchResultsDropdown').append('<a href="/Folders/Details/' + folder.folderId + '" class="dropdown-item">' + folder.name + '</a>');
+                                });
+                            } else {
+                                $('#searchResultsDropdown').append('<div class="dropdown-item">Nenhuma pasta encontrada</div>');
+                            }
+                        }
+                    });
+                } else {
+                    $('#searchResultsDropdown').empty().hide();
+                }
+            });
+
+            // Adjust dropdown width and position to match the search input box
+            $('.search-input').on('input', function () {
+                var inputWidth = $(this).outerWidth(); // Get the current width of the input box
+                var inputOffset = $(this).offset().left - $(this).parent().offset().left; // Get the left position of the input box relative to its parent
+                $('#searchResultsDropdown').width(inputWidth); // Set the width of the dropdown
+                $('#searchResultsDropdown').css('left', inputOffset + 'px'); // Adjust the left position of the dropdown
+            });
+
+            // Close dropdown when clicking outside of it
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('.search-input, #searchResultsDropdown').length) {
+                    $('#searchResultsDropdown').hide();
+                }
+            });
+        });
+    </script>
 }
 
 

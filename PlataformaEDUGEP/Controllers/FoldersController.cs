@@ -87,6 +87,20 @@ namespace PlataformaEDUGEP.Controllers
         }
 
 
+        public async Task<IActionResult> SearchFolders(string searchString)
+        {
+            var foldersQuery = _context.Folder.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                foldersQuery = foldersQuery.Where(f => f.Name.Contains(searchString));
+            }
+
+            var folders = await foldersQuery.Select(f => new { f.FolderId, f.Name }).ToListAsync();
+
+            return Json(folders);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetTags(string searchTerm)
         {

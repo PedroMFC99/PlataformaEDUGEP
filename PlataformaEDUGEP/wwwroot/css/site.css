@@ -29,4 +29,40 @@ body {
     min-height: 120px; /* Adjust the value to prevent layout shift */
 }
 
+.search-container {
+    position: relative; /* This makes the .search-results-dropdown position relative to this container */
+}
+
+.search-results-dropdown {
+    position: absolute;
+    z-index: 1000; /* Ensures the dropdown appears above other content */
+    width: 100%; /* Match the width of the search input */
+    background-color: #fff; /* Background color for the dropdown */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+    border: 1px solid #ccc; /* Light border for definition */
+    border-top: none; /* Removes top border to blend with the input box */
+    max-height: 400px; /* Limits the height and adds scroll */
+    overflow-y: auto; /* Adds scroll to the dropdown */
+    padding: 0; /* Reset padding */
+    margin-top: -1px; /* Helps align with the input box */
+}
+
+    .search-results-dropdown .dropdown-item {
+        padding: 10px 15px; /* Padding for each item */
+        cursor: pointer; /* Changes cursor to pointer on hover */
+        display: block; /* Ensures each item is on a new line */
+    }
+
+        .search-results-dropdown .dropdown-item:hover {
+            background-color: #f8f9fa; /* Light background color on hover */
+        }
+
+        /* Additional styling for no results message */
+        .search-results-dropdown .dropdown-item.no-results {
+            text-align: center; /* Center the text */
+            color: #888; /* Lighter text color */
+        }
+
+
+
 
