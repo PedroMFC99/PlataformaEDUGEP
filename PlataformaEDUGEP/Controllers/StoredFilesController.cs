@@ -76,31 +76,42 @@ namespace PlataformaEDUGEP.Controllers
         {
             if (fileData == null || fileData.Length == 0)
             {
+                // If no file was uploaded, add a model error.
                 ModelState.AddModelError("FileData", "The file is required.");
             }
-
-            if (ModelState.IsValid)
+            else
             {
+                // Process the file if it's present
                 var uploadsFolderPath = Path.Combine(_env.WebRootPath, _configuration.GetValue<string>("FileStorage:UploadsFolderPath"));
                 var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(fileData.FileName);
                 var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
 
+                // Save the uploaded file to a local folder
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await fileData.CopyToAsync(stream);
                 }
 
-                storedFile.StoredFileName = uniqueFileName; // Consider saving filePath if you need to retrieve it later
-                storedFile.UploadDate = DateTime.Now;
+                // Assign the unique file name to the model (you might want to save the full path or a relative path depending on your requirements)
+                storedFile.StoredFileName = uniqueFileName;
+                storedFile.UploadDate = DateTime.Now; // Set the current time as the upload date
+            }
 
+            if (ModelState.IsValid)
+            {
+                // Add the StoredFile object to the database context and save changes
                 _context.Add(storedFile);
                 await _context.SaveChangesAsync();
+
+                // Redirect to the index action after successfully saving the file and its metadata
                 return RedirectToAction(nameof(Index));
             }
 
+            // If the model state is not valid (which could be due to missing file or other validation errors), reload the create view with the current model to display errors
             ViewData["FolderId"] = new SelectList(_context.Folder, "FolderId", "Name", storedFile.FolderId);
             return View(storedFile);
         }
+
 
 
 
