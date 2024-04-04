@@ -138,8 +138,13 @@ namespace PlataformaEDUGEP.Controllers
                 return NotFound();
             }
 
+            // Fetch all folders for the dropdown list in the edit modal
+            var folders = await _context.Folder.Select(f => new { f.FolderId, f.Name }).ToListAsync();
+            ViewBag.FoldersJson = Newtonsoft.Json.JsonConvert.SerializeObject(folders);
+
             return View(folder);
         }
+
 
 
 

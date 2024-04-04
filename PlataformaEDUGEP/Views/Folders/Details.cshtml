@@ -97,7 +97,9 @@
                 <td>@file.User.FullName</td>
                 <td>
                     <!-- Edit Link -->
-                    <a href="@Url.Action("Edit", "StoredFiles", new { id = file.StoredFileId })" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                    <button type="button" class="btn btn-sm btn-primary edit-file-btn" data-bs-toggle="modal" data-bs-target="#editFileModal" data-id="@file.StoredFileId" data-folder-id="@file.FolderId">
+                        <i class="fas fa-edit"></i>
+                    </button>
                     <!-- Delete Link -->
                     <!-- Delete Button triggers Modal -->
                     <button class="btn btn-sm btn-danger delete-file-btn" data-id="@file.StoredFileId" data-bs-toggle="modal" data-bs-target="#confirmDeleteFileModal">
@@ -109,6 +111,37 @@
         }
     </tbody>
 </table>
+
+
+<!-- Edit File Modal -->
+<div class="modal fade" id="editFileModal" tabindex="-1" aria-labelledby="editFileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editFileForm" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editFileModalLabel">Edit File</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editStoredFileId" name="StoredFileId">
+                    <div class="form-group">
+                        <label for="newFileData">Alterar ficheiro</label>
+                        <input type="file" class="form-control" id="newFileData" name="newFileData">
+                    </div>
+                    <div class="form-group">
+                        <label for="editFolderId" class="control-label">Escolher pasta</label>
+                        <select id="editFolderId" class="form-control" name="FolderId"></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <input type="submit" value="Confirmar alterações" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 <!-- Delete File Confirmation Modal -->
 <div class="modal fade" id="confirmDeleteFileModal" tabindex="-1" aria-labelledby="confirmDeleteFileModalLabel" aria-hidden="true">
@@ -132,6 +165,64 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            // Example of populating the folder dropdown
+            // Assuming `folders` is available and contains your folders data
+            var folders = @Html.Raw(ViewBag.FoldersJson); // Make sure to encode your folders data into a ViewBag in your controller
+            folders.forEach(function (folder) {
+                $('#editFolderId').append(new Option(folder.Name, folder.FolderId));
+            });
+
+            $('.edit-file-btn').on('click', function () {
+                var fileId = $(this).data('id');
+                var folderId = $(this).data('folder-id'); // Assuming you have the folder ID available
+
+                // Set the values in the form
+                $('#editStoredFileId').val(fileId);
+                $('#editFolderId').val(folderId);
+
+                // Show the modal
+                //$('#editFileModal').modal('show');
+            });
+        });
+    </script>
+
+    <script>
+        $('#editFileForm').submit(function (e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+            var fileId = $('#editStoredFileId').val(); // Get the file ID to construct the URL
+
+            $.ajax({
+                url: '@Url.Action("Edit", "StoredFiles")/' + fileId,
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $('#editFileModal').modal('hide');
+                    // Use the success response to decide if the page should be reloaded
+                    if (response.success) {
+                        // Optionally, display a success message before reloading
+                        alert('File edited successfully.');
+                        // Reload the current page to reflect the changes
+                        location.reload();
+                    } else {
+                        // Handle the case where edit was not successful
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function () {
+                    // Handle general AJAX errors
+                    alert('Error editing file.');
+                }
+            });
+        });
+    </script>
+
 
     <script>
         $(document).ready(function () {
@@ -162,5 +253,4 @@
             });
         });
     </script>
-
 }
