@@ -306,6 +306,25 @@ namespace PlataformaEDUGEP.Controllers
             return RedirectToAction("Details", "Folders", new { id = folderId });
         }
 
+
+        [HttpPost]
+        [Authorize(Roles = "Admin, Teacher")]
+        public async Task<IActionResult> AjaxDeleteFile(int id)
+        {
+            var storedFile = await _context.StoredFile.FindAsync(id);
+            if (storedFile == null)
+            {
+                return Json(new { success = false, message = "File not found." });
+            }
+
+            _context.StoredFile.Remove(storedFile);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "File deleted successfully." });
+        }
+
+
+
         [Authorize]
         private bool StoredFileExists(int id)
         {

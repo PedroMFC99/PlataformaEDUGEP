@@ -99,17 +99,68 @@
                     <!-- Edit Link -->
                     <a href="@Url.Action("Edit", "StoredFiles", new { id = file.StoredFileId })" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
                     <!-- Delete Link -->
-                    <a href="@Url.Action("Delete", "StoredFiles", new { id = file.StoredFileId })" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                    <!-- Delete Button triggers Modal -->
+                    <button class="btn btn-sm btn-danger delete-file-btn" data-id="@file.StoredFileId" data-bs-toggle="modal" data-bs-target="#confirmDeleteFileModal">
+                        <i class="fas fa-trash"></i>
+                    </button>
+
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
+<!-- Delete File Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteFileModal" tabindex="-1" aria-labelledby="confirmDeleteFileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteFileModalLabel">Confirmar Exclusão do Ficheiro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza de que deseja excluir este ficheiro? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirm-delete-file">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 @section Scripts {
-    @{
-        <partial name="_ValidationScriptsPartial" />
-    }
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            var fileIdToDelete = 0;
+            $('.delete-file-btn').on('click', function () {
+                fileIdToDelete = $(this).data('id'); // Set the file ID to delete
+            });
+
+            $('#confirm-delete-file').on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("AjaxDeleteFile", "StoredFiles")/' + fileIdToDelete,
+                    headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                    success: function (response) {
+                        if (response.success) {
+                            // Close modal and show success message or remove the file row from the table
+                            $('#confirmDeleteFileModal').modal('hide');
+                            location.reload(); // Or better, remove the row for the deleted file
+                        } else {
+                            // Handle failure
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('Something went wrong.');
+                    }
+                });
+            });
+        });
+    </script>
+
 }

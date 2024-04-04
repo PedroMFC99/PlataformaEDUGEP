@@ -127,6 +127,7 @@ namespace PlataformaEDUGEP.Controllers
             }
 
             var folder = await _context.Folder
+                .Include(f => f.User)
                 .Include(f => f.StoredFiles)
                     .ThenInclude(sf => sf.User) // Include User for each StoredFile
                 .Include(f => f.Tags) // Make sure to include the tags.
