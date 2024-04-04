@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Net.Http.Headers;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
 
@@ -119,6 +120,77 @@ namespace PlataformaEDUGEP.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+        public async Task<IActionResult> DownloadFile(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return NotFound();
+            }
+
+            var path = Path.Combine(_env.WebRootPath, "uploads", fileName);
+
+            if (!System.IO.File.Exists(path))
+            {
+                return NotFound();
+            }
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(path, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+
+            // Extract the original file name (if you stored it in a different field, use that instead)
+            var originalFileName = fileName.Substring(fileName.IndexOf('_') + 1);
+
+            // Return the file
+            return File(memory, GetContentType(path), originalFileName);
+        }
+
+        private string GetContentType(string path)
+        {
+            var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(path, out var contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+            return contentType;
+        }
+
+        public async Task<IActionResult> PreviewFile(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return NotFound();
+            }
+
+            var path = Path.Combine(_env.WebRootPath, "uploads", fileName);
+            if (!System.IO.File.Exists(path))
+            {
+                return NotFound();
+            }
+
+            var memoryStream = new MemoryStream();
+            using (var stream = new FileStream(path, FileMode.Open))
+            {
+                await stream.CopyToAsync(memoryStream);
+            }
+            memoryStream.Position = 0;
+
+            string contentType = GetContentType(path);
+            // Explicitly set the Content-Disposition header to inline; filename="{originalFileName}"
+            // Note: Ensure originalFileName does not expose the encrypted part if sensitive
+            var originalFileName = Path.GetFileNameWithoutExtension(fileName).Substring(37); // Adjust as necessary based on your naming convention
+            var contentDisposition = new ContentDispositionHeaderValue("inline")
+            {
+                FileName = originalFileName
+            }.ToString();
+
+            Response.Headers[HeaderNames.ContentDisposition] = contentDisposition;
+            return File(memoryStream.ToArray(), contentType);
+        }
 
 
 

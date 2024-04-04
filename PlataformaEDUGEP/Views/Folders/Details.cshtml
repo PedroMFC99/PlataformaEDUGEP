@@ -85,12 +85,22 @@
         {
             <tr>
                 <td>@file.StoredFileTitle</td>
-                <td>@file.StoredFileName</td>
+                <td>
+                    <!-- Link to preview the file -->
+                    <a href="@Url.Action("PreviewFile", "StoredFiles", new { fileName = file.StoredFileName })" target="_blank">
+                        Preview
+                    </a>
+                    <!-- Optionally, a direct download link -->
+                    <a href="@Url.Action("DownloadFile", "StoredFiles", new { fileName = file.StoredFileName })" class="ml-2">
+                        Download
+                    </a>
+                </td>
                 <td>@file.UploadDate.ToShortDateString()</td>
             </tr>
         }
     </tbody>
 </table>
+
 
 @section Scripts {
     @{
