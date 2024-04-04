@@ -65,11 +65,12 @@
 
 <h4>Ficheiros</h4>
 
+<!-- Button to Open the Modal -->
 @if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
 {
-    <a href="@Url.Action("Create", "StoredFiles", new { folderId = Model.FolderId })" class="btn btn-primary">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFileModal">
         <i class="fas fa-plus"></i> Adicionar Ficheiro
-    </a>
+    </button>
 }
 
 <table class="table">
@@ -97,7 +98,11 @@
                 <td>@file.User.FullName</td>
                 <td>
                     <!-- Edit Link -->
-                    <button type="button" class="btn btn-sm btn-primary edit-file-btn" data-bs-toggle="modal" data-bs-target="#editFileModal" data-id="@file.StoredFileId" data-folder-id="@file.FolderId">
+                    <button type="button" class="btn btn-sm btn-primary edit-file-btn"
+                            data-bs-toggle="modal" data-bs-target="#editFileModal"
+                            data-id="@file.StoredFileId" data-folder-id="@file.FolderId"
+                            data-title="@file.StoredFileTitle">
+                        <!-- Add data-title here -->
                         <i class="fas fa-edit"></i>
                     </button>
                     <!-- Delete Link -->
@@ -113,6 +118,36 @@
 </table>
 
 
+<!-- Add File Modal -->
+<div class="modal fade" id="createFileModal" tabindex="-1" aria-labelledby="createFileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="createForm" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createFileModalLabel">Adicionar Ficheiro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="FolderId" value="@Model.FolderId" />
+                    <div class="form-group">
+                        <label for="storedFileName">Nome do Ficheiro</label>
+                        <input type="text" class="form-control" id="storedFileName" name="storedFileName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fileData">Ficheiro</label>
+                        <input type="file" class="form-control" id="fileData" name="fileData" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Adicionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
 <!-- Edit File Modal -->
 <div class="modal fade" id="editFileModal" tabindex="-1" aria-labelledby="editFileModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -125,17 +160,21 @@
                 <div class="modal-body">
                     <input type="hidden" id="editStoredFileId" name="StoredFileId">
                     <div class="form-group">
-                        <label for="newFileData">Alterar ficheiro</label>
+                        <label for="editStoredFileTitle">File Title</label>
+                        <input type="text" class="form-control" id="editStoredFileTitle" name="StoredFileTitle">
+                    </div>
+                    <div class="form-group">
+                        <label for="newFileData">Change file</label>
                         <input type="file" class="form-control" id="newFileData" name="newFileData">
                     </div>
                     <div class="form-group">
-                        <label for="editFolderId" class="control-label">Escolher pasta</label>
+                        <label for="editFolderId" class="control-label">Choose folder</label>
                         <select id="editFolderId" class="form-control" name="FolderId"></select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <input type="submit" value="Confirmar alterações" class="btn btn-primary" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <input type="submit" value="Confirm changes" class="btn btn-primary" />
                 </div>
             </form>
         </div>
@@ -168,6 +207,33 @@
 
     <script>
         $(document).ready(function () {
+            $('#createForm').submit(function (e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $.ajax({
+                    url: '@Url.Action("Create", "StoredFiles")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        $('#createFileModal').modal('hide');
+                        // Refresh part of your page or show success message
+                        alert('Ficheiro adicionado com sucesso');
+                        location.reload(); // For simplicity, just reload the page to see the new file.
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert('Erro ao adicionar ficheiro: ' + textStatus);
+                    }
+                });
+            });
+        });
+    </script>
+
+
+
+    <script>
+        $(document).ready(function () {
             // Example of populating the folder dropdown
             // Assuming `folders` is available and contains your folders data
             var folders = @Html.Raw(ViewBag.FoldersJson); // Make sure to encode your folders data into a ViewBag in your controller
@@ -177,14 +243,13 @@
 
             $('.edit-file-btn').on('click', function () {
                 var fileId = $(this).data('id');
-                var folderId = $(this).data('folder-id'); // Assuming you have the folder ID available
+                var folderId = $(this).data('folder-id');
+                var fileTitle = $(this).data('title'); // Get the title from data attribute
 
-                // Set the values in the form
+                // Set the values in the form, including the title
                 $('#editStoredFileId').val(fileId);
                 $('#editFolderId').val(folderId);
-
-                // Show the modal
-                //$('#editFileModal').modal('show');
+                $('#editStoredFileTitle').val(fileTitle); // Set the input box value to the current title
             });
         });
     </script>

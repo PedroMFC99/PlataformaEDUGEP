@@ -238,37 +238,39 @@ namespace PlataformaEDUGEP.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Teacher")]
-        public async Task<IActionResult> Edit(int id, IFormFile? newFileData, int folderId)
+        public async Task<IActionResult> Edit(int id, IFormFile? newFileData, string storedFileTitle, int folderId)
         {
-            if (newFileData == null || newFileData.Length == 0)
-            {
-                // If newFileData is optional, remove any ModelState errors related to it
-                ModelState.Remove("newFileData");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                return Json(new { success = false, message = "Check your input.", errors = errors });
-            }
-
+            // Check if the file to edit exists
             var storedFile = await _context.StoredFile.FindAsync(id);
             if (storedFile == null)
             {
                 return NotFound();
             }
 
-            // If a new file is provided, process it
+            if (!ModelState.IsValid)
+            {
+                // If the model state is not valid, you can return to the view or handle the error as per your need.
+                // Returning a JSON response assuming this method is called using AJAX.
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return Json(new { success = false, message = "Model state is not valid.", errors });
+            }
+
+            // Update the title of the stored file.
+            storedFile.StoredFileTitle = storedFileTitle;
+
             if (newFileData != null && newFileData.Length > 0)
             {
-                // Logic to delete or archive the old file
+                // Logic for handling the file update goes here.
+                // Example: delete or move the old file and save the new one.
+
+                // Determine the path for the old file and delete it
                 var oldFilePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
                 if (System.IO.File.Exists(oldFilePath))
                 {
-                    System.IO.File.Delete(oldFilePath); // Consider archiving instead of deleting
+                    System.IO.File.Delete(oldFilePath); // Consider error handling or logging here as needed.
                 }
 
-                // Process the new file
+                // Process and store the new file
                 var originalFileName = Path.GetFileName(newFileData.FileName);
                 var uniqueFileName = Guid.NewGuid().ToString() + "_" + originalFileName;
                 var uploadsFolderPath = Path.Combine(_env.WebRootPath, "uploads");
@@ -279,28 +281,36 @@ namespace PlataformaEDUGEP.Controllers
                     await newFileData.CopyToAsync(stream);
                 }
 
-                storedFile.StoredFileName = uniqueFileName; // Update the file name in the database
-                storedFile.UploadDate = DateTime.Now; // Update the upload date
+                storedFile.StoredFileName = uniqueFileName; // Update with the new file's name
+                storedFile.UploadDate = DateTime.Now; // Optionally update the upload date
             }
 
-            // Update the FolderId
+            // Update the FolderId in case it was changed.
             storedFile.FolderId = folderId;
 
-            // Save changes to the database
             try
             {
+                // Attempt to save changes to the database
                 _context.Update(storedFile);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+                // Handle any database update concurrency issues here
+                if (!StoredFileExists(storedFile.StoredFileId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    // Log the error or handle it as needed
+                    return Json(new { success = false, message = $"An error occurred while updating the file: {ex.Message}" });
+                }
             }
 
-            // Handle AJAX request
-            return Json(new { success = true, message = "File edited successfully." });
+            // If this action method is called via AJAX, return a JSON response
+            return Json(new { success = true, message = "File updated successfully." });
         }
-
 
 
         // GET: StoredFiles/Delete/5
