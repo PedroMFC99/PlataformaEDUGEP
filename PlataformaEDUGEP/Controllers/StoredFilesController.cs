@@ -79,31 +79,25 @@ namespace PlataformaEDUGEP.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Teacher")]
-        public async Task<IActionResult> Create(IFormFile fileData, int? folderId)
+        public async Task<IActionResult> Create(IFormFile fileData, string storedFileName ,int? folderId)
         {
-            // Log or debug the incoming request
-            Console.WriteLine($"Received file data: {fileData?.FileName}, Folder ID: {folderId}");
-
-            // Create a new StoredFile instance to populate from form data
-            var storedFile = new StoredFile();
-
-            // Check if folderId is provided and valid
             if (!folderId.HasValue)
             {
                 ModelState.AddModelError("FolderId", "The FolderId is required.");
-                return View(storedFile);
+                return View();
             }
 
-            // Check if a file is uploaded
             if (fileData == null || fileData.Length == 0)
             {
                 ModelState.AddModelError("FileData", "The file is required.");
-                return View(storedFile);
+                return View();
             }
 
-            // Process the uploaded file if it's present
+            var titleFolder = storedFileName;
+            var originalFileName = Path.GetFileName(fileData.FileName); // Original file name
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + originalFileName; // Unique file name for storage
+
             var uploadsFolderPath = Path.Combine(_env.WebRootPath, "uploads");
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(fileData.FileName);
             var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -111,18 +105,20 @@ namespace PlataformaEDUGEP.Controllers
                 await fileData.CopyToAsync(stream);
             }
 
-            // Populate the StoredFile instance with the appropriate data
-            storedFile.StoredFileName = uniqueFileName;
-            storedFile.UploadDate = DateTime.Now;
-            storedFile.FolderId = folderId.Value;
+            var storedFile = new StoredFile
+            {
+                StoredFileName = uniqueFileName, // For storage
+                StoredFileTitle = titleFolder, // For display
+                UploadDate = DateTime.Now,
+                FolderId = folderId.Value
+            };
 
-            // Add and save the StoredFile instance to the database
             _context.Add(storedFile);
             await _context.SaveChangesAsync();
 
-            // Redirect to the index action after successfully saving
             return RedirectToAction(nameof(Index));
         }
+
 
 
 

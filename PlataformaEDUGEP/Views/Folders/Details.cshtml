@@ -75,6 +75,7 @@
 <table class="table">
     <thead>
         <tr>
+            <th>Título do ficheiro</th>
             <th>Nome do ficheiro</th>
             <th>Data de upload</th>
         </tr>
@@ -83,6 +84,7 @@
         @foreach (var file in Model.StoredFiles)
         {
             <tr>
+                <td>@file.StoredFileTitle</td>
                 <td>@file.StoredFileName</td>
                 <td>@file.UploadDate.ToShortDateString()</td>
             </tr>

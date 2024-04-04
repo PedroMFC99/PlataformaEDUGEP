@@ -13,6 +13,10 @@ namespace PlataformaEDUGEP.Models
         [Display(Name = "Nome do ficheiro")]
         public string StoredFileName { get; set; }
 
+        [Required] // Add this if the title is required
+        [Display(Name = "Título do ficheiro")]
+        public string StoredFileTitle { get; set; }
+
         [Display(Name = "Data de upload")]
         public DateTime UploadDate { get; set; }
 
