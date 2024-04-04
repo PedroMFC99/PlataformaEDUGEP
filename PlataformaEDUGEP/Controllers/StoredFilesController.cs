@@ -106,6 +106,13 @@ namespace PlataformaEDUGEP.Controllers
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + originalFileName; // Unique file name for storage
 
             var uploadsFolderPath = Path.Combine(_env.WebRootPath, "uploads");
+
+            // Check if the directory exists, and if not, create it
+            if (!Directory.Exists(uploadsFolderPath))
+            {
+                Directory.CreateDirectory(uploadsFolderPath);
+            }
+
             var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
