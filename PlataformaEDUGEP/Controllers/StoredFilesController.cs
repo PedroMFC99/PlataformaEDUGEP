@@ -286,18 +286,19 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.StoredFile == null)
+            var storedFile = await _context.StoredFile.Include(s => s.Folder).FirstOrDefaultAsync(m => m.StoredFileId == id);
+            if (storedFile == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.StoredFile'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.StoredFile' is null.");
             }
-            var storedFile = await _context.StoredFile.FindAsync(id);
-            if (storedFile != null)
-            {
-                _context.StoredFile.Remove(storedFile);
-            }
-            
+
+            var folderId = storedFile.FolderId; // Capture the FolderId before deleting the file
+
+            _context.StoredFile.Remove(storedFile);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            // Redirect to the Details page of the associated folder
+            return RedirectToAction("Details", "Folders", new { id = folderId });
         }
 
         [Authorize]

@@ -79,6 +79,7 @@
             <th>Nome do ficheiro</th>
             <th>Data de upload</th>
             <th>Adicionado por</th>
+            <th>Ações</th> <!-- Add this header for actions -->
         </tr>
     </thead>
     <tbody>
@@ -88,20 +89,23 @@
                 <td>@file.StoredFileTitle</td>
                 <td>
                     <!-- Link to preview the file -->
-                    <a href="@Url.Action("PreviewFile", "StoredFiles", new { fileName = file.StoredFileName })" target="_blank">
-                        Preview
-                    </a>
+                    <a href="@Url.Action("PreviewFile", "StoredFiles", new { fileName = file.StoredFileName })" target="_blank">Preview</a>
                     <!-- Optionally, a direct download link -->
-                    <a href="@Url.Action("DownloadFile", "StoredFiles", new { fileName = file.StoredFileName })" class="ml-2">
-                        Download
-                    </a>
+                    <a href="@Url.Action("DownloadFile", "StoredFiles", new { fileName = file.StoredFileName })" class="ml-2">Download</a>
                 </td>
                 <td>@file.UploadDate.ToShortDateString()</td>
                 <td>@file.User.FullName</td>
+                <td>
+                    <!-- Edit Link -->
+                    <a href="@Url.Action("Edit", "StoredFiles", new { id = file.StoredFileId })" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>
+                    <!-- Delete Link -->
+                    <a href="@Url.Action("Delete", "StoredFiles", new { id = file.StoredFileId })" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                </td>
             </tr>
         }
     </tbody>
 </table>
+
 
 
 @section Scripts {
