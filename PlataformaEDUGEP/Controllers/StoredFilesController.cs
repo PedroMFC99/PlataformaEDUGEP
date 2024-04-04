@@ -125,7 +125,8 @@ namespace PlataformaEDUGEP.Controllers
             _context.Add(storedFile);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            // Redirect to the associated folder details page
+            return RedirectToAction("Details", "Folders", new { id = folderId });
         }
 
 
