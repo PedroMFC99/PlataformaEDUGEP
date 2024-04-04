@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -80,7 +81,7 @@ namespace PlataformaEDUGEP.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Teacher")]
-        public async Task<IActionResult> Create(IFormFile fileData, string storedFileName ,int? folderId)
+        public async Task<IActionResult> Create(IFormFile fileData, string storedFileName, int? folderId)
         {
             if (!folderId.HasValue)
             {
@@ -94,7 +95,13 @@ namespace PlataformaEDUGEP.Controllers
                 return View();
             }
 
-            var titleFolder = storedFileName;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the current user's ID
+            if (string.IsNullOrEmpty(userId))
+            {
+                // Handle the case where the user ID is not available if necessary
+                return RedirectToAction("Error", "Home"); // Or any other error handling
+            }
+
             var originalFileName = Path.GetFileName(fileData.FileName); // Original file name
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + originalFileName; // Unique file name for storage
 
@@ -109,9 +116,10 @@ namespace PlataformaEDUGEP.Controllers
             var storedFile = new StoredFile
             {
                 StoredFileName = uniqueFileName, // For storage
-                StoredFileTitle = titleFolder, // For display
+                StoredFileTitle = storedFileName, // For display, assuming this comes from the form
                 UploadDate = DateTime.Now,
-                FolderId = folderId.Value
+                FolderId = folderId.Value,
+                UserId = userId // Set the UserId to the ID of the current user
             };
 
             _context.Add(storedFile);
@@ -119,6 +127,7 @@ namespace PlataformaEDUGEP.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
 
 
         public async Task<IActionResult> DownloadFile(string fileName)

@@ -78,6 +78,7 @@
             <th>Título do ficheiro</th>
             <th>Nome do ficheiro</th>
             <th>Data de upload</th>
+            <th>Adicionado por</th>
         </tr>
     </thead>
     <tbody>
@@ -96,6 +97,7 @@
                     </a>
                 </td>
                 <td>@file.UploadDate.ToShortDateString()</td>
+                <td>@file.User.FullName</td>
             </tr>
         }
     </tbody>

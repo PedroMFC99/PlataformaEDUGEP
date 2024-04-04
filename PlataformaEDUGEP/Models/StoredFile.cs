@@ -26,6 +26,10 @@ namespace PlataformaEDUGEP.Models
         [ForeignKey("Folder")]
         public int FolderId { get; set; }
         public virtual Folder Folder { get; set; }
+
+        // Add user reference
+        public string UserId { get; set; }
+        public virtual ApplicationUser User { get; set; }
     }
 
 }
