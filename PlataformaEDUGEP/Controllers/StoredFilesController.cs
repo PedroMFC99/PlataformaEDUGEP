@@ -209,7 +209,7 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.StoredFile == null)
+            if (id == null)
             {
                 return NotFound();
             }
@@ -219,45 +219,50 @@ namespace PlataformaEDUGEP.Controllers
             {
                 return NotFound();
             }
-            ViewData["FolderId"] = new SelectList(_context.Folder, "FolderId", "Name", storedFile.FolderId);
+
+            // Assuming FolderId is correctly populated in your storedFile entity
+            ViewBag.FolderId = new SelectList(_context.Folder, "FolderId", "Name", storedFile.FolderId);
+
             return View(storedFile);
         }
 
-        // POST: StoredFiles/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Teacher")]
-        public async Task<IActionResult> Edit(int id, [Bind("StoredFileId,StoredFileName,UploadDate,FolderId")] StoredFile storedFile)
+        public async Task<IActionResult> Edit(int id, IFormFile newFileData, int folderId)
         {
-            if (id != storedFile.StoredFileId)
+            var storedFile = await _context.StoredFile.FindAsync(id);
+            if (storedFile == null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (newFileData != null && newFileData.Length > 0)
             {
-                try
+                // Delete the old file from the filesystem or archive it as needed
+
+                // Upload the new file and update the StoredFileName and UploadDate
+                var originalFileName = Path.GetFileName(newFileData.FileName);
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + originalFileName;
+                var uploadsFolderPath = Path.Combine(_env.WebRootPath, "uploads");
+                var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    _context.Update(storedFile);
-                    await _context.SaveChangesAsync();
+                    await newFileData.CopyToAsync(stream);
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!StoredFileExists(storedFile.StoredFileId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+
+                storedFile.StoredFileName = uniqueFileName; // Update with the new unique file name
+                storedFile.UploadDate = DateTime.Now; // Update the upload date to now
             }
-            ViewData["FolderId"] = new SelectList(_context.Folder, "FolderId", "Name", storedFile.FolderId);
-            return View(storedFile);
+
+            storedFile.FolderId = folderId; // Update the FolderId based on the user's selection
+
+            // Save the changes to the database
+            await _context.SaveChangesAsync();
+
+            // Redirect to the details page of the folder the file is now associated with
+            return RedirectToAction("Details", "Folders", new { id = folderId });
         }
 
         // GET: StoredFiles/Delete/5
