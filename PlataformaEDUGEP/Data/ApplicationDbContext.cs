@@ -10,8 +10,8 @@ namespace PlataformaEDUGEP.Data
             : base(options)
         {
         }
-        public DbSet<Folder>? Folder { get; set; }
-        public DbSet<StoredFile>? StoredFile { get; set; }
+        public DbSet<Folder> Folder { get; set; }
+        public DbSet<StoredFile> StoredFile { get; set; }
         public DbSet<FolderLike> FolderLikes { get; set; }
         public DbSet<FolderAudit> FolderAudits { get; set; }
 

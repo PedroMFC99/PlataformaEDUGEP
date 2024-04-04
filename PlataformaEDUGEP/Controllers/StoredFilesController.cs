@@ -56,62 +56,73 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Admin, Teacher")]
         public IActionResult Create(int? folderId)
         {
-            // Use folderId as needed to pre-select the folder in your view
-            if (folderId.HasValue)
+            // Check if folderId is provided
+            if (!folderId.HasValue)
             {
-                ViewData["FolderId"] = new SelectList(_context.Folder, "FolderId", "Name", folderId.Value);
-            }
-            else
-            {
-                ViewData["FolderId"] = new SelectList(_context.Folder, "FolderId", "Name");
+                // Redirect to Error404 page if no folderId is provided
+                return RedirectToAction("Error404", "Home");
             }
 
-            return View();
+            // Check if the folder exists
+            var folderExists = _context.Folder.Any(f => f.FolderId == folderId.Value);
+            if (!folderExists)
+            {
+                // Redirect to Error404 page if the folder does not exist
+                return RedirectToAction("Error404", "Home");
+            }
+
+            // Proceed as normal if the folder exists
+            var model = new StoredFile { FolderId = folderId.Value };
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Teacher")]
-        public async Task<IActionResult> Create([Bind("StoredFileName,FolderId")] StoredFile storedFile, IFormFile fileData)
+        public async Task<IActionResult> Create(IFormFile fileData, int? folderId)
         {
+            // Log or debug the incoming request
+            Console.WriteLine($"Received file data: {fileData?.FileName}, Folder ID: {folderId}");
+
+            // Create a new StoredFile instance to populate from form data
+            var storedFile = new StoredFile();
+
+            // Check if folderId is provided and valid
+            if (!folderId.HasValue)
+            {
+                ModelState.AddModelError("FolderId", "The FolderId is required.");
+                return View(storedFile);
+            }
+
+            // Check if a file is uploaded
             if (fileData == null || fileData.Length == 0)
             {
-                // If no file was uploaded, add a model error.
                 ModelState.AddModelError("FileData", "The file is required.");
+                return View(storedFile);
             }
-            else
+
+            // Process the uploaded file if it's present
+            var uploadsFolderPath = Path.Combine(_env.WebRootPath, "uploads");
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(fileData.FileName);
+            var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                // Process the file if it's present
-                var uploadsFolderPath = Path.Combine(_env.WebRootPath, _configuration.GetValue<string>("FileStorage:UploadsFolderPath"));
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(fileData.FileName);
-                var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
-
-                // Save the uploaded file to a local folder
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await fileData.CopyToAsync(stream);
-                }
-
-                // Assign the unique file name to the model (you might want to save the full path or a relative path depending on your requirements)
-                storedFile.StoredFileName = uniqueFileName;
-                storedFile.UploadDate = DateTime.Now; // Set the current time as the upload date
+                await fileData.CopyToAsync(stream);
             }
 
-            if (ModelState.IsValid)
-            {
-                // Add the StoredFile object to the database context and save changes
-                _context.Add(storedFile);
-                await _context.SaveChangesAsync();
+            // Populate the StoredFile instance with the appropriate data
+            storedFile.StoredFileName = uniqueFileName;
+            storedFile.UploadDate = DateTime.Now;
+            storedFile.FolderId = folderId.Value;
 
-                // Redirect to the index action after successfully saving the file and its metadata
-                return RedirectToAction(nameof(Index));
-            }
+            // Add and save the StoredFile instance to the database
+            _context.Add(storedFile);
+            await _context.SaveChangesAsync();
 
-            // If the model state is not valid (which could be due to missing file or other validation errors), reload the create view with the current model to display errors
-            ViewData["FolderId"] = new SelectList(_context.Folder, "FolderId", "Name", storedFile.FolderId);
-            return View(storedFile);
+            // Redirect to the index action after successfully saving
+            return RedirectToAction(nameof(Index));
         }
-
 
 
 
