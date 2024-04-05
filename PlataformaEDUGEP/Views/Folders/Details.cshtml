@@ -10,7 +10,7 @@
             <a href="@Url.Action("Index")" class="btn btn-link"><i class="fas fa-arrow-left"></i> Voltar</a>
         </div>
         <div class="col d-flex justify-content-start align-items-center">
-            <h4 class="mb-0">Detalhes</h4>ss
+            <h4 class="mb-0">Detalhes</h4>
         </div>
     </div>
     <hr />
@@ -61,7 +61,6 @@
 
 <h4>Ficheiros</h4>
 
-
 @if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
 {
     <div class="d-flex justify-content-end mb-3">
@@ -69,69 +68,68 @@
     </div>
 }
 
-<!-- Button to Open the Modal -->
-@*<div class="d-flex justify-content-end mb-3">
-    @if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
-    {
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createFileModal"><i class="fas fa-plus"></i></button>
-    }
-</div>*@
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Título do ficheiro</th>
-            <th>Nome do ficheiro</th>
-            <th>Data de upload</th>
-            <th>Adicionado por</th>
-            <th>Última edição por</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var file in Model.StoredFiles)
-        {
+@if (Model.StoredFiles != null && Model.StoredFiles.Any())
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>@file.StoredFileTitle</td>
-                <td>
-                    <!-- Link to preview the file -->
-                    <a href="@Url.Action("PreviewFile", "StoredFiles", new { fileName = file.StoredFileName })" target="_blank">Preview</a>
-                    <!-- Optionally, a direct download link -->
-                    <a href="@Url.Action("DownloadFile", "StoredFiles", new { fileName = file.StoredFileName })" class="ml-2">Download</a>
-                </td>
-                <td>@file.UploadDate.ToShortDateString()</td>
-                <td>@file.User.FullName</td>
-                <td>
-                    @if (!string.IsNullOrEmpty(file.LastEditorFullName))
-                    {
-                        <i class="fas fa-edit"></i> @file.LastEditorFullName
-                    }
-                    else
-                    {
-                        <text>N/A</text>
-                    }
-                </td>
-
-                <td>
-                    <!-- Edit Link -->
-                    <button type="button" class="btn btn-sm btn-primary edit-file-btn"
-                            data-bs-toggle="modal" data-bs-target="#editFileModal"
-                            data-id="@file.StoredFileId" data-folder-id="@file.FolderId"
-                            data-title="@file.StoredFileTitle">
-                        <!-- Add data-title here -->
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <!-- Delete Link -->
-                    <!-- Delete Button triggers Modal -->
-                    <button class="btn btn-sm btn-danger delete-file-btn" data-id="@file.StoredFileId" data-bs-toggle="modal" data-bs-target="#confirmDeleteFileModal">
-                        <i class="fas fa-trash"></i>
-                    </button>
-
-                </td>
+                <th>Título do ficheiro</th>
+                <th>Nome do ficheiro</th>
+                <th>Data de upload</th>
+                <th>Adicionado por</th>
+                <th>Última edição por</th>
+                <th>Ações</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var file in Model.StoredFiles)
+            {
+                <tr>
+                    <td>@file.StoredFileTitle</td>
+                    <td>
+                        <!-- Link to preview the file -->
+                        <a href="@Url.Action("PreviewFile", "StoredFiles", new { fileName = file.StoredFileName })" target="_blank">Preview</a>
+                        <!-- Optionally, a direct download link -->
+                        <a href="@Url.Action("DownloadFile", "StoredFiles", new { fileName = file.StoredFileName })" class="ml-2">Download</a>
+                    </td>
+                    <td>@file.UploadDate.ToShortDateString()</td>
+                    <td>@file.User.FullName</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(file.LastEditorFullName))
+                        {
+                            <i class="fas fa-edit"></i> @file.LastEditorFullName
+                        }
+                        else
+                        {
+                            <text>N/A</text>
+                        }
+                    </td>
+                    <td>
+                        <!-- Edit Link -->
+                        <button type="button" class="btn btn-sm btn-primary edit-file-btn"
+                                data-bs-toggle="modal" data-bs-target="#editFileModal"
+                                data-id="@file.StoredFileId" data-folder-id="@file.FolderId"
+                                data-title="@file.StoredFileTitle">
+                            <!-- Add data-title here -->
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <!-- Delete Link -->
+                        <!-- Delete Button triggers Modal -->
+                        <button class="btn btn-sm btn-danger delete-file-btn" data-id="@file.StoredFileId" data-bs-toggle="modal" data-bs-target="#confirmDeleteFileModal">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info" role="alert">
+        A pasta não contém nenhum ficheiro.
+    </div>
+}
 
 
 <!-- Add File Modal -->
@@ -176,21 +174,21 @@
                 <div class="modal-body">
                     <input type="hidden" id="editStoredFileId" name="StoredFileId">
                     <div class="form-group">
-                        <label for="editStoredFileTitle">File Title</label>
+                        <label for="editStoredFileTitle">Título do ficheiro</label>
                         <input type="text" class="form-control" id="editStoredFileTitle" name="StoredFileTitle">
                     </div>
                     <div class="form-group">
-                        <label for="newFileData">Change file</label>
+                        <label for="newFileData">Novo ficheiro?</label>
                         <input type="file" class="form-control" id="newFileData" name="newFileData">
                     </div>
                     <div class="form-group">
-                        <label for="editFolderId" class="control-label">Choose folder</label>
+                        <label for="editFolderId" class="control-label">Escolher pasta</label>
                         <select id="editFolderId" class="form-control" name="FolderId"></select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <input type="submit" value="Confirm changes" class="btn btn-primary" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <input type="submit" value="Guardar alterações" class="btn btn-primary" />
                 </div>
             </form>
         </div>
