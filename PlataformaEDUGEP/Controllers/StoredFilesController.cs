@@ -86,60 +86,44 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> Create(IFormFile fileData, string storedFileName, int? folderId)
         {
-            if (!folderId.HasValue)
+            if (!folderId.HasValue || fileData == null || fileData.Length == 0)
             {
-                ModelState.AddModelError("FolderId", "The FolderId is required.");
+                // Combine error messages for efficiency
+                ModelState.AddModelError("", "The FolderId and file data are required.");
                 return View();
             }
 
-            if (fileData == null || fileData.Length == 0)
-            {
-                ModelState.AddModelError("FileData", "The file is required.");
-                return View();
-            }
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the current user's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
-                // Handle the case where the user ID is not available if necessary
-                return RedirectToAction("Error", "Home"); // Or any other error handling
+                return RedirectToAction("Error", "Home");
             }
 
-            var originalFileName = Path.GetFileName(fileData.FileName); // Original file name
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + originalFileName; // Unique file name for storage
+            // Generate the file path once and reuse
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(fileData.FileName);
+            var filePath = Path.Combine(_env.WebRootPath, "uploads", uniqueFileName);
 
-            var uploadsFolderPath = Path.Combine(_env.WebRootPath, "uploads");
-
-            // Check if the directory exists, and if not, create it
-            if (!Directory.Exists(uploadsFolderPath))
-            {
-                Directory.CreateDirectory(uploadsFolderPath);
-            }
-
-            var filePath = Path.Combine(uploadsFolderPath, uniqueFileName);
-
+            // Use using statement to ensure the stream is disposed of
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await fileData.CopyToAsync(stream);
             }
 
+            // Initialize the model in one go
             var storedFile = new StoredFile
             {
-                StoredFileName = uniqueFileName, // For storage
-                StoredFileTitle = storedFileName, // For display, assuming this comes from the form
+                StoredFileName = uniqueFileName,
+                StoredFileTitle = storedFileName,
                 UploadDate = DateTime.Now,
                 FolderId = folderId.Value,
-                UserId = userId // Set the UserId to the ID of the current user
+                UserId = userId
             };
 
             _context.Add(storedFile);
             await _context.SaveChangesAsync();
 
-            // Redirect to the associated folder details page
             return RedirectToAction("Details", "Folders", new { id = folderId });
         }
-
-
 
         public async Task<IActionResult> DownloadFile(string fileName)
         {
@@ -155,18 +139,20 @@ namespace PlataformaEDUGEP.Controllers
                 return NotFound();
             }
 
-            var memory = new MemoryStream();
-            using (var stream = new FileStream(path, FileMode.Open))
-            {
-                await stream.CopyToAsync(memory);
-            }
-            memory.Position = 0;
+            var contentType = GetContentType(path);
+            HttpContext.Response.ContentType = contentType;
 
-            // Extract the original file name (if you stored it in a different field, use that instead)
+            // Extract the original file name for the Content-Disposition header
             var originalFileName = fileName.Substring(fileName.IndexOf('_') + 1);
+            ContentDispositionHeaderValue contentDisposition = new ContentDispositionHeaderValue("attachment")
+            {
+                FileName = originalFileName
+            };
+            Response.Headers[HeaderNames.ContentDisposition] = contentDisposition.ToString();
 
-            // Return the file
-            return File(memory, GetContentType(path), originalFileName);
+            // Stream the file directly to the response
+            var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            return File(fileStream, contentType, originalFileName);
         }
 
         private string GetContentType(string path)

@@ -281,7 +281,11 @@ else
             // Initialize Select2 on elements with the class 'select2-searchable'
             $('.select2-searchable').select2({
                 placeholder: "Selecionar etiquetas",
+                minimumInputLength: 2,
                 language: {
+                    inputTooShort: function () {
+                        return ""; // Returning empty string to hide the 'input too short' message
+                    },
                     noResults: function () {
                         return "Nenhuma etiqueta associada";
                     },
