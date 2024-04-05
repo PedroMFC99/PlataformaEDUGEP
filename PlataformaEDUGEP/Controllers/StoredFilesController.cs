@@ -349,13 +349,21 @@ namespace PlataformaEDUGEP.Controllers
                 return Problem("Entity set 'ApplicationDbContext.StoredFile' is null.");
             }
 
-            var folderId = storedFile.FolderId; // Capture the FolderId before deleting the file
+            // Build the path to the file on the server
+            var filePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
 
+            // Check if the file exists and delete it
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            // Continue with the existing code to remove the record from the database
             _context.StoredFile.Remove(storedFile);
             await _context.SaveChangesAsync();
 
             // Redirect to the Details page of the associated folder
-            return RedirectToAction("Details", "Folders", new { id = folderId });
+            return RedirectToAction("Details", "Folders", new { id = storedFile.FolderId });
         }
 
 
@@ -369,12 +377,21 @@ namespace PlataformaEDUGEP.Controllers
                 return Json(new { success = false, message = "File not found." });
             }
 
+            // Build the path to the file on the server
+            var filePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
+
+            // Check if the file exists and delete it
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            // Remove the record from the database
             _context.StoredFile.Remove(storedFile);
             await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = "File deleted successfully." });
         }
-
 
 
         [Authorize]
