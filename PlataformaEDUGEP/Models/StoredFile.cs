@@ -30,6 +30,10 @@ namespace PlataformaEDUGEP.Models
         // Add user reference
         public string UserId { get; set; }
         public virtual ApplicationUser User { get; set; }
+
+        // Add LastEditorFullName property
+        [Display(Name = "Última edição por")]
+        public string? LastEditorFullName { get; set; }
     }
 
 }

@@ -65,13 +65,21 @@
 
 <h4>Ficheiros</h4>
 
-<!-- Button to Open the Modal -->
+
 @if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
 {
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFileModal">
-        <i class="fas fa-plus"></i> Adicionar Ficheiro
-    </button>
+    <div class="d-flex justify-content-end mb-3">
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createFileModal"><i class="fas fa-plus"></i></button>
+    </div>
 }
+
+<!-- Button to Open the Modal -->
+@*<div class="d-flex justify-content-end mb-3">
+    @if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
+    {
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createFileModal"><i class="fas fa-plus"></i></button>
+    }
+</div>*@
 
 <table class="table">
     <thead>
@@ -80,7 +88,8 @@
             <th>Nome do ficheiro</th>
             <th>Data de upload</th>
             <th>Adicionado por</th>
-            <th>Ações</th> <!-- Add this header for actions -->
+            <th>Última edição por</th>
+            <th>Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -96,6 +105,17 @@
                 </td>
                 <td>@file.UploadDate.ToShortDateString()</td>
                 <td>@file.User.FullName</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(file.LastEditorFullName))
+                    {
+                        <i class="fas fa-edit"></i> @file.LastEditorFullName
+                    }
+                    else
+                    {
+                        <text>N/A</text>
+                    }
+                </td>
+
                 <td>
                     <!-- Edit Link -->
                     <button type="button" class="btn btn-sm btn-primary edit-file-btn"
@@ -317,6 +337,12 @@
                     }
                 });
             });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
 }

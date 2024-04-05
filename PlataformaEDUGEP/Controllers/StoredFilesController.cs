@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,12 +19,14 @@ namespace PlataformaEDUGEP.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public StoredFilesController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment env)
+        public StoredFilesController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment env, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _configuration = configuration;
             _env = env;
+            _userManager = userManager;
         }
 
         // GET: StoredFiles
@@ -240,7 +243,6 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> Edit(int id, IFormFile? newFileData, string storedFileTitle, int folderId)
         {
-            // Check if the file to edit exists
             var storedFile = await _context.StoredFile.FindAsync(id);
             if (storedFile == null)
             {
@@ -249,28 +251,32 @@ namespace PlataformaEDUGEP.Controllers
 
             if (!ModelState.IsValid)
             {
-                // If the model state is not valid, you can return to the view or handle the error as per your need.
-                // Returning a JSON response assuming this method is called using AJAX.
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                return Json(new { success = false, message = "Model state is not valid.", errors });
+                // If the model state is not valid, return to the view or handle the error as needed.
+                return View(storedFile);
             }
 
-            // Update the title of the stored file.
+            // Assuming you have access to the UserManager and can get the current user's full name
+            // This part assumes ApplicationUser has a FullName or similar property.
+            // Adjust according to your user management logic.
+            var user = await _userManager.GetUserAsync(User);
+            var editorFullName = user?.FullName; // Use 'FullName' or equivalent property if available
+
+            // Update the stored file properties
             storedFile.StoredFileTitle = storedFileTitle;
+            storedFile.LastEditorFullName = editorFullName; // Update the LastEditorFullName with the current user's full name
 
             if (newFileData != null && newFileData.Length > 0)
             {
-                // Logic for handling the file update goes here.
-                // Example: delete or move the old file and save the new one.
+                // If there's a new file, process and update it as well
 
-                // Determine the path for the old file and delete it
+                // Delete or move the old file as needed
                 var oldFilePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
                 if (System.IO.File.Exists(oldFilePath))
                 {
-                    System.IO.File.Delete(oldFilePath); // Consider error handling or logging here as needed.
+                    System.IO.File.Delete(oldFilePath);
                 }
 
-                // Process and store the new file
+                // Save the new file
                 var originalFileName = Path.GetFileName(newFileData.FileName);
                 var uniqueFileName = Guid.NewGuid().ToString() + "_" + originalFileName;
                 var uploadsFolderPath = Path.Combine(_env.WebRootPath, "uploads");
@@ -285,18 +291,16 @@ namespace PlataformaEDUGEP.Controllers
                 storedFile.UploadDate = DateTime.Now; // Optionally update the upload date
             }
 
-            // Update the FolderId in case it was changed.
+            // Update the FolderId if it was changed.
             storedFile.FolderId = folderId;
 
             try
             {
-                // Attempt to save changes to the database
                 _context.Update(storedFile);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                // Handle any database update concurrency issues here
                 if (!StoredFileExists(storedFile.StoredFileId))
                 {
                     return NotFound();
@@ -308,7 +312,7 @@ namespace PlataformaEDUGEP.Controllers
                 }
             }
 
-            // If this action method is called via AJAX, return a JSON response
+            // If the action method is called via AJAX, return a JSON response
             return Json(new { success = true, message = "File updated successfully." });
         }
 
