@@ -2,6 +2,9 @@
 
 @{
     ViewData["Title"] = "Ver ficheiros";
+    var currentSortOrder = ViewBag.CurrentSortOrder;
+    var currentFileTitle = ViewBag.CurrentFileTitle;
+    var currentAddedBy = ViewBag.CurrentAddedBy;
 }
 
 <div class="container-fluid">
@@ -25,13 +28,13 @@
             @Html.DisplayNameFor(model => model.CreationDate)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.CreationDate)
+            @Model.CreationDate.ToString("dd/MM/yyyy HH:mm")
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ModificationDate)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ModificationDate)
+            @Model.ModificationDate.ToString("dd/MM/yyyy HH:mm")
         </dd>
 
         <!-- Display Tags -->
@@ -68,13 +71,31 @@
     </div>
 }
 
+<!-- Above the files table -->
+<form method="get">
+    <div class="input-group mb-3">
+        <input type="search" class="form-control" placeholder="Título do ficheiro" name="fileTitle" value="@ViewBag.CurrentFileTitle" aria-label="Título do ficheiro">
+        <input type="search" class="form-control" placeholder="Adicionado por" name="addedBy" value="@ViewBag.CurrentAddedBy" aria-label="Adicionado por">
+        <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSortOrder">
+        <button class="btn btn-outline-secondary" type="submit">Pesquisar</button>
+    </div>
+</form>
+
+<!-- Table header for sorting by upload date -->
+<th>
+    <a href="@Url.Action("Details", new { id = Model.FolderId, sortOrder = ViewBag.NextSortOrder, fileTitle = currentFileTitle, addedBy = currentAddedBy })">
+        Data de upload @Html.Raw(ViewBag.UploadDateSortIcon)
+    </a>
+</th>
+
+
 @if (Model.StoredFiles != null && Model.StoredFiles.Any())
 {
     <table class="table">
         <thead>
             <tr>
                 <th>Título do ficheiro</th>
-                <th>Nome do ficheiro</th>
+                <th>Ficheiro</th>
                 <th>Data de upload</th>
                 <th>Adicionado por</th>
                 <th>Última edição por</th>
@@ -92,7 +113,7 @@
                         <!-- Optionally, a direct download link -->
                         <a href="@Url.Action("DownloadFile", "StoredFiles", new { fileName = file.StoredFileName })" class="ml-2">Download</a>
                     </td>
-                    <td>@file.UploadDate.ToShortDateString()</td>
+                    <td>@file.UploadDate.ToString("dd/MM/yyyy HH:mm")</td>
                     <td>@file.User.FullName</td>
                     <td>
                         @if (!string.IsNullOrEmpty(file.LastEditorFullName))
@@ -168,7 +189,7 @@ else
         <div class="modal-content">
             <form id="editFileForm" method="post" enctype="multipart/form-data">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editFileModalLabel">Edit File</h5>
+                    <h5 class="modal-title" id="editFileModalLabel">Editar ficheiro</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">

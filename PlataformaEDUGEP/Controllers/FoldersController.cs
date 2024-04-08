@@ -119,18 +119,17 @@ namespace PlataformaEDUGEP.Controllers
 
         // GET: Folders/Details/5
         [Authorize]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, string fileTitle, string addedBy, string sortOrder)
         {
-            if (id == null || _context.Folder == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             var folder = await _context.Folder
                 .Include(f => f.User)
-                .Include(f => f.StoredFiles)
-                    .ThenInclude(sf => sf.User) // Include User for each StoredFile
-                .Include(f => f.Tags) // Make sure to include the tags.
+                .Include(f => f.StoredFiles).ThenInclude(sf => sf.User) // Include User for each StoredFile
+                .Include(f => f.Tags) // Include the tags
                 .FirstOrDefaultAsync(m => m.FolderId == id);
 
             if (folder == null)
@@ -142,11 +141,47 @@ namespace PlataformaEDUGEP.Controllers
             var folders = await _context.Folder.Select(f => new { f.FolderId, f.Name }).ToListAsync();
             ViewBag.FoldersJson = Newtonsoft.Json.JsonConvert.SerializeObject(folders);
 
+            // Apply filters based on search criteria, ensuring case-insensitive comparison
+            if (!string.IsNullOrEmpty(fileTitle))
+            {
+                folder.StoredFiles = folder.StoredFiles
+                    .Where(sf => sf.StoredFileTitle.ToLower().Contains(fileTitle.ToLower()))
+                    .ToList();
+            }
+            if (!string.IsNullOrEmpty(addedBy))
+            {
+                folder.StoredFiles = folder.StoredFiles
+                    .Where(sf => sf.User.FullName.ToLower().Contains(addedBy.ToLower()))
+                    .ToList();
+            }
+
+            // Sorting logic
+            switch (sortOrder)
+            {
+                case "Date":
+                    folder.StoredFiles = folder.StoredFiles.OrderBy(sf => sf.UploadDate).ToList();
+                    ViewBag.UploadDateSortIcon = "↑";
+                    ViewBag.NextSortOrder = "date_desc";
+                    break;
+                case "date_desc":
+                    folder.StoredFiles = folder.StoredFiles.OrderByDescending(sf => sf.UploadDate).ToList();
+                    ViewBag.UploadDateSortIcon = "↓";
+                    ViewBag.NextSortOrder = "Date";
+                    break;
+                default:
+                    folder.StoredFiles = folder.StoredFiles.OrderByDescending(sf => sf.UploadDate).ToList(); // Default sorting
+                    ViewBag.UploadDateSortIcon = "↓";
+                    ViewBag.NextSortOrder = "Date";
+                    break;
+            }
+
+            // Pass the current sorting and filter criteria back to the view via ViewBag
+            ViewBag.CurrentSortOrder = sortOrder;
+            ViewBag.CurrentFileTitle = fileTitle;
+            ViewBag.CurrentAddedBy = addedBy;
+
             return View(folder);
         }
-
-
-
 
         // GET: Folders/Create
         [Authorize(Roles = "Teacher, Admin")]
