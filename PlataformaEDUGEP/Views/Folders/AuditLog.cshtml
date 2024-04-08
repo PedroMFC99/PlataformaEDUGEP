@@ -110,6 +110,8 @@
 
         // Ensure the updateAuditLog function properly handles the sortOrder parameter and correctly refreshes the content
         function updateAuditLog(searchUser, searchAction, searchFolderName, sortOrder) {
+            var currentSortOrder = sortOrder || document.getElementById('sortOrderLink').getAttribute('data-sort-order');
+
             searchUser = searchUser || $("input[name='searchUser']").val();
             searchAction = searchAction || $("input[name='searchAction']").val();
             searchFolderName = searchFolderName || $("input[name='searchFolderName']").val();
@@ -125,10 +127,10 @@
                 searchUser: searchUser,
                 searchAction: searchAction,
                 searchFolderName: searchFolderName,
-                sortOrder: sortOrder
+                sortOrder: currentSortOrder  // Include the current sort order in the AJAX call
             }, function (data) {
                 $('#audit-log-table').html(data);
-                // No need to update the input values here since they're already being maintained
+                // Additional logic...
             }).fail(function () {
                 console.error("Failed to fetch data"); // Error handling
             });
