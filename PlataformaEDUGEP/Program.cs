@@ -23,6 +23,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.S
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IFolderAuditService, FolderAuditService>();
+builder.Services.AddScoped<IFileAuditService, FileAuditService>();
 
 builder.Services.Configure<IdentityOptions>(opts => {
     opts.Lockout.AllowedForNewUsers = true;

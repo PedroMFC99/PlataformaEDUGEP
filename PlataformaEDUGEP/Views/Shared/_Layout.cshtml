@@ -48,15 +48,21 @@
                         @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Folders" asp-action="AuditLog">Registo de ocorrências</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="Tags" asp-action="Index">Gestão de Etiquetas</a>
                             </li>
                         }
 
-                        <!-- Additional link for users authenticated as Admin -->
+                        <!-- Additional links for users authenticated as Admin -->
                         @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Tags" asp-action="Index">Gestão de etiquetas</a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Auditoria
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Folders" asp-action="AuditLog">Pastas</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="StoredFiles" asp-action="FileAuditLog">Ficheiros</a></li>
+                                </ul>
                             </li>
                         }
 

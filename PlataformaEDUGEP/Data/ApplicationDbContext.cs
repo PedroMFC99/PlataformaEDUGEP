@@ -14,6 +14,7 @@ namespace PlataformaEDUGEP.Data
         public DbSet<StoredFile> StoredFile { get; set; }
         public DbSet<FolderLike> FolderLikes { get; set; }
         public DbSet<FolderAudit> FolderAudits { get; set; }
+        public DbSet<FileAudit> FileAudits { get; set; }
 
         public DbSet<Tag> Tags { get; set; }
 
@@ -42,6 +43,8 @@ namespace PlataformaEDUGEP.Data
                 .HasMany(f => f.Tags)
                 .WithMany(t => t.Folders)
                 .UsingEntity(j => j.ToTable("FolderTags")); // This creates a join table named FolderTags
+
+   
         }
 
     }

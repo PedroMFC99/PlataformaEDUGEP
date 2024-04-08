@@ -1,0 +1,178 @@
+﻿@model IEnumerable<PlataformaEDUGEP.Models.FileAuditViewModel>
+
+@{
+    ViewData["Title"] = "File Audit Log";
+    var currentFilterUser = ViewData["CurrentFilterUser"]?.ToString();
+    var currentFilterAction = ViewData["CurrentFilterAction"]?.ToString();
+    var currentFilterFileTitle = ViewData["CurrentFilterFileTitle"]?.ToString();
+    var currentFilterFolderName = ViewData["CurrentFilterFolderName"]?.ToString();
+}
+
+<h2>Relatório de ocorrências de ficheiros</h2>
+
+<form class="my-2 my-lg-0">
+    <div class="d-flex flex-row">
+        <input class="form-control mr-2" type="search" oninput="updateFileAuditLog()" placeholder="Utilizador" aria-label="Search User" name="searchUser" value="@currentFilterUser">
+        <input class="form-control mr-2" type="search" oninput="updateFileAuditLog()" placeholder="Ação" aria-label="Search Action" name="searchAction" value="@currentFilterAction">
+        <input class="form-control mr-2" type="search" oninput="updateFileAuditLog()" placeholder="Título do Arquivo" aria-label="Search File Title" name="searchFileTitle" value="@currentFilterFileTitle">
+        <input class="form-control mr-2" type="search" oninput="updateFileAuditLog()" placeholder="Nome da Pasta" aria-label="Search Folder Name" name="searchFolderName" value="@currentFilterFolderName">
+    </div>
+</form>
+
+<div class="mt-2 d-flex align-items-center">
+    <button id="clearFiltersButton" onclick="clearFilters()" class="btn btn-secondary mr-2" style="display: none;">Limpar filtros</button>
+    <b class="ms-lg-2">Ordenar:</b>
+
+    <!-- Adjust the initial data-sort-order and icon class to match the default sort order -->
+    <a href="#" id="sortOrderLink" data-sort-order="time_desc" class="ms-lg-2">
+        Hora <i class="fas fa-arrow-down"></i> <!-- Default is desc so show arrow down -->
+    </a>
+
+    <form asp-action="ClearAuditLog" asp-controller="Folders" method="post" class="ms-lg-3">
+        @Html.AntiForgeryToken()
+        <!-- Button to trigger modal -->
+        <!-- Button to trigger modal -->
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteRecordsModal">
+            Resetar registro de ocorrências
+        </button>
+    </form>
+
+</div>
+
+<!-- Delete Records Modal -->
+<div class="modal fade" id="deleteRecordsModal" tabindex="-1" aria-labelledby="deleteRecordsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteRecordsModalLabel">Apagar todo os registos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                De certeza que quer apagar o registo de ocorrências de ficheiros? Esta ação não pode ser desfeita.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <!-- Correct the button ID for consistency with your script -->
+                <button type="button" class="btn btn-danger" id="deleteAllRecordsButton" data-bs-dismiss="modal">Apagar</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="file-audit-log-table" class="mt-2">
+    @Html.Partial("_FileAuditLogTablePartial", Model)
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            // Function to check filters and toggle button visibility
+    function checkFiltersAndToggleClearButton() {
+        // Check if any of the search inputs have a value
+        const isAnyFilterApplied = $("input[type='search']").toArray().some(input => $(input).val().trim().length > 0);
+        // Show or hide the clear filters button based on whether any filter is applied
+        $("#clearFiltersButton").toggle(isAnyFilterApplied);
+    }
+
+    // Trigger the check and toggle function on page load
+    checkFiltersAndToggleClearButton();
+
+    // Re-check whenever any of the search inputs change
+    $("input[type='search']").on('input', function() {
+        checkFiltersAndToggleClearButton();
+        updateFileAuditLog(); // Also update the audit log as per your existing setup
+    });
+
+            // Function to update the file audit log based on filters and sort order
+            function updateFileAuditLog() {
+                const searchUser = $("input[name='searchUser']").val();
+                const searchAction = $("input[name='searchAction']").val();
+                const searchFileTitle = $("input[name='searchFileTitle']").val();
+                const searchFolderName = $("input[name='searchFolderName']").val();
+                const sortOrder = $("#sortOrderLink").data("sort-order");
+
+                // AJAX call to refresh the file audit log based on current filters
+                $.get('@Url.Action("FileAuditLog", "StoredFiles")', {
+                    searchUser: searchUser,
+                    searchAction: searchAction,
+                    searchFileTitle: searchFileTitle,
+                    searchFolderName: searchFolderName,
+                    sortOrder: sortOrder
+                }, function (data) {
+                    $('#file-audit-log-table').html(data);
+                }).fail(function () {
+                    console.error("Failed to fetch file audit log.");
+                });
+            }
+
+            // Event listeners for search inputs to update the log dynamically
+            $("input[type='search']").on('input', function () {
+                updateFileAuditLog();
+            });
+
+            // Toggle clear filters button visibility based on whether any filters are applied
+            function toggleClearFiltersButton() {
+                const isAnyFilterApplied = $("input[type='search']").toArray().some(input => $(input).val());
+                $("#clearFiltersButton").toggle(isAnyFilterApplied);
+            }
+
+            // Initial toggle state based on current filters
+            toggleClearFiltersButton();
+
+            // Clear filters and update log
+            $("#clearFiltersButton").click(function () {
+                $("input[type='search']").val('');
+                toggleClearFiltersButton();
+                updateFileAuditLog();
+            });
+
+            $("#sortOrderLink").click(function (e) {
+                e.preventDefault();
+                var currentSortOrder = $(this).data("sort-order");
+                var newSortOrder = currentSortOrder === "time_desc" ? "time_asc" : "time_desc";
+                $(this).data("sort-order", newSortOrder); // Update the data attribute
+                updateSortIcon(newSortOrder); // Update the icon
+                updateFileAuditLog(); // Refresh the audit log with the new sort order
+            });
+
+            function updateSortIcon(sortOrder) {
+                const icon = $("#sortOrderLink i");
+                // First, remove both classes to reset the icon state
+                icon.removeClass("fa-arrow-up fa-arrow-down");
+                // Then, add the appropriate class based on the new sort order
+                if (sortOrder === "time_asc") {
+                    icon.addClass("fa-arrow-up");
+                } else {
+                    icon.addClass("fa-arrow-down");
+                }
+            }
+
+
+            // Handle the "Delete All" functionality with confirmation dialog
+            $("#deleteAllRecordsButton").on("click", function () {
+                const confirmed = confirm("Are you sure you want to delete all records? This action cannot be undone.");
+                if (confirmed) {
+                    var token = $('input[name="__RequestVerificationToken"]').val(); // Fetch CSRF token from the hidden input
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("DeleteAllFileAudits", "StoredFiles")',
+                        headers: {
+                            'RequestVerificationToken': token // Include the CSRF token in the request header
+                        },
+                        success: function () {
+                            alert("All records have been deleted.");
+                            window.location.reload(); // Refresh the page
+                        },
+                        error: function () {
+                            alert("Error occurred while deleting all records.");
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
+    
+}

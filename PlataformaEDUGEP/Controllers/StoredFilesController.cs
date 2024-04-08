@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
+using PlataformaEDUGEP.Services;
 
 namespace PlataformaEDUGEP.Controllers
 {
@@ -20,13 +21,15 @@ namespace PlataformaEDUGEP.Controllers
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _env;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IFileAuditService _fileAuditService;
 
-        public StoredFilesController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment env, UserManager<ApplicationUser> userManager)
+        public StoredFilesController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment env, UserManager<ApplicationUser> userManager, IFileAuditService fileAuditService)
         {
             _context = context;
             _configuration = configuration;
             _env = env;
             _userManager = userManager;
+            _fileAuditService = fileAuditService;
         }
 
         // GET: StoredFiles
@@ -121,6 +124,9 @@ namespace PlataformaEDUGEP.Controllers
 
             _context.Add(storedFile);
             await _context.SaveChangesAsync();
+
+            // Record the file creation action
+            await _fileAuditService.RecordCreationAsync(storedFile, userId);
 
             return RedirectToAction("Details", "Folders", new { id = folderId });
         }
@@ -241,6 +247,11 @@ namespace PlataformaEDUGEP.Controllers
                 return View(storedFile);
             }
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the user ID here
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Error", "Home");
+            }
             // Assuming you have access to the UserManager and can get the current user's full name
             // This part assumes ApplicationUser has a FullName or similar property.
             // Adjust according to your user management logic.
@@ -298,6 +309,9 @@ namespace PlataformaEDUGEP.Controllers
                 }
             }
 
+            // Record the file update action
+            await _fileAuditService.RecordEditAsync(storedFile, userId); // Assuming you have a method for editing
+
             // If the action method is called via AJAX, return a JSON response
             return Json(new { success = true, message = "File updated successfully." });
         }
@@ -335,6 +349,12 @@ namespace PlataformaEDUGEP.Controllers
                 return Problem("Entity set 'ApplicationDbContext.StoredFile' is null.");
             }
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             // Build the path to the file on the server
             var filePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
 
@@ -343,6 +363,9 @@ namespace PlataformaEDUGEP.Controllers
             {
                 System.IO.File.Delete(filePath);
             }
+
+            // Record the file deletion action
+            await _fileAuditService.RecordDeletionAsync(storedFile, userId);
 
             // Continue with the existing code to remove the record from the database
             _context.StoredFile.Remove(storedFile);
@@ -363,6 +386,12 @@ namespace PlataformaEDUGEP.Controllers
                 return Json(new { success = false, message = "File not found." });
             }
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
             // Build the path to the file on the server
             var filePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
 
@@ -372,11 +401,97 @@ namespace PlataformaEDUGEP.Controllers
                 System.IO.File.Delete(filePath);
             }
 
+            // Record the file deletion action
+            await _fileAuditService.RecordDeletionAsync(storedFile, userId);
+
             // Remove the record from the database
             _context.StoredFile.Remove(storedFile);
             await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = "File deleted successfully." });
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> FileAuditLog(string searchUser = "", string searchAction = "", string searchFileTitle = "", string searchFolderName = "", string sortOrder = "time_desc")
+        {
+            ViewData["CurrentFilterUser"] = searchUser;
+            ViewData["CurrentFilterAction"] = searchAction;
+            ViewData["CurrentFilterFileTitle"] = searchFileTitle;
+            ViewData["CurrentFilterFolderName"] = searchFolderName;
+            ViewData["CurrentSort"] = sortOrder;
+
+            var auditsQuery = from audit in _context.FileAudits
+                              join user in _context.Users on audit.UserId equals user.Id
+                              select new FileAuditViewModel
+                              {
+                                  Id = audit.Id,
+                                  Timestamp = audit.Timestamp,
+                                  UserName = user.FullName, // Assuming FullName is the desired display name
+                                  ActionType = audit.ActionType,
+                                  StoredFileTitle = audit.StoredFileTitle,
+                                  FolderName = audit.FolderName
+                              };
+
+            if (!String.IsNullOrEmpty(searchUser))
+            {
+                auditsQuery = auditsQuery.Where(a => a.UserName.Contains(searchUser));
+            }
+            if (!String.IsNullOrEmpty(searchAction))
+            {
+                auditsQuery = auditsQuery.Where(a => a.ActionType.Contains(searchAction));
+            }
+            if (!String.IsNullOrEmpty(searchFileTitle))
+            {
+                auditsQuery = auditsQuery.Where(a => a.StoredFileTitle.Contains(searchFileTitle));
+            }
+            if (!String.IsNullOrEmpty(searchFolderName))
+            {
+                auditsQuery = auditsQuery.Where(a => a.FolderName.Contains(searchFolderName));
+            }
+
+            // Apply sort order to query
+            switch (sortOrder)
+            {
+                case "time_asc":
+                    auditsQuery = auditsQuery.OrderBy(a => a.Timestamp);
+                    break;
+                case "time_desc":
+                    auditsQuery = auditsQuery.OrderByDescending(a => a.Timestamp);
+                    break;
+            }
+
+            var fileAuditLogs = await auditsQuery.ToListAsync();
+
+            // Check if the request is an AJAX request
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_FileAuditLogTablePartial", fileAuditLogs);
+            }
+
+            return View(fileAuditLogs);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")] // Ensure this action is secured and accessible only by authorized roles
+        public async Task<IActionResult> DeleteAllFileAudits()
+        {
+            try
+            {
+                // Fetch all records
+                var allAudits = await _context.FileAudits.ToListAsync();
+                // Remove all fetched records
+                _context.FileAudits.RemoveRange(allAudits);
+                // Save changes to the database
+                await _context.SaveChangesAsync();
+
+                // Optionally return a success message or redirect
+                return Json(new { success = true, message = "All records deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions, e.g., log them and return an error response
+                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+            }
         }
 
 
