@@ -1,4 +1,5 @@
-﻿using PlataformaEDUGEP.Data;
+﻿using PlataformaEDUGEP.AuxilliaryClasses;
+using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Services
@@ -14,10 +15,8 @@ namespace PlataformaEDUGEP.Services
 
         public async Task LogAuditAsync(string userId, string actionType, int folderId, string folderName)
         {
-            TimeZoneInfo londonTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
-
-            // Convert from UTC to London time
-            DateTime londonTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, londonTimeZone);
+            // Use the helper class for time zone conversion
+            DateTime londonTime = TimeZoneHelper.ConvertUtcToLondonTime(DateTime.UtcNow);
 
             var audit = new FolderAudit
             {

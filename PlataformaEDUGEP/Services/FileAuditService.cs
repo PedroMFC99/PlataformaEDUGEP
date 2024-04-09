@@ -1,8 +1,6 @@
-﻿using NuGet.Packaging.Signing;
+﻿using PlataformaEDUGEP.AuxilliaryClasses;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
-using System;
-using System.Threading.Tasks;
 
 namespace PlataformaEDUGEP.Services
 {
@@ -17,59 +15,20 @@ namespace PlataformaEDUGEP.Services
 
         public async Task RecordCreationAsync(StoredFile storedFile, string userId)
         {
-            var folder = await _context.Folder.FindAsync(storedFile.FolderId);
-            if (folder == null)
-            {
-                throw new ArgumentException("Invalid folder ID.");
-            }
-
-            TimeZoneInfo londonTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
-
-            // Convert from UTC to London time
-            DateTime londonTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, londonTimeZone);
-
-            var audit = new FileAudit
-            {
-                FileId = storedFile.StoredFileId,
-                UserId = userId,
-                Timestamp = londonTime,
-                ActionType = "Criação",
-                StoredFileTitle = storedFile.StoredFileTitle,
-                FolderName = folder.Name
-            };
-
-            _context.FileAudits.Add(audit);
-            await _context.SaveChangesAsync();
+            await RecordActionAsync(storedFile, userId, "Criação");
         }
 
         public async Task RecordDeletionAsync(StoredFile storedFile, string userId)
         {
-            var folder = await _context.Folder.FindAsync(storedFile.FolderId);
-            if (folder == null)
-            {
-                throw new ArgumentException("Invalid folder ID.");
-            }
-
-            TimeZoneInfo londonTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
-
-            // Convert from UTC to London time
-            DateTime londonTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, londonTimeZone);
-
-            var audit = new FileAudit
-            {
-                FileId = storedFile.StoredFileId,
-                UserId = userId,
-                Timestamp = londonTime,
-                ActionType = "Remoção",
-                StoredFileTitle = storedFile.StoredFileTitle,
-                FolderName = folder.Name
-            };
-
-            _context.FileAudits.Add(audit);
-            await _context.SaveChangesAsync();
+            await RecordActionAsync(storedFile, userId, "Remoção");
         }
 
         public async Task RecordEditAsync(StoredFile storedFile, string userId)
+        {
+            await RecordActionAsync(storedFile, userId, "Edição");
+        }
+
+        private async Task RecordActionAsync(StoredFile storedFile, string userId, string actionType)
         {
             var folder = await _context.Folder.FindAsync(storedFile.FolderId);
             if (folder == null)
@@ -77,22 +36,20 @@ namespace PlataformaEDUGEP.Services
                 throw new ArgumentException("Invalid folder ID.");
             }
 
-            // Convert from UTC to London time
-            TimeZoneInfo londonTimeZone = TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+            // Utilize TimeZoneHelper for time conversion
+            DateTime londonTime = TimeZoneHelper.ConvertUtcToLondonTime(DateTime.UtcNow);
 
-            DateTime londonTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, londonTimeZone);
-
-            var auditRecord = new FileAudit
+            var audit = new FileAudit
             {
                 FileId = storedFile.StoredFileId,
                 UserId = userId,
                 Timestamp = londonTime,
-                ActionType = "Edição",
+                ActionType = actionType,
                 StoredFileTitle = storedFile.StoredFileTitle,
                 FolderName = folder.Name
             };
 
-            _context.FileAudits.Add(auditRecord);
+            _context.FileAudits.Add(audit);
             await _context.SaveChangesAsync();
         }
     }
