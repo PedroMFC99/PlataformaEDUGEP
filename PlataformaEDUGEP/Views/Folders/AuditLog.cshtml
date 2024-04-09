@@ -114,14 +114,27 @@
                     sortOrder: currentSortOrder,
                     pageNumber: pageNumber, // Pass the pageNumber for pagination
                     pageSize: @ViewData["PageSize"]
-                        },
+                },
                 type: 'GET',
                 success: function (result) {
                     $('#audit-log-table').html(result);
                     toggleClearFiltersButton();
+
+                    // Update pagination active state
+                    updatePaginationActiveState(pageNumber);
                 },
                 error: function (xhr, status, error) {
                     console.error("Error fetching audit log data: ", status, error);
+                }
+            });
+        }
+
+        // Updates active state on pagination
+        function updatePaginationActiveState(activePageNumber) {
+            $('.pagination .page-item').removeClass('active'); // Remove active class from all
+            $('.pagination .page-item').each(function () {
+                if (parseInt($(this).text()) === activePageNumber) {
+                    $(this).addClass('active'); // Add active class to the clicked page number
                 }
             });
         }

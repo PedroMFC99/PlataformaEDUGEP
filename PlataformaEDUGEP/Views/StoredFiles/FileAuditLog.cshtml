@@ -100,6 +100,7 @@
                 const searchFolderName = $("input[name='searchFolderName']").val();
                 const sortOrder = $("#sortOrderLink").data("sort-order");
 
+                // AJAX call to fetch data based on the new page number and other filters
                 $.ajax({
                     url: '@Url.Action("FileAuditLog", "StoredFiles")',
                     data: {
@@ -112,6 +113,12 @@
                     },
                     success: function (data) {
                         $('#file-audit-log-table').html(data);
+
+                        // Remove 'active' class from all pagination links
+                        $('.pagination .page-item').removeClass('active');
+                        // Add 'active' class to the current page. Since 'page' might be a string, ensure conversion to int for comparison
+                        $('.pagination .page-item').eq(page - 1).addClass('active');
+
                         bindSearchEvents(); // Re-bind search events after content update
                         bindPaginationLinks(); // Also re-bind pagination links
                         toggleClearFiltersButton(); // Check if the clear filters button should be displayed
