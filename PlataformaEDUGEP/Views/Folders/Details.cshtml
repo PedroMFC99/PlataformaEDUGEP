@@ -7,6 +7,11 @@
     var currentAddedBy = ViewBag.CurrentAddedBy;
 }
 
+<!-- Alert placeholder div -->
+<div id="alertPlaceholderCreate" class="mb-3"></div>
+<div id="alertPlaceholderEdit" class="mb-3"></div>
+<div id="alertPlaceholderDelete" class="mb-3"></div>
+
 <div class="container-fluid">
     <div class="row align-items-center mb-3">
         <div class="col-auto">
@@ -246,6 +251,99 @@ else
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        function showBootstrapAlertCreate(type, message) {
+            // Define the alert placeholder
+            var alertPlaceholder = $('#alertPlaceholderCreate');
+
+            // Ensure the placeholder is empty before adding a new alert
+            alertPlaceholder.empty();
+
+            // Create a Bootstrap alert element
+            var alertElement = $('<div>')
+                .addClass('alert alert-' + type + ' alert-dismissible fade show')
+                .attr('role', 'alert')
+                .html(message)
+                .append(
+                    $('<button>')
+                        .attr('type', 'button')
+                        .addClass('btn-close')
+                        .attr('data-bs-dismiss', 'alert')
+                        .attr('aria-label', 'Close')
+                );
+
+            // Append the alert to the designated placeholder
+            alertPlaceholder.append(alertElement);
+
+            // Automatically dismiss the alert after 3 seconds (3000 milliseconds)
+            setTimeout(function () {
+                alertElement.alert('close');
+            }, 2000);
+        }
+    </script>
+
+    <script>
+        function showBootstrapAlertEdit(type, message) {
+            // Define the alert placeholder
+            var alertPlaceholder = $('#alertPlaceholderEdit');
+
+            // Ensure the placeholder is empty before adding a new alert
+            alertPlaceholder.empty();
+
+            // Create a Bootstrap alert element
+            var alertElement = $('<div>')
+                .addClass('alert alert-' + type + ' alert-dismissible fade show')
+                .attr('role', 'alert')
+                .html(message)
+                .append(
+                    $('<button>')
+                        .attr('type', 'button')
+                        .addClass('btn-close')
+                        .attr('data-bs-dismiss', 'alert')
+                        .attr('aria-label', 'Close')
+                );
+
+            // Append the alert to the designated placeholder
+            alertPlaceholder.append(alertElement);
+
+            // Automatically dismiss the alert after 3 seconds (3000 milliseconds)
+            setTimeout(function () {
+                alertElement.alert('close');
+            }, 2000);
+        }
+    </script>
+
+    <script>
+        function showBootstrapAlertDelete(type, message) {
+            // Define the alert placeholder
+            var alertPlaceholder = $('#alertPlaceholderDelete');
+
+            // Ensure the placeholder is empty before adding a new alert
+            alertPlaceholder.empty();
+
+            // Create a Bootstrap alert element
+            var alertElement = $('<div>')
+                .addClass('alert alert-' + type + ' alert-dismissible fade show')
+                .attr('role', 'alert')
+                .html(message)
+                .append(
+                    $('<button>')
+                        .attr('type', 'button')
+                        .addClass('btn-close')
+                        .attr('data-bs-dismiss', 'alert')
+                        .attr('aria-label', 'Close')
+                );
+
+            // Append the alert to the designated placeholder
+            alertPlaceholder.append(alertElement);
+
+            // Automatically dismiss the alert after 3 seconds (3000 milliseconds)
+            setTimeout(function () {
+                alertElement.alert('close');
+            }, 2000);
+        }
+    </script>
+
+    <script>
         $(document).ready(function () {
             $('#createForm').submit(function (e) {
                 e.preventDefault();
@@ -258,19 +356,20 @@ else
                     contentType: false,
                     success: function (data) {
                         $('#createFileModal').modal('hide');
-                        // Refresh part of your page or show success message
-                        alert('Ficheiro adicionado com sucesso');
-                        location.reload(); // For simplicity, just reload the page to see the new file.
+                        showBootstrapAlertCreate('success', 'Ficheiro adicionado com sucesso.');
+                        // Delay reloading to let the alert show
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500); // Adjust time as needed
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        alert('Erro ao adicionar ficheiro: ' + textStatus);
+                        // Show error alert
+                        showBootstrapAlertCreate('danger', 'Erro ao adicionar ficheiro: ' + textStatus);
                     }
                 });
             });
         });
     </script>
-
-
 
     <script>
         $(document).ready(function () {
@@ -309,20 +408,22 @@ else
                 processData: false,
                 success: function (response) {
                     $('#editFileModal').modal('hide');
-                    // Use the success response to decide if the page should be reloaded
                     if (response.success) {
-                        // Optionally, display a success message before reloading
-                        alert('File edited successfully.');
-                        // Reload the current page to reflect the changes
-                        location.reload();
+                        // Display a Bootstrap success alert in the designated placeholder
+                        showBootstrapAlertEdit('success', 'Ficheiro editado com sucesso.');
+                        // Delay the page reload to let the user see the alert
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500); // This delay should match the alert dismiss time
                     } else {
-                        // Handle the case where edit was not successful
-                        alert('Error: ' + response.message);
+                        // Handle failure case, perhaps with a different alert
+                        showBootstrapAlertEdit('danger', 'Error: ' + response.message);
                     }
                 },
                 error: function (xhr, status, error) {
                     var errorMessage = xhr.status + ': ' + xhr.statusText;
                     console.log('Error - ' + errorMessage);
+                    // It might be helpful to show this error in a user-friendly manner
                     alert('Error - ' + errorMessage);
                 }
             });
@@ -344,16 +445,19 @@ else
                     headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
                     success: function (response) {
                         if (response.success) {
-                            // Close modal and show success message or remove the file row from the table
                             $('#confirmDeleteFileModal').modal('hide');
-                            location.reload(); // Or better, remove the row for the deleted file
+                            showBootstrapAlertDelete('success', 'Ficheiro excluído com sucesso.');
+                            // Delay reloading to let the alert show
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1500); // Adjust time as needed
                         } else {
-                            // Handle failure
-                            alert('Error: ' + response.message);
+                            showBootstrapAlertDelete('danger', 'Error: ' + response.message);
                         }
                     },
                     error: function () {
-                        alert('Something went wrong.');
+                        // Show error alert
+                        showBootstrapAlertDelete('danger', 'Algo deu errado.');
                     }
                 });
             });
