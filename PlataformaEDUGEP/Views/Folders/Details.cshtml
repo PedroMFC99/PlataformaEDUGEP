@@ -83,6 +83,11 @@
 
 <!-- Table header for sorting by upload date -->
 <th>
+    <!-- Clear Filters Button -->
+    <!-- Clear Filters Button, initially hidden -->
+    <a href="@Url.Action("Details", new { id = Model.FolderId })" class="btn btn-secondary mr-3" id="clearFiltersBtn" style="display:none;">Limpar filtros</a>
+
+    <span class="mr-3 align-self-center"><strong>Ordenar:</strong></span>
     <a href="@Url.Action("Details", new { id = Model.FolderId, sortOrder = ViewBag.NextSortOrder, fileTitle = currentFileTitle, addedBy = currentAddedBy })">
         Data de upload @Html.Raw(ViewBag.UploadDateSortIcon)
     </a>
@@ -351,6 +356,31 @@ else
                         alert('Something went wrong.');
                     }
                 });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // Function to check the value of the input fields and show/hide the clear button
+            function toggleClearButton() {
+                if ($('#fileTitleInput').val().length > 0 || $('#addedByInput').val().length > 0) {
+                    $('#clearFiltersBtn').show();
+                } else {
+                    $('#clearFiltersBtn').hide();
+                }
+            }
+
+            // Assign IDs to your input fields for easier selection
+            $('input[name="fileTitle"]').attr('id', 'fileTitleInput');
+            $('input[name="addedBy"]').attr('id', 'addedByInput');
+
+            // Check initially if there's any need to show the clear button
+            toggleClearButton();
+
+            // Bind the input event to both fields to check for changes
+            $('#fileTitleInput, #addedByInput').on('input', function () {
+                toggleClearButton();
             });
         });
     </script>
