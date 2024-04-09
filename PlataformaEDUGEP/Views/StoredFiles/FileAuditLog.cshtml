@@ -53,7 +53,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <!-- Correct the button ID for consistency with your script -->
-                <button type="button" class="btn btn-danger" id="deleteAllRecordsButton" data-bs-dismiss="modal">Apagar</button>
+                <button type="button" class="btn btn-danger" id="deleteAllRecordsButton">Apagar</button>
 
             </div>
         </div>
@@ -169,6 +169,33 @@
             toggleSortIcon();
             updateFileAuditLog(); // Load initial audit log content
             toggleClearFiltersButton(); // Check at page load if the button should be visible
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // Handler for the "Apagar" button click event
+            $("#deleteAllRecordsButton").click(function () {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("DeleteAllFileAudits", "StoredFiles")",
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message); // Or use a more user-friendly notification
+                            $('#deleteRecordsModal').modal('hide'); // Close the modal on success
+                            location.reload(); // Optionally reload the page or just part of it
+                        } else {
+                            alert(response.message); // Handle the error
+                        }
+                    },
+                    error: function () {
+                        alert("There was an error processing your request."); // Handle AJAX errors
+                    }
+                });
+            });
         });
     </script>
 }

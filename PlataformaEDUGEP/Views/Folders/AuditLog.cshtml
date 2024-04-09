@@ -128,7 +128,7 @@
 
         // Function to handle clear audit log confirmation and action
         function clearAuditLog() {
-            if (!confirm('Tem a certeza que deseja apagar todo o registo de auditoria? Esta ação não pode ser desfeita.')) {
+            if (!confirm('Tem a certeza que deseja apagar todo o registo de auditoria das pastas? Esta ação não pode ser desfeita.')) {
                 return;
             }
 
@@ -140,12 +140,20 @@
                     xhr.setRequestHeader("RequestVerificationToken", token);
                 },
                 success: function (response) {
-                    $('#confirmDeleteModal').modal('hide');
-                    alert("Registo de auditoria apagado com sucesso.");
-                    updateAuditLog(); // Refresh the log to reflect the clear action
+                    if (response.success) {
+                        alert("Registo de auditoria das pastas apagado com sucesso.");
+                        $('#confirmDeleteModal').modal('hide'); // Close the modal dialog
+                        // Refresh the audit log section of the page
+                        updateAuditLog(); // Call the function to refresh the audit log display
+
+                        // Hide or remove pagination controls
+                        $('.pagination').hide(); // or $('.pagination').empty();
+                    } else {
+                        alert(response.message); // Show the error message from the server
+                    }
                 },
                 error: function (xhr, status, error) {
-                    alert("Error clearing audit log: " + error);
+                    alert("Erro ao apagar o registo de auditoria das pastas: " + error);
                 }
             });
         }
