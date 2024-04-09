@@ -7,7 +7,9 @@
     var selectedTagIds = ViewBag.SelectedTagIds as int[]; // For retaining selected tags
 }
 
-    <h1>Pastas</h1>
+<div id="alertPlaceholder" class="mb-3"></div>
+
+<h1>Pastas</h1>
 
 <div class="mb-3">
     @using (Html.BeginForm("Index", "Folders", FormMethod.Get, new { @class = "form-inline search-container" }))
@@ -195,6 +197,24 @@ else
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        function showBootstrapAlert(type, message) {
+            var alertPlaceholder = $('#alertPlaceholder');
+            alertPlaceholder.empty(); // Clear previous alerts
+
+            var alertElement = $('<div>')
+                .addClass('alert alert-' + type + ' alert-dismissible fade show')
+                .attr('role', 'alert')
+                .html(message)
+                .append($('<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'));
+
+            alertPlaceholder.append(alertElement);
+            setTimeout(function () {
+                alertElement.alert('close');
+            }, 3000);
+        }
+    </script>
+
+    <script>
         $(document).ready(function () {
             // Load Edit Form into Modal
             $('.edit-folder-btn').click(function () {
@@ -216,7 +236,10 @@ else
                     data: form.serialize(),
                     success: function (response) {
                         $('#editFolderModal').modal('hide');
-                        location.reload(); // Reload the page to reflect the changes
+                        showBootstrapAlert('success', 'Pasta editada com sucesso!'); // Display success message
+                        setTimeout(function () {
+                            location.reload(); // Reload the page after a short delay to show the new folder
+                        }, 1500); // Delay reload to allow users to see the message
                     },
                     error: function (xhr, status, error) {
                         console.error("Error updating folder: ", xhr.responseText);
@@ -241,11 +264,19 @@ else
                     url: '@Url.Action("Create", "Folders")',
                     data: form.serialize(),
                     success: function (response) {
+                        console.log('Success response received');
                         $('#createFolderModal').modal('hide');
-                        location.reload(); // Reload the page to show the new folder
+                        showBootstrapAlert('success', 'Pasta criada com sucesso!');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
                     },
                     error: function (xhr, status, error) {
+                        console.log('Error response received');
                         console.error("Error creating folder: ", xhr.responseText);
+                    },
+                    complete: function () {
+                        console.log('AJAX call completed');
                     }
                 });
             });
@@ -266,7 +297,10 @@ else
                     headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
                     success: function (response) {
                         $('#confirmDeleteModal').modal('hide');
-                        location.reload(); // Reload the page to reflect the deletion
+                        showBootstrapAlert('success', 'Pasta removida com sucesso!'); // Display success message
+                        setTimeout(function () {
+                            location.reload(); // Reload the page after a short delay to show the new folder
+                        }, 1500); // Delay reload to allow users to see the message
                     },
                     error: function (xhr, status, error) {
                         console.error("Error deleting folder: ", xhr.responseText);

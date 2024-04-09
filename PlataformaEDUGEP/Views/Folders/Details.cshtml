@@ -8,9 +8,7 @@
 }
 
 <!-- Alert placeholder div -->
-<div id="alertPlaceholderCreate" class="mb-3"></div>
-<div id="alertPlaceholderEdit" class="mb-3"></div>
-<div id="alertPlaceholderDelete" class="mb-3"></div>
+<div id="alertPlaceholder" class="mb-3"></div>
 
 <div class="container-fluid">
     <div class="row align-items-center mb-3">
@@ -251,9 +249,9 @@ else
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-        function showBootstrapAlertCreate(type, message) {
+        function showBootstrapAlert(type, message) {
             // Define the alert placeholder
-            var alertPlaceholder = $('#alertPlaceholderCreate');
+            var alertPlaceholder = $('#alertPlaceholder');
 
             // Ensure the placeholder is empty before adding a new alert
             alertPlaceholder.empty();
@@ -356,7 +354,7 @@ else
                     contentType: false,
                     success: function (data) {
                         $('#createFileModal').modal('hide');
-                        showBootstrapAlertCreate('success', 'Ficheiro adicionado com sucesso.');
+                        showBootstrapAlert('success', 'Ficheiro adicionado com sucesso.');
                         // Delay reloading to let the alert show
                         setTimeout(function () {
                             location.reload();
@@ -364,7 +362,7 @@ else
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         // Show error alert
-                        showBootstrapAlertCreate('danger', 'Erro ao adicionar ficheiro: ' + textStatus);
+                        showBootstrapAlert('danger', 'Erro ao adicionar ficheiro: ' + textStatus);
                     }
                 });
             });
@@ -410,14 +408,14 @@ else
                     $('#editFileModal').modal('hide');
                     if (response.success) {
                         // Display a Bootstrap success alert in the designated placeholder
-                        showBootstrapAlertEdit('success', 'Ficheiro editado com sucesso.');
+                        showBootstrapAlert('success', 'Ficheiro editado com sucesso.');
                         // Delay the page reload to let the user see the alert
                         setTimeout(function () {
                             location.reload();
                         }, 1500); // This delay should match the alert dismiss time
                     } else {
                         // Handle failure case, perhaps with a different alert
-                        showBootstrapAlertEdit('danger', 'Error: ' + response.message);
+                        showBootstrapAlert('danger', 'Error: ' + response.message);
                     }
                 },
                 error: function (xhr, status, error) {
@@ -446,18 +444,18 @@ else
                     success: function (response) {
                         if (response.success) {
                             $('#confirmDeleteFileModal').modal('hide');
-                            showBootstrapAlertDelete('success', 'Ficheiro excluído com sucesso.');
+                            showBootstrapAlert('success', 'Ficheiro excluído com sucesso.');
                             // Delay reloading to let the alert show
                             setTimeout(function () {
                                 location.reload();
                             }, 1500); // Adjust time as needed
                         } else {
-                            showBootstrapAlertDelete('danger', 'Error: ' + response.message);
+                            showBootstrapAlert('danger', 'Error: ' + response.message);
                         }
                     },
                     error: function () {
                         // Show error alert
-                        showBootstrapAlertDelete('danger', 'Algo deu errado.');
+                        showBootstrapAlert('danger', 'Algo deu errado.');
                     }
                 });
             });
