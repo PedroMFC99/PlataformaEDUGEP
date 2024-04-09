@@ -412,7 +412,7 @@ namespace PlataformaEDUGEP.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> FileAuditLog(string searchUser = "", string searchAction = "", string searchFileTitle = "", string searchFolderName = "", string sortOrder = "time_desc")
+        public async Task<IActionResult> FileAuditLog(string searchUser = "", string searchAction = "", string searchFileTitle = "", string searchFolderName = "", string sortOrder = "time_desc", int page = 1, int pageSize = 10)
         {
             ViewData["CurrentFilterUser"] = searchUser;
             ViewData["CurrentFilterAction"] = searchAction;
@@ -426,7 +426,7 @@ namespace PlataformaEDUGEP.Controllers
                               {
                                   Id = audit.Id,
                                   Timestamp = audit.Timestamp,
-                                  UserName = user.FullName, // Assuming FullName is the desired display name
+                                  UserName = user.FullName,
                                   ActionType = audit.ActionType,
                                   StoredFileTitle = audit.StoredFileTitle,
                                   FolderName = audit.FolderName
@@ -460,15 +460,23 @@ namespace PlataformaEDUGEP.Controllers
                     break;
             }
 
-            var fileAuditLogs = await auditsQuery.ToListAsync();
+            // Pagination
+            int totalRecords = await auditsQuery.CountAsync();
+            var audits = await auditsQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            // Check if the request is an AJAX request
+            // ViewData for pagination
+            ViewData["TotalPages"] = (int)Math.Ceiling((double)totalRecords / pageSize);
+            ViewData["CurrentPage"] = page;
+
+            // Check if it's an AJAX request
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                return PartialView("_FileAuditLogTablePartial", fileAuditLogs);
+                // Return only the partial view for the file audit log table
+                return PartialView("_FileAuditLogTablePartial", audits);
             }
 
-            return View(fileAuditLogs);
+            // For non-AJAX requests, return the full view
+            return View(audits);
         }
 
         [HttpPost]

@@ -64,115 +64,116 @@
     @Html.Partial("_FileAuditLogTablePartial", Model)
 </div>
 
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        @for (int i = 1; i <= Convert.ToInt32(ViewData["TotalPages"]); i++)
+        {
+            <li class="page-item @(i == Convert.ToInt32(ViewData["CurrentPage"]) ? "active" : "")">
+                <a class="page-link" href="javascript:void(0)" onclick="updateFileAuditLog(@i)">@i</a>
+            </li>
+        }
+    </ul>
+</nav>
+
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
         $(document).ready(function () {
-            // Function to check filters and toggle button visibility
-    function checkFiltersAndToggleClearButton() {
-        // Check if any of the search inputs have a value
-        const isAnyFilterApplied = $("input[type='search']").toArray().some(input => $(input).val().trim().length > 0);
-        // Show or hide the clear filters button based on whether any filter is applied
-        $("#clearFiltersButton").toggle(isAnyFilterApplied);
-    }
+            // Function to check input fields and toggle the visibility of the clear filters button
+            function toggleClearFiltersButton() {
+                var isAnyFilterApplied = $("input[type='search']").toArray().some(function (input) {
+                    return $(input).val() !== '';
+                });
 
-    // Trigger the check and toggle function on page load
-    checkFiltersAndToggleClearButton();
+                if (isAnyFilterApplied) {
+                    $("#clearFiltersButton").show();
+                } else {
+                    $("#clearFiltersButton").hide();
+                }
+            }
 
-    // Re-check whenever any of the search inputs change
-    $("input[type='search']").on('input', function() {
-        checkFiltersAndToggleClearButton();
-        updateFileAuditLog(); // Also update the audit log as per your existing setup
-    });
-
-            // Function to update the file audit log based on filters and sort order
-            function updateFileAuditLog() {
+            function updateFileAuditLog(page = 1) {
                 const searchUser = $("input[name='searchUser']").val();
                 const searchAction = $("input[name='searchAction']").val();
                 const searchFileTitle = $("input[name='searchFileTitle']").val();
                 const searchFolderName = $("input[name='searchFolderName']").val();
                 const sortOrder = $("#sortOrderLink").data("sort-order");
 
-                // AJAX call to refresh the file audit log based on current filters
-                $.get('@Url.Action("FileAuditLog", "StoredFiles")', {
-                    searchUser: searchUser,
-                    searchAction: searchAction,
-                    searchFileTitle: searchFileTitle,
-                    searchFolderName: searchFolderName,
-                    sortOrder: sortOrder
-                }, function (data) {
-                    $('#file-audit-log-table').html(data);
-                }).fail(function () {
-                    console.error("Failed to fetch file audit log.");
+                $.ajax({
+                    url: '@Url.Action("FileAuditLog", "StoredFiles")',
+                    data: {
+                        searchUser: searchUser,
+                        searchAction: searchAction,
+                        searchFileTitle: searchFileTitle,
+                        searchFolderName: searchFolderName,
+                        sortOrder: sortOrder,
+                        page: page
+                    },
+                    success: function (data) {
+                        $('#file-audit-log-table').html(data);
+                        bindSearchEvents(); // Re-bind search events after content update
+                        bindPaginationLinks(); // Also re-bind pagination links
+                        toggleClearFiltersButton(); // Check if the clear filters button should be displayed
+                    },
+                    error: function () {
+                        alert("An error occurred. Please try again.");
+                    }
                 });
             }
 
-            // Event listeners for search inputs to update the log dynamically
-            $("input[type='search']").on('input', function () {
-                updateFileAuditLog();
-            });
-
-            // Toggle clear filters button visibility based on whether any filters are applied
-            function toggleClearFiltersButton() {
-                const isAnyFilterApplied = $("input[type='search']").toArray().some(input => $(input).val());
-                $("#clearFiltersButton").toggle(isAnyFilterApplied);
+            function bindSearchEvents() {
+                $("input[type='search']").off('input').on('input', function () {
+                    updateFileAuditLog();
+                    toggleClearFiltersButton(); // Check if the clear filters button should be displayed whenever the input changes
+                });
             }
 
-            // Initial toggle state based on current filters
-            toggleClearFiltersButton();
+            function bindPaginationLinks() {
+                $('.pagination a').off('click').on('click', function (e) {
+                    e.preventDefault();
+                    var pageNum = $(this).text();
+                    updateFileAuditLog(pageNum);
+                });
+            }
 
-            // Clear filters and update log
-            $("#clearFiltersButton").click(function () {
-                $("input[type='search']").val('');
-                toggleClearFiltersButton();
-                updateFileAuditLog();
-            });
+            function toggleSortIcon() {
+                var sortOrder = $("#sortOrderLink").data("sort-order");
+                var icon = $("#sortOrderLink i");
+                icon.removeClass("fa-arrow-down fa-arrow-up");
+                if (sortOrder === "time_desc") {
+                    icon.addClass("fa-arrow-down");
+                } else {
+                    icon.addClass("fa-arrow-up");
+                }
+            }
 
             $("#sortOrderLink").click(function (e) {
                 e.preventDefault();
                 var currentSortOrder = $(this).data("sort-order");
                 var newSortOrder = currentSortOrder === "time_desc" ? "time_asc" : "time_desc";
-                $(this).data("sort-order", newSortOrder); // Update the data attribute
-                updateSortIcon(newSortOrder); // Update the icon
-                updateFileAuditLog(); // Refresh the audit log with the new sort order
+                $(this).data("sort-order", newSortOrder);
+                toggleSortIcon();
+                updateFileAuditLog();
             });
 
-            function updateSortIcon(sortOrder) {
-                const icon = $("#sortOrderLink i");
-                // First, remove both classes to reset the icon state
-                icon.removeClass("fa-arrow-up fa-arrow-down");
-                // Then, add the appropriate class based on the new sort order
-                if (sortOrder === "time_asc") {
-                    icon.addClass("fa-arrow-up");
-                } else {
-                    icon.addClass("fa-arrow-down");
-                }
-            }
-
-
-            // Handle the "Delete All" functionality with confirmation dialog
-            $("#deleteAllRecordsButton").on("click", function () {
-                const confirmed = confirm("Are you sure you want to delete all records? This action cannot be undone.");
-                if (confirmed) {
-                    var token = $('input[name="__RequestVerificationToken"]').val(); // Fetch CSRF token from the hidden input
-                    $.ajax({
-                        type: "POST",
-                        url: '@Url.Action("DeleteAllFileAudits", "StoredFiles")',
-                        headers: {
-                            'RequestVerificationToken': token // Include the CSRF token in the request header
-                        },
-                        success: function () {
-                            alert("All records have been deleted.");
-                            window.location.reload(); // Refresh the page
-                        },
-                        error: function () {
-                            alert("Error occurred while deleting all records.");
-                        }
-                    });
-                }
+            $("#clearFiltersButton").click(function () {
+                $("input[type='search']").val('');
+                updateFileAuditLog();
+                toggleClearFiltersButton(); // Immediately hide the button after clearing the filters
             });
 
+            // Initially bind events and set the correct sort icon
+            bindSearchEvents();
+            bindPaginationLinks();
+            toggleSortIcon();
+            updateFileAuditLog(); // Load initial audit log content
+            toggleClearFiltersButton(); // Check at page load if the button should be visible
         });
     </script>
-    
 }
+
+
+
+
+

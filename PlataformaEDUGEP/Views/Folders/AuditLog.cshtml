@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Audit Log";
+    int totalPages = (int)ViewData["TotalPages"];
+    int currentPage = (int)ViewData["CurrentPage"];
 }
 
 <h2>Relatório de ocorrências de pastas</h2>
@@ -46,6 +48,17 @@
     @Html.Partial("_AuditLogTablePartial", Model)
 </div>
 
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(i == currentPage ? "active" : "")" onclick="updateAuditLog(null, null, null, null, @i)">
+                <span class="page-link">@i</span>
+            </li>
+        }
+    </ul>
+</nav>
+
 <!-- Delete Audit Log Modal -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -70,94 +83,94 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        // Clears the search filters
         function clearFilters() {
             $("input[name='searchUser']").val('');
             $("input[name='searchAction']").val('');
             $("input[name='searchFolderName']").val('');
             $("#clearFiltersButton").hide(); // Hide the "Limpar filtros" button
-            updateAuditLog('', '', ''); // Call with empty values to reset
+            // Reset the audit log without changing the sort order
+            updateAuditLog('', '', '', $('#sortOrderLink').data('sort-order'));
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById('sortOrderLink').addEventListener('click', function (e) {
-                e.preventDefault(); // Prevent the default link action
-
-                // Determine the current sort order and calculate the new sort order
-                var currentSortOrder = this.getAttribute('data-sort-order');
-                var newSortOrder = currentSortOrder === 'time_desc' ? 'time_asc' : 'time_desc';
-
-                // Update the data-sort-order attribute to the new sort order BEFORE calling updateAuditLog
-                this.setAttribute('data-sort-order', newSortOrder);
-
-                // Update the icon to reflect the new sort order immediately
-                updateSortIcon(newSortOrder);
-
-                // Now call updateAuditLog with the new sort order
-                updateAuditLog(null, null, null, newSortOrder);
-            });
-        });
-
+        // Updates the visual sort icon based on the sort order
         function updateSortIcon(sortOrder) {
             var iconElement = document.querySelector('#sortOrderLink i');
-            if (iconElement) {
-                // Reset the icon classes
-                iconElement.classList.remove('fa-arrow-up', 'fa-arrow-down');
-                // Apply the correct class based on the new sort order
-                var iconClass = sortOrder === 'time_desc' ? 'fa-arrow-down' : 'fa-arrow-up';
-                iconElement.classList.add(iconClass);
-            }
+            iconElement.classList.remove('fa-arrow-up', 'fa-arrow-down');
+            iconElement.classList.add(sortOrder === 'time_desc' ? 'fa-arrow-down' : 'fa-arrow-up');
         }
 
-        // Ensure the updateAuditLog function properly handles the sortOrder parameter and correctly refreshes the content
-        function updateAuditLog(searchUser, searchAction, searchFolderName, sortOrder) {
-            var currentSortOrder = sortOrder || document.getElementById('sortOrderLink').getAttribute('data-sort-order');
+        // Dynamically updates the audit log based on filters, sort order, and page number
+        function updateAuditLog(searchUser, searchAction, searchFolderName, sortOrder, pageNumber = 1) {
+            // Ensure currentSortOrder is fetched directly if not provided as an argument
+            var currentSortOrder = sortOrder || $('#sortOrderLink').data('sort-order');
 
-            searchUser = searchUser || $("input[name='searchUser']").val();
-            searchAction = searchAction || $("input[name='searchAction']").val();
-            searchFolderName = searchFolderName || $("input[name='searchFolderName']").val();
-
-            // Show the clear filters button if any of the inputs have a value
-            if (searchUser.length > 0 || searchAction.length > 0 || searchFolderName.length > 0) {
-                $("#clearFiltersButton").show();
-            } else {
-                $("#clearFiltersButton").hide();
-            }
-
-            $.get('@Url.Action("AuditLog", "Folders")', {
-                searchUser: searchUser,
-                searchAction: searchAction,
-                searchFolderName: searchFolderName,
-                sortOrder: currentSortOrder  // Include the current sort order in the AJAX call
-            }, function (data) {
-                $('#audit-log-table').html(data);
-                // Additional logic...
-            }).fail(function () {
-                console.error("Failed to fetch data"); // Error handling
+            $.ajax({
+                url: '@Url.Action("AuditLog", "Folders")',
+                data: {
+                    searchUser: searchUser || $("input[name='searchUser']").val(),
+                    searchAction: searchAction || $("input[name='searchAction']").val(),
+                    searchFolderName: searchFolderName || $("input[name='searchFolderName']").val(),
+                    sortOrder: currentSortOrder,
+                    pageNumber: pageNumber, // Pass the pageNumber for pagination
+                    pageSize: @ViewData["PageSize"]
+                        },
+                type: 'GET',
+                success: function (result) {
+                    $('#audit-log-table').html(result);
+                    toggleClearFiltersButton();
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error fetching audit log data: ", status, error);
+                }
             });
         }
 
+        // Function to handle clear audit log confirmation and action
         function clearAuditLog() {
             if (!confirm('Tem a certeza que deseja apagar todo o registo de auditoria? Esta ação não pode ser desfeita.')) {
-                return; // Exit if the user cancels
+                return;
             }
 
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("ClearAuditLog", "Folders")',
                 beforeSend: function (xhr) {
-                    var token = $('input[name="__RequestVerificationToken"]').val(); // Ensure you are fetching the token correctly.
-                    xhr.setRequestHeader("RequestVerificationToken", token); // Set the token in the request header.
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    xhr.setRequestHeader("RequestVerificationToken", token);
                 },
                 success: function (response) {
                     $('#confirmDeleteModal').modal('hide');
-                    alert("Registo de auditoria apagado com sucesso."); // Notify user
-                    location.reload(); // Reload the page to reflect changes
+                    alert("Registo de auditoria apagado com sucesso.");
+                    updateAuditLog(); // Refresh the log to reflect the clear action
                 },
                 error: function (xhr, status, error) {
-                    alert("Erro ao apagar registo de auditoria.");
+                    alert("Error clearing audit log: " + error);
                 }
             });
         }
-    </script>
 
+        // Toggles the visibility of the "Limpar filtros" button based on input content
+        function toggleClearFiltersButton() {
+            const hasValue = $("input[name='searchUser']").val() || $("input[name='searchAction']").val() || $("input[name='searchFolderName']").val();
+            $("#clearFiltersButton").toggle(!!hasValue);
+        }
+
+        $(document).ready(function () {
+            // Event handler for sort order change
+            $('#sortOrderLink').click(function (e) {
+                e.preventDefault();
+                var currentSortOrder = $(this).data('sort-order');
+                var newSortOrder = currentSortOrder === 'time_desc' ? 'time_asc' : 'time_desc';
+                $(this).data('sort-order', newSortOrder);
+                updateSortIcon(newSortOrder);
+                updateAuditLog(null, null, null, newSortOrder);
+            });
+
+            // Bind input change events to toggle the clear filters button
+            $("input").on('input', toggleClearFiltersButton);
+            toggleClearFiltersButton(); // Ensure correct initial state
+        });
+    </script>
 }
+

@@ -514,12 +514,15 @@ namespace PlataformaEDUGEP.Controllers
 
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> AuditLog(string searchUser = "", string searchAction = "", string searchFolderName = "", string sortOrder = "")
+        public async Task<IActionResult> AuditLog(string searchUser = "", string searchAction = "", string searchFolderName = "", string sortOrder = "", int pageNumber = 1, int pageSize = 10)
         {
             ViewData["CurrentFilterUser"] = searchUser;
             ViewData["CurrentFilterAction"] = searchAction;
             ViewData["CurrentFilterFolderName"] = searchFolderName;
             ViewData["CurrentSort"] = sortOrder;
+
+            ViewData["CurrentPage"] = pageNumber;
+            ViewData["PageSize"] = pageSize;
 
             var auditsQuery = from audit in _context.FolderAudits
                               join user in _context.Users on audit.UserId equals user.Id
@@ -559,12 +562,16 @@ namespace PlataformaEDUGEP.Controllers
                     break;
             }
 
-            var audits = await auditsQuery.ToListAsync();
+            int totalRecords = await auditsQuery.CountAsync();
+            var audits = await auditsQuery.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            // Check if the request is an AJAX request
+            // Use ViewData or ViewBag to pass pagination data
+            ViewData["TotalRecords"] = totalRecords;
+            ViewData["TotalPages"] = (int)Math.Ceiling(totalRecords / (double)pageSize);
+
+            // For AJAX requests, return the partial view
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                // Return the partial view for AJAX requests
                 return PartialView("_AuditLogTablePartial", audits);
             }
 
