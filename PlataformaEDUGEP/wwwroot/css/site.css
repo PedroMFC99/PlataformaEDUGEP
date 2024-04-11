@@ -23,6 +23,7 @@ body {
 
 .select2-searchable {
     visibility: hidden;
+    display: none;
 }
 
 #wrapper {
