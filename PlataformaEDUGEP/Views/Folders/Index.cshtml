@@ -133,7 +133,7 @@ else
                             Etiquetas:
                             @foreach (var tag in item.Tags)
                             {
-                                <span class="badge bg-info">@tag.Name</span>
+                                <span class="badge bg-info" data-tag-id="@tag.TagId">@tag.Name</span>
                             }
                         </p>
                         <a href="@Url.Action("Details", "Folders", new { id = item.FolderId })" class="btn btn-secondary">Abrir</a>
@@ -398,6 +398,17 @@ else
                 if (!$(e.target).closest('.search-input, #searchResultsDropdown').length) {
                     $('#searchResultsDropdown').hide();
                 }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // Event listener for tag clicks
+            $('.badge.bg-info').on('click', function () {
+                var tagId = $(this).data('tag-id');
+                // Redirect user to the filtered page using the tag ID
+                window.location.href = '@Url.Action("Index", "Folders")?searchString=&selectedTagIds=' + tagId;
             });
         });
     </script>

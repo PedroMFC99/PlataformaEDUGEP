@@ -140,4 +140,7 @@ input:checked + .slider:before {
     color: white; /* Moon icon color in dark mode */
 }
 
+.badge.bg-info {
+    cursor: pointer; /* Changes cursor to hand pointer on hover */
+}
 
