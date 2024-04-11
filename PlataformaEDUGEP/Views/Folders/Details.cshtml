@@ -159,7 +159,7 @@ else
 }
 
 
-<!-- Add File Modal -->
+<!-- Create File Modal -->
 <div class="modal fade" id="createFileModal" tabindex="-1" aria-labelledby="createFileModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -178,6 +178,7 @@ else
                         <label for="fileData">Ficheiro</label>
                         <input type="file" class="form-control" id="fileData" name="fileData" required>
                     </div>
+                    <div id="createFileError" class="text-danger"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -208,6 +209,7 @@ else
                         <label for="newFileData">Novo ficheiro?</label>
                         <input type="file" class="form-control" id="newFileData" name="newFileData">
                     </div>
+                    <div id="editFileError" class="text-danger"></div>
                     <div class="form-group">
                         <label for="editFolderId" class="control-label">Escolher pasta</label>
                         <select id="editFolderId" class="form-control" name="FolderId"></select>
@@ -281,6 +283,10 @@ else
         $(document).ready(function () {
             $('#createForm').submit(function (e) {
                 e.preventDefault();
+                // Validate file before submitting
+                if (!validateFile('fileData', 'createFileError')) {
+                    return false; // Stop form submission
+                }
                 var formData = new FormData(this);
                 $.ajax({
                     url: '@Url.Action("Create", "StoredFiles")',
@@ -330,7 +336,10 @@ else
     <script>
         $('#editFileForm').submit(function (e) {
             e.preventDefault();
-
+            // Validate the file only if a new file has been selected
+            if ($('#newFileData').val() && !validateFile('newFileData', 'editFileError')) {
+                return false; // Stop form submission
+            }
             var formData = new FormData(this);
             var fileId = $('#editStoredFileId').val(); // Get the file ID to construct the URL
 
@@ -427,5 +436,36 @@ else
         $(document).ready(function () {
             $('[data-toggle="tooltip"]').tooltip();
         });
+    </script>
+
+    <script>
+        const allowedExtensions = {
+            ".pdf": 10485760, // 10 MB
+            ".png": 5242880,  // 5 MB
+            ".jpg": 5242880   // 5 MB
+        };
+
+        function validateFile(inputId, errorMessageId) {
+            var inputFile = document.getElementById(inputId);
+            var file = inputFile ? inputFile.files[0] : null;
+            var errorElement = document.getElementById(errorMessageId);
+
+            // Clear previous messages
+            errorElement.innerHTML = '';
+
+            if (file) {
+                var fileSize = file.size;
+                var fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+
+                if (!(fileExtension in allowedExtensions)) {
+                    errorElement.innerHTML = 'Tipo de arquivo não permitido.';
+                    return false;
+                } else if (fileSize > allowedExtensions[fileExtension]) {
+                    errorElement.innerHTML = `O arquivo excede o tamanho máximo permitido de ${(allowedExtensions[fileExtension] / 1024 / 1024).toFixed(2)} MB.`;
+                    return false;
+                }
+            }
+            return true;
+        }
     </script>
 }
