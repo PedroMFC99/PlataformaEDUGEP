@@ -14,12 +14,14 @@ namespace PlataformaEDUGEP.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFolderAuditService _folderAuditService;
+        private readonly IWebHostEnvironment _env;
 
-        public FoldersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IFolderAuditService folderAuditService)
+        public FoldersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IFolderAuditService folderAuditService, IWebHostEnvironment env)
         {
             _context = context;
             _userManager = userManager;
             _folderAuditService = folderAuditService;
+            _env = env;
         }
 
         [Authorize]
@@ -340,22 +342,38 @@ namespace PlataformaEDUGEP.Controllers
         }
 
         // POST: Folders/Delete/5
+        // POST: Folders/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher, Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var folder = await _context.Folder.FindAsync(id);
+            var folder = await _context.Folder.Include(f => f.StoredFiles).FirstOrDefaultAsync(m => m.FolderId == id);
             if (folder == null)
             {
                 return NotFound();
             }
 
-            var userId = _userManager.GetUserId(User);
+            // Delete the files associated with the folder from the filesystem
+            foreach (var file in folder.StoredFiles)
+            {
+                var filePath = Path.Combine(_env.WebRootPath, "uploads", file.StoredFileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+
+                // Optionally, log each file deletion
+            }
+
+            // Now delete the files from the database
+            _context.StoredFile.RemoveRange(folder.StoredFiles);
 
             // Log the delete action before actually removing the folder
+            var userId = _userManager.GetUserId(User);
             await _folderAuditService.LogAuditAsync(userId, "Exclusão", folder.FolderId, folder.Name);
 
+            // Remove the folder record from the database
             _context.Folder.Remove(folder);
             await _context.SaveChangesAsync();
 
