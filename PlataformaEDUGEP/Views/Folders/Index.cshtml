@@ -28,14 +28,13 @@
         </div>
 
         <!-- Tag Filtering Setup -->
+        <!-- Tag Filtering Setup -->
         <div class="form-group">
-            <!-- Placeholder for Select2 to prevent layout shift -->
-            <div id="select2-placeholder" style="display: none; height: 38px; background-color: #EEE; line-height: 38px; text-align: center;">
-                Loading tags...
-            </div>
             <label for="selectedTagIds">Etiquetas</label>
+            <div class="select2-wrapper">
+                <!-- Wrapper to maintain consistent layout -->
             @Html.ListBox("selectedTagIds", allTags, new { @class = "form-control select2-searchable", @multiple = "multiple" })
-
+            </div>
         </div>
 
         <div class="mb-3">
@@ -315,57 +314,50 @@ else
     </script>
 
     <script>
-    $(document).ready(function () {
-        // Display the placeholder initially and hide the Select2 control
-        $('#select2-placeholder').show();
-        $('.select2-searchable').hide(); // Ensure this is hidden initially
-
-        $('.select2-searchable').select2({
-            placeholder: "Selecionar etiquetas",
-            minimumInputLength: 2,
-            language: {
-                inputTooShort: function () {
-                    return ""; // Returning empty string to hide the 'input too short' message
+        $(document).ready(function () {
+            // Initialize Select2 for the searchable select element.
+            $('.select2-searchable').select2({
+                placeholder: "Selecionar etiquetas",
+                minimumInputLength: 2,
+                language: {
+                    inputTooShort: function () {
+                        return ""; // Hide 'input too short' message
+                    },
+                    noResults: function () {
+                        return "Nenhuma etiqueta associada";
+                    },
+                    searching: function () {
+                        return "A procurar...";
+                    }
                 },
-                noResults: function () {
-                    return "Nenhuma etiqueta associada";
-                },
-                searching: function () {
-                    return "A procurar...";
+                escapeMarkup: function (markup) { return markup; },
+                allowClear: true,
+                ajax: {
+                    url: '@Url.Action("GetTags", "Folders")', // Adjust as needed
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            searchTerm: params.term // search term
+                        };
+                    },
+                    processResults: function (data) {
+                        return { results: data.results };
+                    },
+                    cache: true
                 }
-            },
-            escapeMarkup: function (markup) {
-                return markup;
-            },
-            allowClear: true,
-            ajax: {
-                url: '@Url.Action("GetTags", "Folders")', // Adjust the URL as needed
-                dataType: 'json',
-                delay: 250,
-                data: function (params) {
-                    return {
-                        searchTerm: params.term // search term
-                    };
-                },
-                processResults: function (data) {
-                    // This function is called when the results are retrieved from the server
-                    return {
-                        results: data.results
-                    };
-                },
-                cache: true
-            }
-        }).on("select2:select", function (e) { // You can choose the appropriate event for your scenario
-            $('#select2-placeholder').hide(); // Hide the placeholder
-            $('.select2-searchable').css('visibility', 'visible'); // Make Select2 visible
-        });
+            });
 
-        // Optionally, if your Select2 initialization immediately loads the data,
-        // you may want to hide the placeholder and show Select2 right after initializing it.
-        // This depends on your specific use case and whether data loading is instant or delayed.
-        $('#select2-placeholder').hide(); // Consider moving or removing this line based on your AJAX call setup
-        $('.select2-searchable').css('visibility', 'visible'); // Same as above
-    });
+            // Handle the Select2 open event to hide the placeholder
+            $('.select2-searchable').on("select2:open", function (e) {
+                $('#select2-placeholder').hide();
+            });
+
+            // Consider hiding the placeholder immediately if Select2 is pre-populated or in case it doesn't need loading
+            if ($('.select2-searchable').find(":selected").length) {
+                $('#select2-placeholder').hide();
+            }
+        });
 </script>
 
     <script>

@@ -21,6 +21,32 @@ body {
     z-index: 999999 !important; /* Use a high value to ensure it's above other elements */
 }
 
+/* Ensure the container for the Select2 maintains a minimum height */
+.select2-container {
+    min-height: 38px; /* Adjust based on your Select2 size */
+}
+
+/* Additional styles to ensure visibility adjustments do not cause layout shifts */
+.select2-container--default .select2-selection--multiple {
+    min-height: 38px;
+}
+
+.select2-wrapper {
+    min-height: 38px; /* Adjust this value based on the actual height of your Select2 component when loaded */
+    background-color: #FFF;
+}
+
+
+/* Placeholder adjustments to match the Select2 appearance */
+#select2-placeholder {
+    display: block; /* make sure it's not none */
+    height: 38px; /* Match this with the actual height of Select2 */
+    background-color: #EEE;
+    line-height: 38px;
+    text-align: center;
+    margin-bottom: 10px; /* Adjust based on your layout */
+}
+
 .select2-searchable {
     visibility: hidden;
     display: none;
