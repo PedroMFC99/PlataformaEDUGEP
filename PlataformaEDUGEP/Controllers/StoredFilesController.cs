@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -91,8 +87,17 @@ namespace PlataformaEDUGEP.Controllers
         {
             if (!folderId.HasValue || fileData == null || fileData.Length == 0)
             {
-                // Combine error messages for efficiency
                 ModelState.AddModelError("", "The FolderId and file data are required.");
+                return View();
+            }
+
+            // Load allowed extensions and sizes from configuration
+            var allowedExtensions = _configuration.GetSection("AllowedFileUploads:Extensions").Get<Dictionary<string, long>>();
+
+            var fileExtension = Path.GetExtension(fileData.FileName).ToLower();
+            if (!allowedExtensions.ContainsKey(fileExtension) || fileData.Length > allowedExtensions[fileExtension])
+            {
+                ModelState.AddModelError("fileData", "The file type is not allowed or exceeds the maximum allowed size.");
                 return View();
             }
 
@@ -102,17 +107,14 @@ namespace PlataformaEDUGEP.Controllers
                 return RedirectToAction("Error", "Home");
             }
 
-            // Generate the file path once and reuse
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(fileData.FileName);
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + storedFileName + fileExtension;
             var filePath = Path.Combine(_env.WebRootPath, "uploads", uniqueFileName);
 
-            // Use using statement to ensure the stream is disposed of
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await fileData.CopyToAsync(stream);
             }
 
-            // Initialize the model in one go
             var storedFile = new StoredFile
             {
                 StoredFileName = uniqueFileName,
@@ -125,7 +127,6 @@ namespace PlataformaEDUGEP.Controllers
             _context.Add(storedFile);
             await _context.SaveChangesAsync();
 
-            // Record the file creation action
             await _fileAuditService.RecordCreationAsync(storedFile, userId);
 
             return RedirectToAction("Details", "Folders", new { id = folderId });
@@ -243,30 +244,35 @@ namespace PlataformaEDUGEP.Controllers
 
             if (!ModelState.IsValid)
             {
-                // If the model state is not valid, return to the view or handle the error as needed.
                 return View(storedFile);
             }
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Get the user ID here
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
                 return RedirectToAction("Error", "Home");
             }
-            // Assuming you have access to the UserManager and can get the current user's full name
-            // This part assumes ApplicationUser has a FullName or similar property.
-            // Adjust according to your user management logic.
+
             var user = await _userManager.GetUserAsync(User);
-            var editorFullName = user?.FullName; // Use 'FullName' or equivalent property if available
+            var editorFullName = user?.FullName;
 
-            // Update the stored file properties
-            storedFile.StoredFileTitle = storedFileTitle;
-            storedFile.LastEditorFullName = editorFullName; // Update the LastEditorFullName with the current user's full name
+            // Load allowed extensions and sizes from configuration
+            var allowedExtensions = _configuration.GetSection("AllowedFileUploads:Extensions").Get<Dictionary<string, long>>();
 
-            if (newFileData != null && newFileData.Length > 0)
+            if (newFileData != null)
             {
-                // If there's a new file, process and update it as well
+                var fileExtension = Path.GetExtension(newFileData.FileName).ToLower();
+                if (!allowedExtensions.ContainsKey(fileExtension) || newFileData.Length > allowedExtensions[fileExtension])
+                {
+                    ModelState.AddModelError("newFileData", "The file type is not allowed or exceeds the maximum allowed size.");
+                    return View(storedFile);
+                }
 
-                // Delete or move the old file as needed
+                // Construct the new file name using storedFileTitle and file extension
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + storedFileTitle + fileExtension;
+                var newFilePath = Path.Combine(_env.WebRootPath, "uploads", uniqueFileName);
+
+                // Delete the old file
                 var oldFilePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
                 if (System.IO.File.Exists(oldFilePath))
                 {
@@ -274,21 +280,36 @@ namespace PlataformaEDUGEP.Controllers
                 }
 
                 // Save the new file
-                var originalFileName = Path.GetFileName(newFileData.FileName);
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + originalFileName;
-                var uploadsFolderPath = Path.Combine(_env.WebRootPath, "uploads");
-                var newFilePath = Path.Combine(uploadsFolderPath, uniqueFileName);
-
                 using (var stream = new FileStream(newFilePath, FileMode.Create))
                 {
                     await newFileData.CopyToAsync(stream);
                 }
 
-                storedFile.StoredFileName = uniqueFileName; // Update with the new file's name
-                storedFile.UploadDate = DateTime.Now; // Optionally update the upload date
+                // Update the StoredFile entity with the new file name
+                storedFile.StoredFileName = uniqueFileName;
+            }
+            else
+            {
+                // If no new file is uploaded but the title is changed, generate a new file name with the old extension
+                var oldFileExtension = Path.GetExtension(storedFile.StoredFileName);
+                var newFileName = Guid.NewGuid().ToString() + "_" + storedFileTitle + oldFileExtension;
+                var newFilePath = Path.Combine(_env.WebRootPath, "uploads", newFileName);
+                var oldFilePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
+
+                // Rename the old file (if it still exists)
+                if (System.IO.File.Exists(oldFilePath))
+                {
+                    System.IO.File.Move(oldFilePath, newFilePath);
+                }
+
+                // Update the file name in the database to reflect the new title
+                storedFile.StoredFileName = newFileName;
             }
 
-            // Update the FolderId if it was changed.
+            // Update other properties
+            storedFile.StoredFileTitle = storedFileTitle;
+            storedFile.LastEditorFullName = editorFullName;
+            storedFile.UploadDate = DateTime.Now;
             storedFile.FolderId = folderId;
 
             try
@@ -304,18 +325,14 @@ namespace PlataformaEDUGEP.Controllers
                 }
                 else
                 {
-                    // Log the error or handle it as needed
                     return Json(new { success = false, message = $"An error occurred while updating the file: {ex.Message}" });
                 }
             }
 
-            // Record the file update action
-            await _fileAuditService.RecordEditAsync(storedFile, userId); // Assuming you have a method for editing
+            await _fileAuditService.RecordEditAsync(storedFile, userId);
 
-            // If the action method is called via AJAX, return a JSON response
             return Json(new { success = true, message = "File updated successfully." });
         }
-
 
         // GET: StoredFiles/Delete/5
         [Authorize(Roles = "Admin, Teacher")]

@@ -86,7 +86,6 @@
 
 <!-- Table header for sorting by upload date -->
 <th>
-    <!-- Clear Filters Button -->
     <!-- Clear Filters Button, initially hidden -->
     <a href="@Url.Action("Details", new { id = Model.FolderId })" class="btn btn-secondary mr-3" id="clearFiltersBtn" style="display:none;">Limpar filtros</a>
 
@@ -142,7 +141,6 @@
                             <!-- Add data-title here -->
                             <i class="fas fa-edit"></i>
                         </button>
-                        <!-- Delete Link -->
                         <!-- Delete Button triggers Modal -->
                         <button class="btn btn-sm btn-danger delete-file-btn" data-id="@file.StoredFileId" data-bs-toggle="modal" data-bs-target="#confirmDeleteFileModal">
                             <i class="fas fa-trash"></i>
@@ -252,68 +250,6 @@ else
         function showBootstrapAlert(type, message) {
             // Define the alert placeholder
             var alertPlaceholder = $('#alertPlaceholder');
-
-            // Ensure the placeholder is empty before adding a new alert
-            alertPlaceholder.empty();
-
-            // Create a Bootstrap alert element
-            var alertElement = $('<div>')
-                .addClass('alert alert-' + type + ' alert-dismissible fade show')
-                .attr('role', 'alert')
-                .html(message)
-                .append(
-                    $('<button>')
-                        .attr('type', 'button')
-                        .addClass('btn-close')
-                        .attr('data-bs-dismiss', 'alert')
-                        .attr('aria-label', 'Close')
-                );
-
-            // Append the alert to the designated placeholder
-            alertPlaceholder.append(alertElement);
-
-            // Automatically dismiss the alert after 3 seconds (3000 milliseconds)
-            setTimeout(function () {
-                alertElement.alert('close');
-            }, 2000);
-        }
-    </script>
-
-    <script>
-        function showBootstrapAlertEdit(type, message) {
-            // Define the alert placeholder
-            var alertPlaceholder = $('#alertPlaceholderEdit');
-
-            // Ensure the placeholder is empty before adding a new alert
-            alertPlaceholder.empty();
-
-            // Create a Bootstrap alert element
-            var alertElement = $('<div>')
-                .addClass('alert alert-' + type + ' alert-dismissible fade show')
-                .attr('role', 'alert')
-                .html(message)
-                .append(
-                    $('<button>')
-                        .attr('type', 'button')
-                        .addClass('btn-close')
-                        .attr('data-bs-dismiss', 'alert')
-                        .attr('aria-label', 'Close')
-                );
-
-            // Append the alert to the designated placeholder
-            alertPlaceholder.append(alertElement);
-
-            // Automatically dismiss the alert after 3 seconds (3000 milliseconds)
-            setTimeout(function () {
-                alertElement.alert('close');
-            }, 2000);
-        }
-    </script>
-
-    <script>
-        function showBootstrapAlertDelete(type, message) {
-            // Define the alert placeholder
-            var alertPlaceholder = $('#alertPlaceholderDelete');
 
             // Ensure the placeholder is empty before adding a new alert
             alertPlaceholder.empty();

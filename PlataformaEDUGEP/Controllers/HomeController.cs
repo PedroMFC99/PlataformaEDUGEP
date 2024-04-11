@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PlataformaEDUGEP.Data;
-using PlataformaEDUGEP.Enums;
 using PlataformaEDUGEP.Models;
 using System.Diagnostics;
 
