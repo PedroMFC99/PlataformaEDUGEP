@@ -18,7 +18,7 @@ namespace PlataformaEDUGEP.Data
 
         public DbSet<Tag> Tags { get; set; }
 
-        public DbSet<Profile>? Profile { get; set; }
+        public DbSet<Profile> Profile { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

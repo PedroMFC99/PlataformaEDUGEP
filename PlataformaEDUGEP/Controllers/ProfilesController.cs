@@ -39,33 +39,33 @@ namespace PlataformaEDUGEP.Controllers
                 return NotFound();
             }
 
+            // Fetch roles only once and use it throughout
             var roles = await _userManager.GetRolesAsync(user);
-            var isStudent = roles.Contains("Student");
 
-            string roleLabel = roles.Contains("Admin") ? "Administrador" :
-                               roles.Contains("Teacher") ? "Professor" :
-                               roles.Contains("Student") ? "Estudante" : "Desconhecido";
+            // Correctly determining role label using boolean checks
+            var roleLabel = roles.Any(role => role == "Admin") ? "Administrador" :
+                            roles.Any(role => role == "Teacher") ? "Professor" :
+                            roles.Any(role => role == "Student") ? "Estudante" :
+                            "Desconhecido";
 
             ViewBag.RoleLabel = roleLabel;
-            ViewBag.IsStudent = isStudent;
+            ViewBag.IsStudent = roles.Contains("Student");
 
             // Check if the currently authenticated user is a Teacher or Admin
             var currentUser = await _userManager.GetUserAsync(User);
             var userRoles = await _userManager.GetRolesAsync(currentUser);
-            bool isAdminOrTeacher = userRoles.Any(role => role == "Teacher" || role == "Admin");
+            bool isAdminOrTeacher = userRoles.Contains("Teacher") || userRoles.Contains("Admin");
 
             // Adjust the query based on the role
-            var userFolders = isAdminOrTeacher
-                ? await _context.Folder.Where(f => f.User.Id == id).ToListAsync() // Show all folders for teachers or admins
-                : await _context.Folder.Where(f => f.User.Id == id && !f.IsHidden).ToListAsync(); // Show only visible folders for others
+            var userFolders = await _context.Folder
+                .Where(f => f.User.Id == id && (isAdminOrTeacher || !f.IsHidden))
+                .ToListAsync();
 
             // Pass the folders to the view via ViewBag
             ViewBag.UserFolders = userFolders;
 
             return View(user);
         }
-
-
 
         // GET: Profiles/Create
         public IActionResult Create()
@@ -165,14 +165,16 @@ namespace PlataformaEDUGEP.Controllers
         {
             if (_context.Profile == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Profile'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Profile' is null.");
             }
+
             var profile = await _context.Profile.FindAsync(id);
-            if (profile != null)
+            if (profile == null)
             {
-                _context.Profile.Remove(profile);
+                return NotFound();
             }
-            
+
+            _context.Profile.Remove(profile);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

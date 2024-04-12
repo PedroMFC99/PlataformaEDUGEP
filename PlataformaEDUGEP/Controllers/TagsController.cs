@@ -28,13 +28,7 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Tags == null)
-            {
-                return NotFound();
-            }
-
-            var tag = await _context.Tags
-                .FirstOrDefaultAsync(m => m.TagId == id);
+            var tag = await GetTagById(id);
             if (tag == null)
             {
                 return NotFound();
@@ -103,45 +97,44 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("TagId,Name")] Tag tag)
         {
-            if (id != tag.TagId)
+            if (!ModelState.IsValid)
+            {
+                return View(tag);
+            }
+
+            var existingTag = await GetTagById(id);
+            if (existingTag == null)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            // Update the properties of the fetched tag
+            existingTag.Name = tag.Name;
+
+            try
             {
-                try
-                {
-                    _context.Update(tag);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TagExists(tag.TagId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _context.Update(existingTag);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(tag);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await TagExists(tag.TagId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         // GET: Tags/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Tags == null)
-            {
-                return NotFound();
-            }
-
-            var tag = await _context.Tags
-                .FirstOrDefaultAsync(m => m.TagId == id);
+            var tag = await GetTagById(id);
             if (tag == null)
             {
                 return NotFound();
@@ -150,29 +143,35 @@ namespace PlataformaEDUGEP.Controllers
             return View(tag);
         }
 
-        // POST: Tags/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Tags == null)
+            var tag = await GetTagById(id);
+            if (tag == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Tags'  is null.");
+                return NotFound();
             }
-            var tag = await _context.Tags.FindAsync(id);
-            if (tag != null)
-            {
-                _context.Tags.Remove(tag);
-            }
-            
+
+            _context.Tags.Remove(tag);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TagExists(int id)
+        private async Task<Tag> GetTagById(int? id)
         {
-          return (_context.Tags?.Any(e => e.TagId == id)).GetValueOrDefault();
+            if (id == null)
+            {
+                return null; // Return null immediately if the ID is null
+            }
+
+            return await _context.Tags.FindAsync(id);
+        }
+
+        private async Task<bool> TagExists(int id)
+        {
+            return await _context.Tags.AnyAsync(e => e.TagId == id);
         }
     }
 }
