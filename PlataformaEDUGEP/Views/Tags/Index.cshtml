@@ -6,49 +6,25 @@
 
 <h1>Etiquetas</h1>
 
-<!-- Create Tag Button -->
+<div class="mb-3">
+    <input type="search" id="searchInput" class="form-control" placeholder="Search tags..." autocomplete="off">
+</div>
+
 <div class="d-flex justify-content-end mb-3">
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createTagModal">
         <i class="fas fa-plus"></i>
     </button>
 </div>
 
-
-<style>
-    .custom-black-border td,
-    .custom-black-border th {
-        border: 1px solid black;
-    }
-</style>
-
-<table class="table mt-3 table-bordered custom-black-border">
+<table class="table mt-3 table-bordered">
     <thead class="table-primary">
         <tr>
-            <th class="text-center">
-                @*@Html.DisplayNameFor(model => model.First().Name)*@
-                Etiqueta
-            </th>
+            <th class="text-center">Etiqueta</th>
             <th class="text-center">Ações</th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td class="text-center">
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td class="text-center">
-                    <!-- Edit Button with FontAwesome Icon -->
-                    <a href="javascript:void(0)" class="btn btn-primary mx-1 btn-sm edit-tag-btn" data-id="@item.TagId" data-bs-toggle="modal" data-bs-target="#editTagModal">
-                        <i class="fas fa-pencil-alt"></i>
-                    </a>
-                    <!-- The rest of your buttons like Delete can remain the same -->
-                    <!-- Modify this line in your foreach loop for tags -->
-                    <button class="btn btn-danger mx-1 btn-sm delete-tag-btn" data-id="@item.TagId" data-bs-toggle="modal" data-bs-target="#confirmDeleteTagModal"><i class="fas fa-trash"></i></button>
-                </td>
-            </tr>
-        }
+    <tbody id="tagList">
+        @Html.Partial("_TagListPartial", Model)
     </tbody>
 </table>
 
@@ -103,6 +79,64 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            let debounceTimer;
+            $('#searchInput').on('input', function () {
+                clearTimeout(debounceTimer);
+                const searchValue = $(this).val();
+                debounceTimer = setTimeout(() => {
+                    $.ajax({
+                        url: '@Url.Action("Index", "Tags")',
+                        type: 'GET',
+                        data: { search: searchValue },
+                        success: function (data) {
+                            $('#tagList').html(data);
+                        }
+                    });
+                }, 150); // Adjust delay as needed
+            });
+
+            // Delegated event for opening the edit modal and loading content
+            $('#tagList').on('click', '.edit-tag-btn', function () {
+                var tagId = $(this).data('id');
+                var url = '@Url.Action("Edit", "Tags")/' + tagId;
+                $.get(url, function (data) {
+                    $('#editTagModal .modal-body').html(data);
+                    $('#editTagModal').modal('show');
+                });
+            });
+
+            // Delegated event for delete confirmation modal
+            $('#tagList').on('click', '.delete-tag-btn', function () {
+                var tagId = $(this).data('id');
+                $('#confirmDeleteTagModal').data('id', tagId);
+                $('#confirmDeleteTagModal').modal('show');
+            });
+
+            // AJAX submission for Delete
+            $('#confirmDeleteTagModal').on('click', '.btn-delete-tag-confirm', function () {
+                var tagId = $('#confirmDeleteTagModal').data('id');
+                $.ajax({
+                    type: 'POST',
+                    url: '/Tags/Delete/' + tagId,
+                    headers: {
+                        "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (response) {
+                        $('#confirmDeleteTagModal').modal('hide');
+                        location.reload(); // Or any other logic to update the UI
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error deleting tag: ", xhr.responseText);
+                    }
+                });
+            });
+
+            // AJAX submission for Create and Edit are already inside $(document).ready and do not need to be delegated
+        });
+    </script>
 
     <script>
         $(document).ready(function () {

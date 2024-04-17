@@ -1,0 +1,27 @@
+﻿@model IEnumerable<PlataformaEDUGEP.Models.Tag>
+
+@if (Model.Any())
+{
+    foreach (var item in Model)
+    {
+        <tr>
+            <td class="text-center">
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td class="text-center">
+                <a href="javascript:void(0)" class="btn btn-primary mx-1 btn-sm edit-tag-btn" data-id="@item.TagId" data-bs-toggle="modal" data-bs-target="#editTagModal">
+                    <i class="fas fa-pencil-alt"></i>
+                </a>
+                <button class="btn btn-danger mx-1 btn-sm delete-tag-btn" data-id="@item.TagId" data-bs-toggle="modal" data-bs-target="#confirmDeleteTagModal">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    }
+}
+else
+{
+    <tr>
+        <td colspan="2" class="text-center">Nenhuma etiqueta encontrada</td>
+    </tr>
+}

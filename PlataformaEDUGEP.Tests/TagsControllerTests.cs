@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using PlataformaEDUGEP.Controllers;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,50 +14,88 @@ namespace PlataformaEDUGEP.Tests
 {
     public class TagsControllerTests : IAsyncLifetime
     {
-        private ApplicationDbContext _context;
-        private TagsController _controller;
+        private readonly ApplicationDbContext _context;
+        private readonly TagsController _controller;
 
-        public async Task InitializeAsync()
+        public TagsControllerTests()
         {
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())  // Ensures each test uses a unique DB
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Ensures each test uses a unique DB
                 .Options;
 
             _context = new ApplicationDbContext(options);
+
+            // Initialize the controller and set up a default context
+            _controller = new TagsController(_context);
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            };
+        }
+
+        public async Task InitializeAsync()
+        {
             await _context.Database.EnsureCreatedAsync();
             SeedDatabase();
-
-            _controller = new TagsController(_context);
         }
 
         public async Task DisposeAsync()
         {
             await _context.Database.EnsureDeletedAsync();
-            _context.Dispose();
         }
 
         private void SeedDatabase()
         {
-            if (!_context.Tags.Any())
-            {
-                _context.Tags.AddRange(
-                    new Tag { TagId = 1, Name = "Test1" },
-                    new Tag { TagId = 2, Name = "Test2" }
-                );
-                _context.SaveChanges();
-            }
+            _context.Tags.AddRange(
+                new Tag { TagId = 1, Name = "Test1" },
+                new Tag { TagId = 2, Name = "Test2" }
+            );
+            _context.SaveChanges();
+        }
+
+        private void SetAjaxRequestHeaders()
+        {
+            _controller.ControllerContext.HttpContext.Request.Headers["X-Requested-With"] = "XMLHttpRequest";
         }
 
         [Fact]
-        public async Task Index_ReturnsAViewResult_WithAListOfTags()
+        public async Task Index_WithNoSearchParameter_ReturnsAllTags()
         {
             // Act
-            var result = await _controller.Index();
+            var result = await _controller.Index(null);
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(result);
             var model = Assert.IsAssignableFrom<IEnumerable<Tag>>(viewResult.Model);
             Assert.Equal(2, model.Count());
+        }
+
+        [Fact]
+        public async Task Index_WithSearchParameter_ReturnsFilteredTags()
+        {
+            // Arrange
+            var search = "Test1";
+
+            // Act
+            var result = await _controller.Index(search);
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsAssignableFrom<IEnumerable<Tag>>(viewResult.Model);
+            Assert.Single(model);
+        }
+
+        [Fact]
+        public async Task Index_AjaxRequest_ReturnsPartialView()
+        {
+            // Arrange
+            SetAjaxRequestHeaders();
+
+            // Act
+            var result = await _controller.Index("Test1");
+
+            // Assert
+            Assert.IsType<PartialViewResult>(result);
         }
 
         [Fact]
@@ -74,7 +113,6 @@ namespace PlataformaEDUGEP.Tests
             Assert.Equal(tagId, model.TagId);
         }
 
-        // Add more tests as necessary
         [Fact]
         public async Task Create_Post_ValidData_ReturnsRedirectToIndex()
         {
@@ -119,14 +157,5 @@ namespace PlataformaEDUGEP.Tests
             Assert.Equal("Index", redirectToActionResult.ActionName);
             Assert.False(_context.Tags.Any(t => t.TagId == tagIdToDelete));
         }
-
-        public void Dispose()
-        {
-            _context.Database.EnsureDeleted();
-            _context.Dispose();
-        }
-
-
-
     }
 }

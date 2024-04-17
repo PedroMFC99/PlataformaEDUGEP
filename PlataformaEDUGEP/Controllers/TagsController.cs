@@ -17,11 +17,21 @@ namespace PlataformaEDUGEP.Controllers
 
         // GET: Tags
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search)
         {
-              return _context.Tags != null ? 
-                          View(await _context.Tags.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Tags'  is null.");
+            var tags = _context.Tags.AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                tags = tags.Where(t => EF.Functions.Like(t.Name, $"%{search}%"));  // Ensures case insensitivity depending on the database
+            }
+
+            if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_TagListPartial", await tags.ToListAsync());
+            }
+
+            return View(await tags.ToListAsync());
         }
 
         // GET: Tags/Details/5
