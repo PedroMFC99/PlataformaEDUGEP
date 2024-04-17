@@ -17,6 +17,21 @@ body {
   margin-bottom: 60px;
 }
 
+.min-width-tag {
+    min-width: 150px; /* Adjust the width as needed */
+}
+
+.min-width-actions {
+    min-width: 100px; /* Adjust the width as needed */
+}
+
+/* Optional: Ensure text alignment and prevent wrapping for smaller screens or content */
+th, td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .select2-container--open {
     z-index: 999999 !important; /* Use a high value to ensure it's above other elements */
 }
