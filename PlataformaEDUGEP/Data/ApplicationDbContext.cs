@@ -10,15 +10,15 @@ namespace PlataformaEDUGEP.Data
             : base(options)
         {
         }
-        public DbSet<Folder> Folder { get; set; }
-        public DbSet<StoredFile> StoredFile { get; set; }
+        public virtual DbSet<Folder> Folder { get; set; }
+        public virtual DbSet<StoredFile> StoredFile { get; set; }
         public DbSet<FolderLike> FolderLikes { get; set; }
-        public DbSet<FolderAudit> FolderAudits { get; set; }
-        public DbSet<FileAudit> FileAudits { get; set; }
+        public virtual DbSet<FolderAudit> FolderAudits { get; set; }
+        public virtual DbSet<FileAudit> FileAudits { get; set; }
 
-        public DbSet<Tag> Tags { get; set; }
+        public virtual DbSet<Tag> Tags { get; set; }
 
-        public DbSet<Profile> Profile { get; set; }
+        public virtual DbSet<Profile> Profile { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
