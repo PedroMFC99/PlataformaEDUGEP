@@ -15,39 +15,45 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Manages the password reset process for users. This page model is used within the ASP.NET Core Identity default UI infrastructure.
+    /// This API supports the Identity UI infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
     public class ResetPasswordModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="ResetPasswordModel"/>.
+        /// </summary>
+        /// <param name="userManager">The UserManager for managing users in a persistence store.</param>
         public ResetPasswordModel(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Holds the input data for the form.
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the input model for the form to reset a user's password.
         /// </summary>
         public class InputModel
         {
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// The email address associated with the user account.
+            /// This property must be a valid email address.
             /// </summary>
             [Required]
             [EmailAddress]
             public string Email { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// The new password for the user account.
             /// </summary>
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -55,8 +61,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             public string Password { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// Confirmation of the new password.
             /// </summary>
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
@@ -64,14 +69,18 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// A token to verify the user is authorized to reset their password.
             /// </summary>
             [Required]
             public string Code { get; set; }
 
         }
 
+        /// <summary>
+        /// Handles the GET request to the page. Initializes the form with the reset code if present.
+        /// </summary>
+        /// <param name="code">The reset code needed to verify the password reset request.</param>
+        /// <returns>A page result allowing the user to reset their password if the code is valid; otherwise, a bad request.</returns>
         public IActionResult OnGet(string code = null)
         {
             if (code == null)
@@ -88,6 +97,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             }
         }
 
+        /// <summary>
+        /// Handles the POST request to reset a user's password.
+        /// </summary>
+        /// <returns>A redirect to the password reset confirmation page if successful, otherwise a page displaying validation errors.</returns>
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)

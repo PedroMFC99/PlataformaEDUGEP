@@ -12,11 +12,21 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
 {
+    /// <summary>
+    /// Manages the disabling of two-factor authentication (2FA) for a logged-in user within the Identity area.
+    /// This page model is part of the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+    /// directly from your code. This API supports the Identity UI infrastructure and may change or be removed in future releases.
+    /// </summary>
     public class Disable2faModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<Disable2faModel> _logger;
 
+        /// <summary>
+        /// Constructor initializing services and utilities for handling user management.
+        /// </summary>
+        /// <param name="userManager">Provides the APIs for managing user in a persistence store.</param>
+        /// <param name="logger">A generic interface for logging where the category is the type of the performing class.</param>
         public Disable2faModel(
             UserManager<ApplicationUser> userManager,
             ILogger<Disable2faModel> logger)
@@ -26,12 +36,14 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// A message indicating the status of the 2FA disabling process, displayed to the user upon action completion.
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
 
+        /// <summary>
+        /// Loads the disable 2FA page, verifying if 2FA is already disabled or if the user is invalid.
+        /// </summary>
         public async Task<IActionResult> OnGet()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -48,6 +60,9 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
+        /// <summary>
+        /// Handles the post request to disable 2FA. Validates user existence and 2FA status before disabling.
+        /// </summary>
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);

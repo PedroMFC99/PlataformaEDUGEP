@@ -17,11 +17,20 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Provides the page model for the forgot password page of the site.
+    /// It facilitates users in initiating a password reset request by sending a reset link to their email.
+    /// </summary>
     public class ForgotPasswordModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
 
+        /// <summary>
+        /// Constructor for ForgotPasswordModel.
+        /// </summary>
+        /// <param name="userManager">Provides the APIs for managing user in a persistence store.</param>
+        /// <param name="emailSender">Service to send emails.</param>
         public ForgotPasswordModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
         {
             _userManager = userManager;
@@ -29,27 +38,29 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Holds the data model for the form on the forgot password page.
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the input model for the forgot password form.
         /// </summary>
         public class InputModel
         {
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// Email address of the user who forgot their password.
             /// </summary>
             [Required]
             [EmailAddress]
             public string Email { get; set; }
         }
 
+        /// <summary>
+        /// Handles the post request for the forgot password form.
+        /// If valid, sends a password reset email and redirects to the confirmation page.
+        /// </summary>
+        /// <returns>A redirection to the ForgotPasswordConfirmation page or renders the current page with validation errors.</returns>
         public async Task<IActionResult> OnPostAsync()
         {
             if (ModelState.IsValid)

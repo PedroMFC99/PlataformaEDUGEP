@@ -21,6 +21,9 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Provides mechanisms for handling external logins (e.g., Google, Facebook) for users.
+    /// </summary>
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
@@ -31,6 +34,14 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
 
+        /// <summary>
+        /// Constructor initializing services used for external login processes.
+        /// </summary>
+        /// <param name="signInManager">Manages sign-in operations for users.</param>
+        /// <param name="userManager">Manages user operations in a persistence store.</param>
+        /// <param name="userStore">Abstraction for a store which manages user data.</param>
+        /// <param name="logger">Logger for logging information.</param>
+        /// <param name="emailSender">Service for sending emails.</param>
         public ExternalLoginModel(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
@@ -47,48 +58,52 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// The input model for the page, holding the email for the external login.
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// The display name of the external provider (e.g., Google, Facebook).
         /// </summary>
         public string ProviderDisplayName { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// The URL to return to after signing in.
         /// </summary>
         public string ReturnUrl { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Message indicating the status or result of the operation.
         /// </summary>
         [TempData]
         public string ErrorMessage { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// This class represents the input model used in the external login process. It contains properties that capture user input necessary for completing the external login and registration process.
         /// </summary>
         public class InputModel
         {
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            ///     Email address of the user. This property supports the ASP.NET Core Identity default UI infrastructure
+            ///     and is used to facilitate the external login process.
             /// </summary>
             [Required]
             [EmailAddress]
             public string Email { get; set; }
         }
-        
+
+        /// <summary>
+        /// Redirects to the login page. Placeholder method for handling GET requests.
+        /// </summary>
         public IActionResult OnGet() => RedirectToPage("./Login");
 
+        /// <summary>
+        /// Initiates the external login process.
+        /// </summary>
+        /// <param name="provider">The external provider's name.</param>
+        /// <param name="returnUrl">The URL to return to after the external login is processed.</param>
+        /// <returns>A challenge result that redirects to the external login provider.</returns>
         public IActionResult OnPost(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
@@ -97,6 +112,12 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             return new ChallengeResult(provider, properties);
         }
 
+        /// <summary>
+        /// Callback endpoint for handling the external login information.
+        /// </summary>
+        /// <param name="returnUrl">The URL to return to if the login is successful.</param>
+        /// <param name="remoteError">Error returned from the external provider.</param>
+        /// <returns>An appropriate action result based on the success or failure of the external login.</returns>
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
@@ -139,6 +160,11 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             }
         }
 
+        /// <summary>
+        /// Confirms the account creation after an external login when user information is not yet registered.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after confirming the user account.</param>
+        /// <returns>A redirection to the specified return URL or the confirmation page.</returns>
         public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
@@ -198,6 +224,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             return Page();
         }
 
+        /// <summary>
+        /// Creates a new instance of ApplicationUser.
+        /// </summary>
+        /// <returns>A new instance of ApplicationUser.</returns>
         private ApplicationUser CreateUser()
         {
             try
@@ -212,6 +242,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             }
         }
 
+        /// <summary>
+        /// Retrieves the email store from the user manager, ensuring it supports user email functionality.
+        /// </summary>
+        /// <returns>The email store for managing user emails.</returns>
         private IUserEmailStore<ApplicationUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)

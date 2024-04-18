@@ -12,11 +12,21 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
 {
+    /// <summary>
+    /// Allows a user without a password to set one. This page model supports the ASP.NET Core Identity default UI infrastructure 
+    /// and is not intended to be used directly from your code. This API may change or be removed in future releases.
+    /// </summary>
     public class SetPasswordModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetPasswordModel"/> class.
+        /// </summary>
+        /// <param name="userManager">The <see cref="UserManager{TUser}"/> used to manage user operations such as adding passwords.</param>
+        /// <param name="signInManager">The <see cref="SignInManager{TUser}"/> used to manage sign-in operations.</param>
+        /// <param name="logger">The <see cref="ILogger{TCategoryName}"/> used for logging messages or errors.</param>
         public SetPasswordModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager)
@@ -26,28 +36,24 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Binds the input from the password set form to the model.
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Displays status messages in the user interface, reflecting the outcome of setting the password.
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the data used in the password set form.
         /// </summary>
         public class InputModel
         {
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// The new password set by the user.
             /// </summary>
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -56,8 +62,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             public string NewPassword { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// Confirmation of the new password, must match the new password.
             /// </summary>
             [DataType(DataType.Password)]
             [Display(Name = "Confirm new password")]
@@ -65,6 +70,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             public string ConfirmPassword { get; set; }
         }
 
+        // <summary>
+        /// Loads the page to set a new password if the user does not already have one.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation, including a page result indicating whether the user can set a password.</returns>
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -83,6 +92,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
+        /// <summary>
+        /// Handles the form submission for setting a new password.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation, including a redirect on successful password set or a page result on failure.</returns>
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)

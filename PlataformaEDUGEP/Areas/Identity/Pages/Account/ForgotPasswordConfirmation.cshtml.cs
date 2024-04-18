@@ -8,15 +8,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 {
     /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
+    /// Provides the page model for the confirmation view after a user has initiated a password reset process.
+    /// This page confirms that a password reset link has been sent to the user's email address.
     /// </summary>
     [AllowAnonymous]
     public class ForgotPasswordConfirmation : PageModel
     {
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Handles the GET request to the ForgotPasswordConfirmation page.
+        /// Displays the password reset email confirmation message to the user.
         /// </summary>
         public void OnGet()
         {

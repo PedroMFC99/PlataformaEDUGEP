@@ -17,6 +17,11 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
 {
+    /// <summary>
+    /// Manages the enabling of two-factor authentication using an authenticator application for a logged-in user.
+    /// This page model is part of the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+    /// directly from your code. This API supports the Identity UI infrastructure and may change or be removed in future releases.
+    /// </summary>
     public class EnableAuthenticatorModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -25,6 +30,12 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
 
         private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EnableAuthenticatorModel"/> class.
+        /// </summary>
+        /// <param name="userManager">Provides the APIs for managing user in a persistence store.</param>
+        /// <param name="logger">Represents a type used to perform logging.</param>
+        /// <param name="urlEncoder">Encodes information in a URL-safe format.</param>
         public EnableAuthenticatorModel(
             UserManager<ApplicationUser> userManager,
             ILogger<EnableAuthenticatorModel> logger,
@@ -36,47 +47,40 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// The shared key used to set up an authenticator application.
         /// </summary>
         public string SharedKey { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// The URI to display a QR code for configuring an authenticator application.
         /// </summary>
         public string AuthenticatorUri { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Two-factor authentication recovery codes returned to the user for backup purposes.
         /// </summary>
         [TempData]
         public string[] RecoveryCodes { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// A message indicating the status of the last operation.
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// The input model for the page, which includes the verification code from the authenticator application.
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the data needed to enable an authenticator application.
         /// </summary>
         public class InputModel
         {
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// The verification code from the authenticator application used to verify setup.
             /// </summary>
             [Required]
             [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -85,6 +89,9 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             public string Code { get; set; }
         }
 
+        /// <summary>
+        /// Handles the GET request to the page, initializes the page state with the authenticator key and QR code URL.
+        /// </summary>
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -98,6 +105,9 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
+        /// <summary>
+        /// Handles the POST request to enable the authenticator. Verifies the provided verification code and enables 2FA for the user.
+        /// </summary>
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -143,6 +153,9 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             }
         }
 
+        /// <summary>
+        /// Loads the shared key and QR code URI for the user to configure their authenticator application.
+        /// </summary>
         private async Task LoadSharedKeyAndQrCodeUriAsync(ApplicationUser user)
         {
             // Load the authenticator key & QR code URI to display on the form
@@ -159,6 +172,9 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             AuthenticatorUri = GenerateQrCodeUri(email, unformattedKey);
         }
 
+        /// <summary>
+        /// Formats the authenticator key into groups of four characters for easier reading.
+        /// </summary>
         private string FormatKey(string unformattedKey)
         {
             var result = new StringBuilder();
@@ -176,6 +192,9 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             return result.ToString().ToLowerInvariant();
         }
 
+        /// <summary>
+        /// Generates a QR code URI for the authenticator app based on the key and the user's email address.
+        /// </summary>
         private string GenerateQrCodeUri(string email, string unformattedKey)
         {
             return string.Format(

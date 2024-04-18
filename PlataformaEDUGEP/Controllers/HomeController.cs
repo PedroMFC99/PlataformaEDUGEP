@@ -5,33 +5,42 @@ using System.Diagnostics;
 
 namespace PlataformaEDUGEP.Controllers
 {
+    /// <summary>
+    /// Controller responsible for handling the home page and related actions.
+    /// </summary>
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="HomeController"/> class.
+        /// </summary>
+        /// <param name="logger">The logger for capturing logging information.</param>
+        /// <param name="context">The database context used for data access operations.</param>
         public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
         {
             _logger = logger;
             _context = context;
         }
 
+        /// <summary>
+        /// Displays the home page.
+        /// </summary>
+        /// <returns>The index view populated with counts of users, folders, files, and role-specific user counts.</returns>
         public IActionResult Index()
         {
             var userCount = _context.Users.Count();
             var folderCount = _context.Folder.Count();
             var fileCount = _context.StoredFile.Count();
 
-            // Assuming that you have DbSet<IdentityRole> Roles and DbSet<IdentityUserRole<string>> UserRoles in your DbContext
             var teacherRole = _context.Roles.FirstOrDefault(r => r.Name == "Teacher");
             var studentRole = _context.Roles.FirstOrDefault(r => r.Name == "Student");
 
-            // Get the count of users in the 'Teacher' role
             var teacherCount = teacherRole != null
                 ? _context.UserRoles.Count(ur => ur.RoleId == teacherRole.Id)
                 : 0;
 
-            // Get the count of users in the 'Student' role
             var studentCount = studentRole != null
                 ? _context.UserRoles.Count(ur => ur.RoleId == studentRole.Id)
                 : 0;
@@ -45,23 +54,38 @@ namespace PlataformaEDUGEP.Controllers
             return View();
         }
 
-
+        /// <summary>
+        /// Displays the Privacy policy page.
+        /// </summary>
+        /// <returns>The Privacy view.</returns>
         public IActionResult Privacy()
         {
             return View();
         }
 
+        /// <summary>
+        /// Displays the About page.
+        /// </summary>
+        /// <returns>The About view.</returns>
         public IActionResult About()
         {
             return View();
         }
 
+        /// <summary>
+        /// Handles HTTP errors by displaying a custom error view.
+        /// </summary>
+        /// <returns>An Error view displaying the error details.</returns>
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
+        /// <summary>
+        /// Handles HTTP 404 errors by displaying a custom 404 error page.
+        /// </summary>
+        /// <returns>A custom 404 Error view.</returns>
         public IActionResult Error404()
         {
             return View();

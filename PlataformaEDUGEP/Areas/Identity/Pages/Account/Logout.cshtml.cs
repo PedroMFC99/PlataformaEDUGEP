@@ -13,17 +13,32 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Manages user logout processes.
+    /// This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+    /// directly from your code. This API may change or be removed in future releases.
+    /// </summary>
     public class LogoutModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LogoutModel> _logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LogoutModel"/> class.
+        /// </summary>
+        /// <param name="signInManager">The sign-in manager for handling user sign-in operations.</param>
+        /// <param name="logger">The logger for logging information about user logouts.</param>
         public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger)
         {
             _signInManager = signInManager;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Handles the post request to log out a user.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after logging out, if specified.</param>
+        /// <returns>A <see cref="IActionResult"/> that redirects the user either to the returnUrl or to the default page.</returns>
         public async Task<IActionResult> OnPost(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();

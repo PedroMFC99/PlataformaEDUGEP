@@ -6,16 +6,27 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Controllers
 {
+    /// <summary>
+    /// Manages operations related to tags including creating, editing, deleting, and displaying tags.
+    /// </summary>
     public class TagsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TagsController"/> class.
+        /// </summary>
+        /// <param name="context">The database context used for tag management.</param>
         public TagsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Tags
+        /// <summary>
+        /// Displays the main view of tags, optionally filtered by a search string.
+        /// </summary>
+        /// <param name="search">The search term used to filter tags.</param>
+        /// <returns>The view displaying a list of tags.</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(string search)
         {
@@ -34,7 +45,11 @@ namespace PlataformaEDUGEP.Controllers
             return View(await tags.ToListAsync());
         }
 
-        // GET: Tags/Details/5
+        /// <summary>
+        /// Displays details for a specific tag.
+        /// </summary>
+        /// <param name="id">The ID of the tag to display.</param>
+        /// <returns>A view showing tag details or NotFound if the tag does not exist.</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
@@ -47,7 +62,10 @@ namespace PlataformaEDUGEP.Controllers
             return View(tag);
         }
 
-        // GET: Tags/Create
+        /// <summary>
+        /// Provides a view to create a new tag.
+        /// </summary>
+        /// <returns>A view with a form to create a new tag.</returns>
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
@@ -58,9 +76,11 @@ namespace PlataformaEDUGEP.Controllers
             return View();
         }
 
-        // POST: Tags/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Handles the creation of a new tag.
+        /// </summary>
+        /// <param name="tag">The tag to create.</param>
+        /// <returns>Redirects to the index if successful, otherwise returns the view with errors.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -75,7 +95,11 @@ namespace PlataformaEDUGEP.Controllers
             return View(tag);
         }
 
-        // GET: Tags/Edit/5
+        /// <summary>
+        /// Provides a view to edit an existing tag.
+        /// </summary>
+        /// <param name="id">The ID of the tag to edit.</param>
+        /// <returns>A view with a form to edit the tag or NotFound if the tag does not exist.</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -99,9 +123,12 @@ namespace PlataformaEDUGEP.Controllers
         }
 
 
-        // POST: Tags/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        /// <summary>
+        /// Handles the update of an existing tag.
+        /// </summary>
+        /// <param name="id">The ID of the tag to update.</param>
+        /// <param name="tag">The updated tag data.</param>
+        /// <returns>Redirects to the index if successful, otherwise returns the view with errors.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -140,7 +167,11 @@ namespace PlataformaEDUGEP.Controllers
             }
         }
 
-        // GET: Tags/Delete/5
+        /// <summary>
+        /// Displays a confirmation dialog for deleting a tag.
+        /// </summary>
+        /// <param name="id">The ID of the tag to delete.</param>
+        /// <returns>A view asking for confirmation to delete the tag or NotFound if the tag does not exist.</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -153,6 +184,11 @@ namespace PlataformaEDUGEP.Controllers
             return View(tag);
         }
 
+        /// <summary>
+        /// Handles the deletion of a tag after confirmation.
+        /// </summary>
+        /// <param name="id">The ID of the tag to delete.</param>
+        /// <returns>Redirects to the index if successful.</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
@@ -169,6 +205,11 @@ namespace PlataformaEDUGEP.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Retrieves a tag by its ID from the database.
+        /// </summary>
+        /// <param name="id">The ID of the tag to retrieve.</param>
+        /// <returns>The tag if found; otherwise, null.</returns>
         private async Task<Tag> GetTagById(int? id)
         {
             if (id == null)
@@ -179,6 +220,11 @@ namespace PlataformaEDUGEP.Controllers
             return await _context.Tags.FindAsync(id);
         }
 
+        /// <summary>
+        /// Checks if a tag exists in the database.
+        /// </summary>
+        /// <param name="id">The ID of the tag to check.</param>
+        /// <returns>True if the tag exists, false otherwise.</returns>
         private async Task<bool> TagExists(int id)
         {
             return await _context.Tags.AnyAsync(e => e.TagId == id);

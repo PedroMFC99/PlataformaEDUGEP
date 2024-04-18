@@ -13,11 +13,21 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
 {
+    /// <summary>
+    /// Manages the user profile information in an ASP.NET Core Identity system.
+    /// This page model supports the Identity UI infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
     public class IndexModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="IndexModel"/>.
+        /// </summary>
+        /// <param name="userManager">Provides the APIs for managing users in a persistence store.</param>
+        /// <param name="signInManager">Provides the APIs for user sign in.</param>
         public IndexModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager)
@@ -27,28 +37,24 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Gets or sets the user's username.
         /// </summary>
         public string Username { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Gets or sets the status message.
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Gets or sets the input model.
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the data needed from the user to manage their profile.
         /// </summary>
         public class InputModel
         {
@@ -64,6 +70,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             public string AboutMe { get; set; } 
         }
 
+        /// <summary>
+        /// Loads user data into the model for display.
+        /// </summary>
+        /// <param name="user">The user whose information is to be loaded.</param>
         private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
@@ -81,6 +91,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             };
         }
 
+        /// <summary>
+        /// Loads the user's profile data asynchronously when the page is accessed.
+        /// </summary>
+        /// <returns>The page result.</returns>
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -93,6 +107,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
+        /// <summary>
+        /// Updates the user's profile data based on the form submission.
+        /// </summary>
+        /// <returns>The page result.</returns>
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);

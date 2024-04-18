@@ -12,6 +12,11 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
 {
+    /// <summary>
+    /// Manages two-factor authentication (2FA) settings for a user in an ASP.NET Core Identity system.
+    /// This page model supports the Identity UI infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
     public class TwoFactorAuthenticationModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -27,37 +32,36 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Indicates if the user has configured an authenticator app.
         /// </summary>
         public bool HasAuthenticator { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// The number of recovery codes left that the user can use to access their account in case of lost two-factor devices.
         /// </summary>
         public int RecoveryCodesLeft { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Indicates whether 2FA is enabled for the user's account.
         /// </summary>
         [BindProperty]
         public bool Is2faEnabled { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Indicates whether the current client machine is remembered as trusted and doesn't require 2FA codes on login.
         /// </summary>
         public bool IsMachineRemembered { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Displays status messages in the user interface, reflecting the outcome of the user's actions related to 2FA settings.
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
 
+        /// <summary>
+        /// Handles the HTTP GET request. It loads the user's two-factor authentication status and settings.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation, including a page result displaying the 2FA status.</returns>
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -74,6 +78,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
+        /// <summary>
+        /// Handles the HTTP POST request to forget the current browser, requiring 2FA again on the next login from this device.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation, including a redirect to refresh the page with an updated status message.</returns>
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);

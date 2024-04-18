@@ -18,6 +18,11 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Provides the page model for the login process, including handling both local and external authentication methods.
+    /// This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
     public class LoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -30,61 +35,56 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Binds the input from the user for the login process.
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// List of external authentication schemes available for login.
         /// </summary>
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// The URL to return to after successfully logging in.
         /// </summary>
         public string ReturnUrl { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Displays error messages related to the login process.
         /// </summary>
         [TempData]
         public string ErrorMessage { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Encapsulates the user input data necessary for logging in.
         /// </summary>
         public class InputModel
         {
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// User's email address. Required for login.
             /// </summary>
             [Required(ErrorMessage = "O email é obrigatório.")]
             [EmailAddress]
             public string Email { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// User's password. Required for login.
             /// </summary>
             [Required(ErrorMessage = "A palavra-passe é obrigatória.")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// Indicates whether the authentication session should remember the user after the browser is closed.
             /// </summary>
             [Display(Name = "Lembrar?")]
             public bool RememberMe { get; set; }
         }
 
+        /// <summary>
+        /// Handles GET requests to the login page by preparing external logins and handling any error messages.
+        /// </summary>
         public async Task OnGetAsync(string returnUrl = null)
         {
             if (!string.IsNullOrEmpty(ErrorMessage))
@@ -102,6 +102,9 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
         }
 
+        /// <summary>
+        /// Handles POST requests to the login page by attempting to sign in the user with the provided credentials.
+        /// </summary>
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");

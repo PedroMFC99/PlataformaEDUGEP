@@ -9,6 +9,9 @@ using PlataformaEDUGEP.Services;
 
 namespace PlataformaEDUGEP.Controllers
 {
+    /// <summary>
+    /// Handles all folder-related interactions within the platform.
+    /// </summary>
     public class FoldersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,6 +19,13 @@ namespace PlataformaEDUGEP.Controllers
         private readonly IFolderAuditService _folderAuditService;
         private readonly IWebHostEnvironment _env;
 
+        /// <summary>
+        /// Constructor for the FoldersController.
+        /// </summary>
+        /// <param name="context">The application's database context.</param>
+        /// <param name="userManager">Manager for handling user-related operations.</param>
+        /// <param name="folderAuditService">Service for logging folder-related actions.</param>
+        /// <param name="env">Provides information about the web hosting environment.</param>
         public FoldersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IFolderAuditService folderAuditService, IWebHostEnvironment env)
         {
             _context = context;
@@ -24,6 +34,13 @@ namespace PlataformaEDUGEP.Controllers
             _env = env;
         }
 
+        /// <summary>
+        /// Displays a list of all folders, potentially filtered and sorted.
+        /// </summary>
+        /// <param name="searchString">Search filter for folder names.</param>
+        /// <param name="sortOrder">Sort order for the displayed list.</param>
+        /// <param name="selectedTagIds">Filter for folders tagged with specific tags.</param>
+        /// <returns>A view of the index page showing folders.</returns>
         [Authorize]
         public async Task<IActionResult> Index(string searchString, string sortOrder, int[] selectedTagIds)
         {
@@ -84,7 +101,11 @@ namespace PlataformaEDUGEP.Controllers
             return View(folderList);
         }
 
-
+        /// <summary>
+        /// Searches folders by name and returns a JSON list of folders that match the search term.
+        /// </summary>
+        /// <param name="searchString">The search string to filter folder names.</param>
+        /// <returns>A JSON response containing folders that match the search criteria.</returns>
         public async Task<IActionResult> SearchFolders(string searchString)
         {
             var foldersQuery = _context.Folder.AsQueryable();
@@ -99,6 +120,11 @@ namespace PlataformaEDUGEP.Controllers
             return Json(folders);
         }
 
+        /// <summary>
+        /// Provides a JSON response containing tags that match the given search term.
+        /// </summary>
+        /// <param name="searchTerm">The search term to filter tags.</param>
+        /// <returns>A JSON response with tags matching the search criteria.</returns>
         [HttpGet]
         public async Task<IActionResult> GetTags(string searchTerm)
         {
@@ -115,7 +141,14 @@ namespace PlataformaEDUGEP.Controllers
         }
 
 
-        // GET: Folders/Details/5
+        /// <summary>
+        /// Displays details for a specific folder, including files and associated information.
+        /// </summary>
+        /// <param name="id">The folder ID for which details are displayed.</param>
+        /// <param name="fileTitle">Filter for file titles within the folder.</param>
+        /// <param name="addedBy">Filter for files added by specific users.</param>
+        /// <param name="sortOrder">Sort order for files within the folder.</param>
+        /// <returns>A view displaying folder details.</returns>
         [Authorize]
         public async Task<IActionResult> Details(int? id, string fileTitle, string addedBy, string sortOrder)
         {
@@ -181,7 +214,10 @@ namespace PlataformaEDUGEP.Controllers
             return View(folder);
         }
 
-        // GET: Folders/Create
+        /// <summary>
+        /// Returns a modal view to create a new folder.
+        /// </summary>
+        /// <returns>A partial view representing the modal.</returns>
         [Authorize(Roles = "Teacher, Admin")]
         public IActionResult CreateModal()
         {
@@ -190,10 +226,12 @@ namespace PlataformaEDUGEP.Controllers
         }
 
 
-        // POST: Folders/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        // POST: Folders/Create
+        /// <summary>
+        /// Handles the creation of a new folder.
+        /// </summary>
+        /// <param name="folder">The folder data bound from the form.</param>
+        /// <param name="SelectedTagIds">Tags selected for the folder.</param>
+        /// <returns>Redirects to the index view after creation or returns the view with errors.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher, Admin")]
@@ -242,7 +280,11 @@ namespace PlataformaEDUGEP.Controllers
             return View(folder);
         }
 
-
+        /// <summary>
+        /// Returns a modal view for editing a folder.
+        /// </summary>
+        /// <param name="id">The ID of the folder to edit.</param>
+        /// <returns>A partial view representing the edit modal if found, otherwise NotFound.</returns>
         [Authorize(Roles = "Teacher, Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -263,7 +305,13 @@ namespace PlataformaEDUGEP.Controllers
             return PartialView("_EditPartial", folder);
         }
 
-
+        /// <summary>
+        /// Handles the submission of folder edits.
+        /// </summary>
+        /// <param name="id">The ID of the folder being edited.</param>
+        /// <param name="folder">The folder data bound from the form.</param>
+        /// <param name="SelectedTagIds">Tags selected for the folder.</param>
+        /// <returns>Redirects to the index view if successful, otherwise returns the view with errors.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher, Admin")]
@@ -319,10 +367,11 @@ namespace PlataformaEDUGEP.Controllers
             return View(folder);
         }
 
-
-
-
-        // GET: Folders/Delete/5
+        // <summary>
+        /// Displays a confirmation view for deleting a folder.
+        /// </summary>
+        /// <param name="id">The ID of the folder to delete.</param>
+        /// <returns>The delete confirmation view.</returns>
         [Authorize(Roles = "Teacher, Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -341,8 +390,11 @@ namespace PlataformaEDUGEP.Controllers
             return View(folder);
         }
 
-        // POST: Folders/Delete/5
-        // POST: Folders/Delete/5
+        /// <summary>
+        /// Handles the confirmed deletion of a folder, removing it and any associated files.
+        /// </summary>
+        /// <param name="id">The ID of the folder to delete.</param>
+        /// <returns>Redirects to the index view after deletion.</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher, Admin")]
@@ -380,12 +432,22 @@ namespace PlataformaEDUGEP.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Checks if a folder exists in the database.
+        /// </summary>
+        /// <param name="id">The ID of the folder to check.</param>
+        /// <returns>True if the folder exists, false otherwise.</returns>
         [Authorize]
         private bool FolderExists(int id)
         {
             return (_context.Folder?.Any(e => e.FolderId == id)).GetValueOrDefault();
         }
 
+        /// <summary>
+        /// Toggles the like status of a folder for the current user.
+        /// </summary>
+        /// <param name="folderId">The ID of the folder to toggle like status.</param>
+        /// <returns>Redirects back to the index view.</returns>
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> ToggleLike(int folderId)
@@ -408,6 +470,12 @@ namespace PlataformaEDUGEP.Controllers
             return RedirectToAction(nameof(Index)); // Adjust as needed
         }
 
+        /// <summary>
+        /// Toggles the like status of a folder for the current user and redirects back to a specific returnUrl or defaults to the Favorites view.
+        /// </summary>
+        /// <param name="folderId">The ID of the folder to toggle like status.</param>
+        /// <param name="returnUrl">The URL to redirect to after toggling the like status.</param>
+        /// <returns>Redirects to the given returnUrl or to the Favorites view if no returnUrl is provided or if it's not valid.</returns>
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> ToggleLikeFavorites(int folderId, string returnUrl = null)
@@ -439,7 +507,11 @@ namespace PlataformaEDUGEP.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Provides an interface to manage favorite folders for a user.
+        /// </summary>
+        /// <param name="searchString">Optional filter for folder names.</param>
+        /// <returns>A view displaying favorite folders.</returns>
         [Authorize]
         public async Task<IActionResult> Favorites(string searchString)
         {
@@ -482,6 +554,11 @@ namespace PlataformaEDUGEP.Controllers
             return View(folderList);
         }
 
+        /// <summary>
+        /// Deletes a folder from the user's favorites and redirects to the Favorites view.
+        /// </summary>
+        /// <param name="id">The ID of the folder to be removed from favorites.</param>
+        /// <returns>Redirects to the Favorites view after the folder is removed.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher, Admin")]
@@ -505,7 +582,11 @@ namespace PlataformaEDUGEP.Controllers
             return RedirectToAction("Favorites");
         }
 
-
+        /// <summary>
+        /// Confirms and processes the deletion of a folder from the Favorites list, redirecting to the Favorites view upon completion.
+        /// </summary>
+        /// <param name="id">The ID of the folder to be permanently deleted from favorites.</param>
+        /// <returns>Redirects to the Favorites view after successful deletion.</returns>
         [HttpPost, ActionName("DeleteConfirmed")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher, Admin")]
@@ -526,7 +607,16 @@ namespace PlataformaEDUGEP.Controllers
             return RedirectToAction(nameof(Favorites));
         }
 
-
+        /// <summary>
+        /// Manages the audit log for folder-related actions.
+        /// </summary>
+        /// <param name="searchUser">Filter for user names in logs.</param>
+        /// <param name="searchAction">Filter for action types in logs.</param>
+        /// <param name="searchFolderName">Filter for folder names in logs.</param>
+        /// <param name="sortOrder">Sort order for the logs.</param>
+        /// <param name="pageNumber">The current page number in pagination.</param>
+        /// <param name="pageSize">The number of records per page in pagination.</param>
+        /// <returns>A view displaying the audit log with optional filters and pagination.</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AuditLog(string searchUser = "", string searchAction = "", string searchFolderName = "", string sortOrder = "", int pageNumber = 1, int pageSize = 10)
         {
@@ -592,8 +682,12 @@ namespace PlataformaEDUGEP.Controllers
             return View(audits);
         }
 
+        /// <summary>
+        /// Clears the audit log for folders.
+        /// </summary>
+        /// <returns>A JSON result indicating the success or failure of the operation.</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")] // Ensure only admins can perform this action
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ClearAuditLog()
         {
             var allAudits = _context.FolderAudits.ToList();

@@ -11,6 +11,9 @@ using PlataformaEDUGEP.Services;
 
 namespace PlataformaEDUGEP.Controllers
 {
+    /// <summary>
+    /// Controller responsible for handling operations related to stored files.
+    /// </summary>
     public class StoredFilesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,6 +22,14 @@ namespace PlataformaEDUGEP.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileAuditService _fileAuditService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StoredFilesController"/> class.
+        /// </summary>
+        /// <param name="context">Database context.</param>
+        /// <param name="configuration">Application configuration.</param>
+        /// <param name="env">Web hosting environment.</param>
+        /// <param name="userManager">User manager for handling user-related operations.</param>
+        /// <param name="fileAuditService">Service for logging file-related actions.</param>
         public StoredFilesController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment env, UserManager<ApplicationUser> userManager, IFileAuditService fileAuditService)
         {
             _context = context;
@@ -28,7 +39,10 @@ namespace PlataformaEDUGEP.Controllers
             _fileAuditService = fileAuditService;
         }
 
-        // GET: StoredFiles
+        /// <summary>
+        /// Displays the index page listing all stored files.
+        /// </summary>
+        /// <returns>The index view.</returns>
         [Authorize]
         public async Task<IActionResult> Index()
         {
@@ -36,7 +50,11 @@ namespace PlataformaEDUGEP.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: StoredFiles/Details/5
+        /// <summary>
+        /// Displays the details of a specific stored file.
+        /// </summary>
+        /// <param name="id">The ID of the stored file.</param>
+        /// <returns>The details view for the stored file.</returns>
         [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
@@ -56,7 +74,11 @@ namespace PlataformaEDUGEP.Controllers
             return View(storedFile);
         }
 
-        // GET: StoredFiles/Create
+         /// <summary>
+        /// Displays the view to create a new stored file.
+        /// </summary>
+        /// <param name="folderId">The ID of the folder where the file will be stored.</param>
+        /// <returns>The create view.</returns>
         [Authorize(Roles = "Admin, Teacher")]
         public IActionResult Create(int? folderId)
         {
@@ -80,6 +102,13 @@ namespace PlataformaEDUGEP.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Processes the request to create a new stored file.
+        /// </summary>
+        /// <param name="fileData">The file data uploaded by the user.</param>
+        /// <param name="storedFileName">The name to store the file as.</param>
+        /// <param name="folderId">The ID of the folder where the file will be stored.</param>
+        /// <returns>A redirect to the created file's details page or returns to the create view with errors.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Teacher")]
@@ -132,6 +161,11 @@ namespace PlataformaEDUGEP.Controllers
             return RedirectToAction("Details", "Folders", new { id = folderId });
         }
 
+        /// <summary>
+        /// Provides functionality to download a file stored in the system.
+        /// </summary>
+        /// <param name="fileName">The name of the file to download.</param>
+        /// <returns>The file as a downloadable object.</returns>
         public async Task<IActionResult> DownloadFile(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
@@ -162,6 +196,11 @@ namespace PlataformaEDUGEP.Controllers
             return File(fileStream, contentType, originalFileName);
         }
 
+        /// <summary>
+        /// Retrieves the MIME content type of a file based on its file extension.
+        /// </summary>
+        /// <param name="path">The file path for which to retrieve the content type.</param>
+        /// <returns>The MIME type as a string. Defaults to 'application/octet-stream' if the type cannot be determined.</returns>
         private string GetContentType(string path)
         {
             var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
@@ -172,6 +211,11 @@ namespace PlataformaEDUGEP.Controllers
             return contentType;
         }
 
+        /// <summary>
+        /// Provides a file preview for files stored on the server.
+        /// </summary>
+        /// <param name="fileName">The name of the file to preview.</param>
+        /// <returns>A file result that renders the file inline in the browser, if found; otherwise, a NotFound result.</returns>
         public async Task<IActionResult> PreviewFile(string fileName)
         {
             if (string.IsNullOrEmpty(fileName))
@@ -206,7 +250,11 @@ namespace PlataformaEDUGEP.Controllers
         }
 
 
-        // GET: StoredFiles/Details/5
+        /// <summary>
+        /// Displays the view for editing an existing stored file.
+        /// </summary>
+        /// <param name="id">The ID of the stored file to edit.</param>
+        /// <returns>The edit view for the stored file.</returns>
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -230,7 +278,14 @@ namespace PlataformaEDUGEP.Controllers
             return View(storedFile);
         }
 
-
+        /// <summary>
+        /// Processes the request to edit an existing stored file.
+        /// </summary>
+        /// <param name="id">The ID of the stored file to update.</param>
+        /// <param name="newFileData">The new file data if uploaded by the user.</param>
+        /// <param name="storedFileTitle">The new title for the stored file.</param>
+        /// <param name="folderId">The ID of the folder to move the file to, if changed.</param>
+        /// <returns>A redirect to the updated file's details page or returns to the edit view with errors.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Teacher")]
@@ -334,7 +389,11 @@ namespace PlataformaEDUGEP.Controllers
             return Json(new { success = true, message = "File updated successfully." });
         }
 
-        // GET: StoredFiles/Delete/5
+        /// <summary>
+        /// Displays the view for deleting a stored file.
+        /// </summary>
+        /// <param name="id">The ID of the stored file to delete.</param>
+        /// <returns>The delete confirmation view.</returns>
         [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -354,7 +413,11 @@ namespace PlataformaEDUGEP.Controllers
             return View(storedFile);
         }
 
-        // POST: StoredFiles/Delete/5
+        /// <summary>
+        /// Processes the request to delete a stored file from the system.
+        /// </summary>
+        /// <param name="id">The ID of the stored file to delete.</param>
+        /// <returns>A redirect to the index page of stored files.</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Teacher")]
@@ -392,7 +455,11 @@ namespace PlataformaEDUGEP.Controllers
             return RedirectToAction("Details", "Folders", new { id = storedFile.FolderId });
         }
 
-
+        /// <summary>
+        /// Handles the deletion of a file via an AJAX request.
+        /// </summary>
+        /// <param name="id">The ID of the file to delete.</param>
+        /// <returns>A JSON response indicating success or failure of the deletion.</returns>
         [HttpPost]
         [Authorize(Roles = "Admin, Teacher")]
         public async Task<IActionResult> AjaxDeleteFile(int id)
@@ -428,6 +495,17 @@ namespace PlataformaEDUGEP.Controllers
             return Json(new { success = true, message = "File deleted successfully." });
         }
 
+        /// <summary>
+        /// Displays a log of all file audits, with options for filtering and sorting.
+        /// </summary>
+        /// <param name="searchUser">Filter audits by user name.</param>
+        /// <param name="searchAction">Filter audits by action type.</param>
+        /// <param name="searchFileTitle">Filter audits by file title.</param>
+        /// <param name="searchFolderName">Filter audits by folder name.</param>
+        /// <param name="sortOrder">Sort order for the audit log entries.</param>
+        /// <param name="page">Current page for pagination.</param>
+        /// <param name="pageSize">Number of items per page for pagination.</param>
+        /// <returns>The view displaying the filtered and sorted audit logs.</returns>
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> FileAuditLog(string searchUser = "", string searchAction = "", string searchFileTitle = "", string searchFolderName = "", string sortOrder = "time_desc", int page = 1, int pageSize = 10)
         {
@@ -496,8 +574,12 @@ namespace PlataformaEDUGEP.Controllers
             return View(audits);
         }
 
+        /// <summary>
+        /// Deletes all file audits from the system.
+        /// </summary>
+        /// <returns>A JSON response indicating success or failure of the deletion.</returns>
         [HttpPost]
-        [Authorize(Roles = "Admin")] // Ensure this action is secured and accessible only by authorized roles
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAllFileAudits()
         {
             try
@@ -519,7 +601,11 @@ namespace PlataformaEDUGEP.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Checks if a specific file exists in the database.
+        /// </summary>
+        /// <param name="id">The ID of the file to check.</param>
+        /// <returns><c>true</c> if the file exists; otherwise, <c>false</c>.</returns>
         [Authorize]
         private bool StoredFileExists(int id)
         {

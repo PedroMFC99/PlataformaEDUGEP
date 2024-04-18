@@ -15,12 +15,22 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
 {
+    /// <summary>
+    /// Manages the external logins for a user's account. This page model is part of the ASP.NET Core Identity default UI infrastructure
+    /// and is not intended to be used directly from your code. This API supports the Identity UI infrastructure and may change or be removed in future releases.
+    /// </summary>
     public class ExternalLoginsModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IUserStore<ApplicationUser> _userStore;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExternalLoginsModel"/>.
+        /// </summary>
+        /// <param name="userManager">Provides the APIs for managing user in a persistence store.</param>
+        /// <param name="signInManager">Provides the APIs for user sign in.</param>
+        /// <param name="userStore">Provides an abstraction for a store which manages user accounts.</param>
         public ExternalLoginsModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
@@ -32,30 +42,29 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Gets the list of current external logins associated with the user.
         /// </summary>
         public IList<UserLoginInfo> CurrentLogins { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Gets the list of available external authentication schemes that are not yet linked to the user.
         /// </summary>
         public IList<AuthenticationScheme> OtherLogins { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Indicates whether the remove button should be shown on the page for external logins.
         /// </summary>
         public bool ShowRemoveButton { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// A message indicating the status of the last operation.
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
 
+        /// <summary>
+        /// Handle the get request to load the page data.
+        /// </summary>
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -79,6 +88,11 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
+        // <summary>
+        /// Handles the post request to remove an external login from the user's account.
+        /// </summary>
+        /// <param name="loginProvider">The external login provider's name.</param>
+        /// <param name="providerKey">The unique key provided by the external login provider for the user's login.</param>
         public async Task<IActionResult> OnPostRemoveLoginAsync(string loginProvider, string providerKey)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -99,6 +113,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             return RedirectToPage();
         }
 
+        /// <summary>
+        /// Handles the post request to initiate linking a new external login to the user's account.
+        /// </summary>
+        /// <param name="provider">The external login provider's name.</param>
         public async Task<IActionResult> OnPostLinkLoginAsync(string provider)
         {
             // Clear the existing external cookie to ensure a clean login process
@@ -110,6 +128,9 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             return new ChallengeResult(provider, properties);
         }
 
+        /// <summary>
+        /// Handles the callback for the link login, completing the process of adding a new external login.
+        /// </summary>
         public async Task<IActionResult> OnGetLinkLoginCallbackAsync()
         {
             var user = await _userManager.GetUserAsync(User);

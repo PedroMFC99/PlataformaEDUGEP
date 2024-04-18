@@ -23,6 +23,11 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Manages user registration processes.
+    /// This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+    /// directly from your code. This API may change or be removed in future releases.
+    /// </summary>
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -33,6 +38,15 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly IConfiguration _configuration;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RegisterModel"/> class.
+        /// </summary>
+        /// <param name="userManager">The user manager for handling user-related operations.</param>
+        /// <param name="userStore">The user store for managing user storage.</param>
+        /// <param name="signInManager">The sign-in manager for handling user sign-in operations.</param>
+        /// <param name="logger">The logger for logging information about user registration.</param>
+        /// <param name="emailSender">The email sender for sending emails to users.</param>
+        /// <param name="configuration">The configuration where special codes and other configurations are stored.</param>
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
@@ -51,27 +65,23 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the input model for the registration form.
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the URL to return to after registering, if any.
         /// </summary>
         public string ReturnUrl { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the list of external authentication schemes available.
         /// </summary>
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the input fields for user registration.
         /// </summary>
         public class InputModel
         {
@@ -98,8 +108,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             [Display(Name = "Código especial")]
             public string SpecialCode { get; set; } // No longer required for all users}
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// Email of the user.
             /// </summary>
             [Required(ErrorMessage = "O email é obrigatório.")]
             [EmailAddress]
@@ -107,8 +116,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// User's password.
             /// </summary>
             [Required(ErrorMessage = "A palavra-passe é obrigatória.")]
             [StringLength(100, ErrorMessage = "A {0} tem de ser pelo menos {2} e no máximo {1} caratéres.", MinimumLength = 6)]
@@ -117,8 +125,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             public string Password { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// Confirmation of the user's password (replicate).
             /// </summary>
             [Required(ErrorMessage = "A confirmação da palavra-passe é obrigatória.")]
             [DataType(DataType.Password)]
@@ -127,13 +134,21 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
         }
 
-
+        /// <summary>
+        /// Handles the GET request for the registration page, initializing necessary data.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after registration, if any.</param>
         public async Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
+        /// <summary>
+        /// Handles the POST request for the registration page, attempting to register a new user.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after a successful registration, if any.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -214,8 +229,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             return Page();
         }
 
-
-
+        /// <summary>
+        /// Creates a new instance of the <see cref="ApplicationUser"/> type.
+        /// </summary>
+        /// <returns>A new instance of <see cref="ApplicationUser"/>.</returns>
         private ApplicationUser CreateUser()
         {
             try
@@ -230,6 +247,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             }
         }
 
+        /// <summary>
+        /// Retrieves the user email store from the user manager.
+        /// </summary>
+        /// <returns>The email store used by the user manager.</returns>
         private IUserEmailStore<ApplicationUser> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)

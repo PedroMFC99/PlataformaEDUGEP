@@ -17,12 +17,22 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Handles the request to resend an email confirmation. This page model is used within the ASP.NET Core Identity default UI infrastructure.
+    /// This API supports the Identity UI infrastructure and is not intended to be used directly from your code.
+    /// This API may change or be removed in future releases.
+    /// </summary>
     [AllowAnonymous]
     public class ResendEmailConfirmationModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="ResendEmailConfirmationModel"/>.
+        /// </summary>
+        /// <param name="userManager">The UserManager for managing users in a persistence store.</param>
+        /// <param name="emailSender">The service used to send emails.</param>
         public ResendEmailConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender)
         {
             _userManager = userManager;
@@ -30,31 +40,37 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Holds the input data for the form.
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the input model for the form to resend an email confirmation.
         /// </summary>
         public class InputModel
         {
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// The email address to resend the confirmation email to.
+            /// This property must be a valid email address.
             /// </summary>
             [Required]
             [EmailAddress]
             public string Email { get; set; }
         }
 
+        /// <summary>
+        /// Handles the GET request to the page.
+        /// </summary>
         public void OnGet()
         {
         }
 
+        /// <summary>
+        /// Handles the POST request to resend the email confirmation.
+        /// If the email is valid and the user exists, it will generate a new confirmation token and send an email.
+        /// </summary>
+        /// <returns>The page result after processing the post request, either displaying errors or confirming the email resend.</returns>
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)

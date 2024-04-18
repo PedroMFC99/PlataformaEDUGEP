@@ -16,12 +16,23 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
 {
+    /// <summary>
+    /// Manages the email settings of a logged-in user within the Identity area.
+    /// This page model is part of the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+    /// directly from your code. This API supports the Identity UI infrastructure and may change or be removed in future releases.
+    /// </summary>
     public class EmailModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
 
+        /// <summary>
+        /// Constructor initializing services and utilities for handling user management and email operations.
+        /// </summary>
+        /// <param name="userManager">Provides the APIs for managing user in a persistence store.</param>
+        /// <param name="signInManager">Provides the APIs for user sign in.</param>
+        /// <param name="emailSender">Service for sending emails.</param>
         public EmailModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
@@ -33,40 +44,34 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Email of the user. Loaded from user manager and displayed in the form.
         /// </summary>
         public string Email { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Indicates whether the user's email is confirmed.
         /// </summary>
         public bool IsEmailConfirmed { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Status message communicated to the page after operations.
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Input model for the page. Represents the email to be managed or modified.
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the email to be managed or modified.
         /// </summary>
         public class InputModel
         {
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            /// The new email to be set for the user, if they decide to change it.
             /// </summary>
             [Required(ErrorMessage = "O novo email é obrigatório.")]
             [EmailAddress]
@@ -74,6 +79,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             public string NewEmail { get; set; }
         }
 
+        /// <summary>
+        /// Loads the current user's email information.
+        /// </summary>
+        /// <param name="user">The user whose information is to be loaded.</param>
         private async Task LoadAsync(ApplicationUser user)
         {
             var email = await _userManager.GetEmailAsync(user);
@@ -87,6 +96,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
         }
 
+        /// <summary>
+        /// Handler for the GET request to the page.
+        /// Loads the user's email information if the user is authenticated.
+        /// </summary>
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -99,6 +112,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
+        /// <summary>
+        /// Handler for the POST request to change the user's email.
+        /// Validates the model state, checks the new email, and sends a confirmation link if the change is initiated.
+        /// </summary>
         public async Task<IActionResult> OnPostChangeEmailAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -137,6 +154,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             return RedirectToPage();
         }
 
+        /// <summary>
+        /// Handler for the POST request to resend the email verification.
+        /// Validates the model state, confirms the email is set, and sends a verification email.
+        /// </summary>
         public async Task<IActionResult> OnPostSendVerificationEmailAsync()
         {
             var user = await _userManager.GetUserAsync(User);

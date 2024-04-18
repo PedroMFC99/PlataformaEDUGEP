@@ -15,12 +15,22 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Handles account confirmation logic after a user registers. 
+    /// This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+    /// directly from your code. This API may change or be removed in future releases.
+    /// </summary>
     [AllowAnonymous]
     public class RegisterConfirmationModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _sender;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="RegisterConfirmationModel"/>.
+        /// </summary>
+        /// <param name="userManager">The UserManager for managing users in a persistence store.</param>
+        /// <param name="sender">The email sender for sending confirmation emails.</param>
         public RegisterConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender sender)
         {
             _userManager = userManager;
@@ -28,23 +38,27 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// The email address of the user who is confirming their account.
         /// </summary>
         public string Email { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Indicates whether to display the link for account confirmation in the UI.
+        /// Typically used when no email sender is configured and accounts need to be confirmed during development or testing.
         /// </summary>
         public bool DisplayConfirmAccountLink { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// The URL for confirming the email account. This is generated only when DisplayConfirmAccountLink is true.
         /// </summary>
         public string EmailConfirmationUrl { get; set; }
 
+        /// <summary>
+        /// Handles the GET request to display user registration confirmation.
+        /// </summary>
+        /// <param name="email">The email of the user to confirm.</param>
+        /// <param name="returnUrl">The URL to return to after the action is completed, if any.</param>
+        /// <returns>An <see cref="IActionResult"/> that may redirect the user or display the page.</returns>
         public async Task<IActionResult> OnGetAsync(string email, string returnUrl = null)
         {
             if (email == null)

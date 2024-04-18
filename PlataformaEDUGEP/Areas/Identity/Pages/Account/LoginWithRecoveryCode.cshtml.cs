@@ -14,6 +14,11 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 {
+    /// <summary>
+    /// Manages the login process using a recovery code for users with two-factor authentication enabled.
+    /// This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+    /// directly from your code. This API may change or be removed in future releases.
+    /// </summary>
     public class LoginWithRecoveryCodeModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -31,21 +36,18 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Holds data necessary for processing a login with a recovery code.
         /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// URL to redirect to after a successful login.
         /// </summary>
         public string ReturnUrl { get; set; }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Represents the input model for the recovery code login process.
         /// </summary>
         public class InputModel
         {
@@ -60,6 +62,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             public string RecoveryCode { get; set; }
         }
 
+        /// <summary>
+        /// Handles the GET request to the login with recovery code page.
+        /// Ensures the user has gone through the username and password screen first.
+        /// </summary>
         public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
             // Ensure the user has gone through the username & password screen first
@@ -74,6 +80,9 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             return Page();
         }
 
+        /// <summary>
+        /// Handles the POST request to validate and process the login with a recovery code.
+        /// </summary>
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             if (!ModelState.IsValid)

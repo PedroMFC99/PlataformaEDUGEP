@@ -16,11 +16,21 @@ using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
 {
+    /// <summary>
+    /// Manages the downloading of personal data for a logged-in user within the Identity area.
+    /// This page model is part of the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+    /// directly from your code. This API supports the Identity UI infrastructure and may change or be removed in future releases.
+    /// </summary>
     public class DownloadPersonalDataModel : PageModel
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<DownloadPersonalDataModel> _logger;
 
+        /// <summary>
+        /// Constructor initializing services and utilities for handling user management and logging.
+        /// </summary>
+        /// <param name="userManager">Provides the APIs for managing user in a persistence store.</param>
+        /// <param name="logger">A generic interface for logging where the category is the type of the performing class.</param>
         public DownloadPersonalDataModel(
             UserManager<ApplicationUser> userManager,
             ILogger<DownloadPersonalDataModel> logger)
@@ -29,11 +39,18 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             _logger = logger;
         }
 
+        /// <summary>
+        /// Handles the GET request. Currently configured to return a NotFound result.
+        /// </summary>
         public IActionResult OnGet()
         {
             return NotFound();
         }
 
+        /// <summary>
+        /// Handles the POST request to download a user's personal data.
+        /// Constructs a JSON file with personal data collected from the user's account.
+        /// </summary>
         public async Task<IActionResult> OnPostAsync()
         {
             var user = await _userManager.GetUserAsync(User);
