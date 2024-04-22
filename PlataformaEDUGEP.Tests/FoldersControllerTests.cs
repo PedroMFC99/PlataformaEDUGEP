@@ -52,6 +52,17 @@ namespace PlataformaEDUGEP.Tests
             };
         }
 
+        public class ResultData
+        {
+            public List<TagResult> Results { get; set; }
+        }
+
+        public class TagResult
+        {
+            public int id { get; set; }
+            public string text { get; set; }
+        }
+
         [Fact]
         public async Task SearchFolders_ReturnsJson_WithFilteredData()
         {
@@ -199,5 +210,72 @@ namespace PlataformaEDUGEP.Tests
             Assert.Equal("Index", redirectToActionResultUnlike.ActionName);  // Redirects to Index after unliking
             Assert.False(_context.FolderLikes.Any(fl => fl.FolderId == folderId && fl.UserId == userId));
         }
+
+        [Fact]
+        public async Task GetTags_ReturnsCorrectTags_WhenCalledWithSearchTerm()
+        {
+            // Arrange
+            _context.Tags.AddRange(
+                new Tag { TagId = 1, Name = "Education" },
+                new Tag { TagId = 2, Name = "EdTech" },
+                new Tag { TagId = 3, Name = "Learning" }
+            );
+            _context.SaveChanges();
+
+            var searchTerm = "Ed";
+
+            // Act
+            var result = await _controller.GetTags(searchTerm);
+            var jsonResult = Assert.IsType<JsonResult>(result);
+            var jsonContent = JsonConvert.SerializeObject(jsonResult.Value);
+            var responseData = JsonConvert.DeserializeObject<ResultData>(jsonContent);
+
+            // Assert
+            Assert.NotNull(responseData);
+            Assert.Equal(2, responseData.Results.Count); // Expecting two tags that match "Ed"
+            Assert.Contains(responseData.Results, t => t.text == "Education");
+            Assert.Contains(responseData.Results, t => t.text == "EdTech");
+            Assert.DoesNotContain(responseData.Results, t => t.text == "Learning");
+        }
+
+        [Fact]
+        public async Task Favorites_ReturnsFilteredFavoriteFolders_WhenCalledWithSearchString()
+        {
+            // Arrange
+            var user = new ApplicationUser { Id = "user1", UserName = "testUser", FullName = "Test User" };
+            _context.Users.Add(user);
+
+            var otherUser = new ApplicationUser { Id = "user2", UserName = "otherUser", FullName = "Other User" };
+            _context.Users.Add(otherUser);
+
+            var folders = new List<Folder>
+    {
+        new Folder { FolderId = 1, Name = "Education Tools", User = user },
+        new Folder { FolderId = 2, Name = "EdTech Innovations", User = user },
+        new Folder { FolderId = 3, Name = "Learning Platforms", User = otherUser }
+    };
+            _context.Folder.AddRange(folders);
+            _context.FolderLikes.AddRange(
+                new FolderLike { FolderId = 1, UserId = "user1" },
+                new FolderLike { FolderId = 2, UserId = "user1" }
+            );
+            _context.SaveChanges();
+
+            // Setup HttpContext to simulate User Identity as "user1"
+            _mockUserManager.Setup(um => um.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("user1");
+
+            var searchString = "EdTech"; // Search term to filter folders
+
+            // Act
+            var result = await _controller.Favorites(searchString);
+
+            // Assert
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsType<List<Folder>>(viewResult.Model);
+            Assert.Single(model); // Expecting one result that matches "EdTech"
+            Assert.Contains(model, f => f.Name == "EdTech Innovations");
+        }
+
+
     }
 }
