@@ -275,7 +275,5 @@ namespace PlataformaEDUGEP.Tests
             Assert.Single(model); // Expecting one result that matches "EdTech"
             Assert.Contains(model, f => f.Name == "EdTech Innovations");
         }
-
-
     }
 }
