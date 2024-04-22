@@ -229,6 +229,16 @@ namespace PlataformaEDUGEP.Controllers
                 return NotFound();
             }
 
+            // Check if the fileName contains '_'
+            int underscoreIndex = fileName.IndexOf('_');
+            if (underscoreIndex == -1 || underscoreIndex >= fileName.Length - 1)
+            {
+                // Handle the error or adjust the logic
+                return NotFound(); // or another appropriate action
+            }
+
+            var originalFileName = fileName.Substring(underscoreIndex + 1);
+
             var memoryStream = new MemoryStream();
             using (var stream = new FileStream(path, FileMode.Open))
             {
@@ -237,9 +247,6 @@ namespace PlataformaEDUGEP.Controllers
             memoryStream.Position = 0;
 
             string contentType = GetContentType(path);
-            // Explicitly set the Content-Disposition header to inline; filename="{originalFileName}"
-            // Note: Ensure originalFileName does not expose the encrypted part if sensitive
-            var originalFileName = Path.GetFileNameWithoutExtension(fileName).Substring(37); // Adjust as necessary based on your naming convention
             var contentDisposition = new ContentDispositionHeaderValue("inline")
             {
                 FileName = originalFileName

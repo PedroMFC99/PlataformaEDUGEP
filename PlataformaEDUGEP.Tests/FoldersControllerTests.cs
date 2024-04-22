@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Newtonsoft.Json;
@@ -27,9 +28,9 @@ namespace PlataformaEDUGEP.Tests
 
         public FoldersControllerTests()
         {
-            // Setup DbContext with In-Memory Database
+            var dbName = $"TestDatabase_{Guid.NewGuid()}"; // Unique database name for each instance
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase") // Ensure each test method has a unique name or use ClassInitialize to clear data
+                .UseInMemoryDatabase(databaseName: dbName)
                 .Options;
 
             _context = new ApplicationDbContext(options);
@@ -96,5 +97,107 @@ namespace PlataformaEDUGEP.Tests
             Assert.Equal(1, count); // Verify that there is exactly one result that matches "Tag1"
         }
 
+        [Fact]
+        public async Task CreateModal_ReturnsPartialView_WithCorrectData()
+        {
+            // Arrange
+            _context.Tags.AddRange(
+                new Tag { TagId = 1, Name = "Tag1" },
+                new Tag { TagId = 2, Name = "Tag2" }
+            );
+            _context.SaveChanges();
+
+            // Act
+            var result = _controller.CreateModal();
+
+            // Assert
+            var partialViewResult = Assert.IsType<PartialViewResult>(result);
+            Assert.Equal("_CreatePartial", partialViewResult.ViewName); // Verify that the correct view is returned
+
+            var tagItems = Assert.IsType<SelectList>(partialViewResult.ViewData["TagItems"]);
+            Assert.Equal(2, tagItems.Count()); // Verify that the correct number of tags is passed to the view
+
+            // Optionally, check that the tags are correctly passed to the view
+            var tagList = tagItems.Select(t => t.Text).ToList();
+            Assert.Contains("Tag1", tagList);
+            Assert.Contains("Tag2", tagList);
+        }
+
+        [Fact]
+        public async Task DeleteConfirmed_FolderExists_DeletesFolderAndRedirects()
+        {
+            // Arrange
+            var folderId = 1;
+            var userId = "user1"; // Example user ID, must correspond to an actual or mocked user
+            var testFolder = new Folder
+            {
+                FolderId = folderId,
+                Name = "Test Folder",
+                StoredFiles = new List<StoredFile>
+        {
+            new StoredFile
+            {
+                StoredFileId = 1,
+                StoredFileName = "file1.txt",
+                StoredFileTitle = "Test File", // Required property
+                UserId = userId // Required property, this should be a valid or mocked user ID
+            }
+        }
+            };
+
+            _context.Folder.Add(testFolder);
+            _context.SaveChanges();
+
+            // Mock the environment setup if your method interacts with the file system
+            _mockWebHostEnvironment.Setup(env => env.WebRootPath).Returns("C:\\fakepath");
+
+            // Act
+            var result = await _controller.DeleteConfirmed(folderId);
+
+            // Assert
+            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectToActionResult.ActionName); // Redirects to Index after deletion
+            Assert.False(_context.Folder.Any(f => f.FolderId == folderId)); // Folder should be deleted
+            Assert.False(_context.StoredFile.Any(sf => sf.FolderId == folderId)); // Files should be deleted
+        }
+
+        [Fact]
+        public async Task ToggleLike_TogglesLikeStatusAndRedirects()
+        {
+            // Arrange
+            int folderId = 1;
+            string userId = "user1";  // Ensure this user ID corresponds to an actual or mocked user.
+
+            // Set up user with required properties
+            var user = new ApplicationUser { Id = userId, UserName = "testUser", FullName = "Test User" }; // Include FullName
+
+            // Ensure UserManager returns the correct user ID
+            _mockUserManager.Setup(um => um.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+
+            // Add user to the context
+            _context.Users.Add(user);
+            _context.Folder.Add(new Folder { FolderId = folderId, Name = "Test Folder" }); // Ensure the folder exists.
+            _context.SaveChanges();
+
+            // Ensure no likes exist initially for clean state
+            _context.FolderLikes.RemoveRange(_context.FolderLikes.Where(fl => fl.FolderId == folderId && fl.UserId == userId));
+            _context.SaveChanges();
+
+            // Act 1: Like the folder
+            var resultLike = await _controller.ToggleLike(folderId);
+
+            // Assert 1: Check if the like is added
+            var redirectToActionResultLike = Assert.IsType<RedirectToActionResult>(resultLike);
+            Assert.Equal("Index", redirectToActionResultLike.ActionName);  // Redirects to Index after liking
+            Assert.True(_context.FolderLikes.Any(fl => fl.FolderId == folderId && fl.UserId == userId));
+
+            // Act 2: Unlike the folder
+            var resultUnlike = await _controller.ToggleLike(folderId);
+
+            // Assert 2: Check if the like is removed
+            var redirectToActionResultUnlike = Assert.IsType<RedirectToActionResult>(resultUnlike);
+            Assert.Equal("Index", redirectToActionResultUnlike.ActionName);  // Redirects to Index after unliking
+            Assert.False(_context.FolderLikes.Any(fl => fl.FolderId == folderId && fl.UserId == userId));
+        }
     }
 }
