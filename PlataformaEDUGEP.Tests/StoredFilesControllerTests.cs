@@ -34,15 +34,18 @@ namespace PlataformaEDUGEP.Tests
 
             _context = new ApplicationDbContext(options);
 
-            // Populate the database with test data, ensuring all required fields are set
+            var folder = new Folder { FolderId = 1, Name = "Test Folder" };
+            _context.Folder.Add(folder);
             _context.StoredFile.Add(new StoredFile
             {
                 StoredFileId = 1,
                 StoredFileName = "TestFile",
                 StoredFileTitle = "Sample Title",
-                UserId = "1"  // Assuming the 'UserId' is a string type as typically used with Identity
+                UserId = "1",  // Assuming the 'UserId' is a string type as typically used with Identity
+                FolderId = 1
             });
             _context.SaveChanges();
+
 
             _userManagerMock = new Mock<UserManager<ApplicationUser>>(
                 new Mock<IUserStore<ApplicationUser>>().Object,
@@ -66,6 +69,27 @@ namespace PlataformaEDUGEP.Tests
                     }
                 }
             };
+        }
+
+        [Fact]
+        public async Task Index_ReturnsViewWithAllStoredFiles()
+        {
+            // Ensure that the database is populated correctly.
+            int expectedCount = _context.StoredFile.Count();
+            Console.WriteLine($"Expected count directly from context: {expectedCount}");  // Output for debugging
+
+            Assert.Equal(1, expectedCount);  // Verify that one file is expected from the setup.
+
+            // Act
+            var result = await _controller.Index();
+
+            // Assert the type of result and the model it contains.
+            var viewResult = Assert.IsType<ViewResult>(result);
+            var model = Assert.IsAssignableFrom<IEnumerable<StoredFile>>(viewResult.Model);
+            Console.WriteLine($"Actual count from controller: {model.Count()}");  // Output for debugging
+
+            // Check if the actual count matches the expected count.
+            Assert.Equal(expectedCount, model.Count());
         }
 
         [Fact]
@@ -234,7 +258,20 @@ namespace PlataformaEDUGEP.Tests
             Assert.IsType<NotFoundResult>(result);
         }
 
+        [Fact]
+        public async Task Create_InvalidFolderId_ReturnsErrorView()
+        {
+            // Arrange
+            var invalidFolderId = 999; // Assume 999 is an ID that does not exist in the database.
 
+            // Act
+            var result = _controller.Create(invalidFolderId);
+
+            // Assert
+            var viewResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error404", viewResult.ActionName); // Verify it redirects to the Error404 action.
+            Assert.Equal("Home", viewResult.ControllerName); // Verify it redirects to the Home controller.
+        }
 
     }
 }
