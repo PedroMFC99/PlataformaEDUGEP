@@ -5,14 +5,12 @@
     ViewData["Title"] = "Entrar";
 }
 
-<h1 class="text-center" style="color:#001DB3;">@ViewData["Title"]</h1>
-
-<div class="container">
+<div class="container" style="background: url('@Url.Content("~/images/identity-background-form.jpg")') no-repeat center center; background-size: cover; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-6" style="background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 5px;">
             <section>
                 <form id="account" method="post">
-                    <h2 class="text-center">Faça login com a sua conta.</h2>
+                    <h3 class="text-center">Efetuar login</h3>
                     <hr />
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-floating mb-3">
@@ -36,16 +34,10 @@
                     <div class="mb-3">
                         <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Entrar</button>
                     </div>
-                    <div>
-                        <p>
-                            <a id="forgot-password" asp-page="./ForgotPassword">Esqueceu-se da palavra-passe?</a>
-                        </p>
-                        <p>
-                            <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Registar como novo utilizador</a>
-                        </p>
-                        <p>
-                            <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Reenviar confirmação do email</a>
-                        </p>
+                    <div class="text-center">
+                        <p><a id="forgot-password" asp-page="./ForgotPassword">Esqueceu-se da palavra-passe?</a></p>
+                        <p><a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Registar como novo utilizador</a></p>
+                        <p><a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Reenviar confirmação do email</a></p>
                     </div>
                 </form>
             </section>
