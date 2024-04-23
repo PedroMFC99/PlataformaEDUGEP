@@ -78,10 +78,10 @@ namespace PlataformaEDUGEP.Controllers
                     folders = folders.OrderByDescending(s => s.Name);
                     break;
                 case "Date":
-                    folders = folders.OrderBy(s => s.CreationDate);
+                    folders = folders.OrderByDescending(s => s.CreationDate);
                     break;
                 case "date_desc":
-                    folders = folders.OrderByDescending(s => s.CreationDate);
+                    folders = folders.OrderBy(s => s.CreationDate);
                     break;
                 default:
                     folders = folders.OrderBy(s => s.Name);
