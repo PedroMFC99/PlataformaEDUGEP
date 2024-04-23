@@ -134,7 +134,7 @@ th, td {
     right: 0;
     bottom: 0;
     background-color: #ccc;
-    transition: .4s;
+    transition: background-color 0.4s;
     border-radius: 22px; /* Adjusted for smaller height */
 }
 
@@ -146,7 +146,7 @@ th, td {
         left: 2px; /* Adjusted for smaller slider */
         bottom: 2px; /* Adjusted for smaller slider */
         background-color: white;
-        transition: .4s;
+        transition: transform 0.4s;
         border-radius: 50%;
     }
 
