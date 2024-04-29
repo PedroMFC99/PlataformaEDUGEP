@@ -186,3 +186,42 @@ input:checked + .slider:before {
     cursor: pointer; /* Changes cursor to hand pointer on hover */
 }
 
+.center-button {
+    display: flex;
+    justify-content: center; /* Centers the button horizontally */
+    margin-top: 20px; /* Optional: adds space above the button */
+}
+
+.modal-header {
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Align items vertically */
+}
+
+    .modal-header .btn-close {
+        position: absolute;
+        right: 15px; /* Standard spacing for bootstrap modals */
+        top: 15px;
+    }
+
+.centered-title {
+    flex-grow: 1; /* Allows the title to occupy the maximum width */
+    text-align: center;
+}
+
+.custom-margin-bottom {
+    margin-bottom: 20px; /* Adjust as needed */
+}
+
+.custom-margin-top {
+    margin-top: 30px; /* Adjust as needed for the button */
+}
+
+.button-container {
+    display: flex;
+    justify-content: center; /* Centers the button horizontally */
+}
+
+
+
+
