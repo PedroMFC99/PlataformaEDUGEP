@@ -28,7 +28,6 @@
         </div>
 
         <!-- Tag Filtering Setup -->
-        <!-- Tag Filtering Setup -->
         <div class="form-group">
             <label for="selectedTagIds">Etiquetas</label>
             <div class="select2-wrapper">
@@ -134,9 +133,16 @@ else
 
                         <p class="card-text">
                             Etiquetas:
-                            @foreach (var tag in item.Tags)
+                            @if (item.Tags != null && item.Tags.Any())
                             {
-                                <span class="badge bg-info" data-tag-id="@tag.TagId">@tag.Name</span>
+                                foreach (var tag in item.Tags)
+                                {
+                                    <span class="badge bg-info" data-tag-id="@tag.TagId">@tag.Name</span>
+                                }
+                            }
+                            else
+                            {
+                                <span>N/A</span>
                             }
                         </p>
                         <a href="@Url.Action("Details", "Folders", new { id = item.FolderId })" class="btn btn-secondary">Abrir</a>
