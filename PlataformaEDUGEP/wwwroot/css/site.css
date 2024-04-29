@@ -232,6 +232,11 @@ input:checked + .slider:before {
     margin-right: 8px; /* Adjust the value as needed */
 }
 
+.bold {
+    font-weight: 600;
+}
+
+
 
 
 
