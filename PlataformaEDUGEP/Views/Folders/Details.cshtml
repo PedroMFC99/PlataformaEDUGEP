@@ -171,7 +171,7 @@ else
                 </div>
                 <div class="modal-body">
                     <input type="hidden" name="FolderId" value="@Model.FolderId" />
-                    <div class="form-group">
+                    <div class="form-group mb-3">
                         <label for="storedFileName">Nome do Ficheiro</label>
                         <input type="text" class="form-control" id="storedFileName" name="storedFileName" required>
                     </div>
@@ -181,7 +181,7 @@ else
                     </div>
                     <div id="createFileError" class="text-danger"></div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" style="display: flex; justify-content: center; align-items: center;">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Adicionar</button>
                 </div>
@@ -202,11 +202,11 @@ else
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="editStoredFileId" name="StoredFileId">
-                    <div class="form-group">
+                    <div class="form-group mb-3">
                         <label for="editStoredFileTitle">Título do ficheiro</label>
                         <input type="text" class="form-control" id="editStoredFileTitle" name="StoredFileTitle">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group mb-3">
                         <label for="newFileData">Novo ficheiro?</label>
                         <input type="file" class="form-control" id="newFileData" name="newFileData">
                     </div>

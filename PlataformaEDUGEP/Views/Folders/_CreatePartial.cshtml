@@ -10,8 +10,10 @@
     </div>
 
     <div class="form-group mb-3">
-        <label asp-for="IsHidden" class="control-label">Esconder pasta?</label>
-        <input asp-for="IsHidden" />
+        <div class="form-check">
+        <input asp-for="IsHidden" class="form-check-input" />
+        <label asp-for="IsHidden" class="form-check-label">Esconder pasta?</label>
+        </div>
     </div>
 
     <div class="form-group mb-3">
@@ -20,6 +22,7 @@
     </div>
 
     <div class="center-button">
+        <button type="button" class="btn btn-secondary margin-right" data-bs-dismiss="modal">Cancelar</button>
         <input type="submit" value="Criar" class="btn btn-primary" />
     </div>
 </form>

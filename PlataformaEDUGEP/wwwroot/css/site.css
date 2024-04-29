@@ -222,6 +222,17 @@ input:checked + .slider:before {
     justify-content: center; /* Centers the button horizontally */
 }
 
+.modal-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.margin-right {
+    margin-right: 8px; /* Adjust the value as needed */
+}
+
+
 
 
 
