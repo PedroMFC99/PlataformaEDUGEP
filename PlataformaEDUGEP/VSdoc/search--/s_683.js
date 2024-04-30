@@ -1,0 +1,1 @@
+search_result['683']=["topic_000000000000016E.html","FolderLike.UserId Property","Gets or sets the identifier of the user who liked the folder."];

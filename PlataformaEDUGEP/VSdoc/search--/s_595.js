@@ -1,0 +1,1 @@
+search_result['595']=["topic_000000000000013E.html","ApplicationUser Class","Represents a user of the application, extending the IdentityUser with custom properties specific to this platform."];

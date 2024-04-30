@@ -1,0 +1,1 @@
+search_result['58']=["topic_000000000000001C.html","EmailModel Class","Manages the email settings of a logged-in user within the Identity area.\r\nThis page model is part of the ASP.NET Core Identity default UI infrastructure and is not intended to be used\r\ndirectly from y..."];

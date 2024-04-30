@@ -1,0 +1,1 @@
+search_result['408']=["topic_00000000000000D0.html","RegisterConfirmationModel.DisplayConfirmAccountLink Property","Indicates whether to display the link for account confirmation in the UI.\r\nTypically used when no email sender is configured and accounts need to be confirmed during development or testing."];

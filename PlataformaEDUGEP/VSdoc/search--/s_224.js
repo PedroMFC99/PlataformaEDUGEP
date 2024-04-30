@@ -1,0 +1,1 @@
+search_result['224']=["topic_0000000000000077.html","TwoFactorAuthenticationModel.RecoveryCodesLeft Property","The number of recovery codes left that the user can use to access their account in case of lost two-factor devices."];

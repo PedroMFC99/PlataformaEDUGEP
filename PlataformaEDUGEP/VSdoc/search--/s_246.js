@@ -1,0 +1,1 @@
+search_result['246']=["topic_0000000000000083.html","ConfirmEmailModel.OnGetAsync Method","Handles the GET request to confirm a user\u0027s email address.\r\nIf the user ID or code is null, redirects to the home page. If the user does not exist or email confirmation fails,\r\nit displays an appropri..."];

@@ -1,0 +1,1 @@
+search_result['88']=["topic_000000000000002B.html","EnableAuthenticatorModel.RecoveryCodes Property","Two-factor authentication recovery codes returned to the user for backup purposes."];

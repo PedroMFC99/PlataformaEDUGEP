@@ -1,0 +1,1 @@
+search_result['79']=["topic_0000000000000027.html","EnableAuthenticatorModel Class","Manages the enabling of two-factor authentication using an authenticator application for a logged-in user.\r\nThis page model is part of the ASP.NET Core Identity default UI infrastructure and is not in..."];

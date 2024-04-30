@@ -1,0 +1,1 @@
+search_result['489']=["topic_00000000000000FC.html","FoldersController.DeleteConfirmedFavorites Method","Confirms and processes the deletion of a folder from the Favorites list, redirecting to the Favorites view upon completion."];

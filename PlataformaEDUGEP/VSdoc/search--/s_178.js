@@ -1,0 +1,1 @@
+search_result['178']=["topic_0000000000000062.html","ResetAuthenticatorModel Class","Manages the reset process for the authenticator app key for users in an ASP.NET Core Identity system.\r\nThis page model supports the Identity UI infrastructure and is not intended to be used directly f..."];

@@ -1,0 +1,1 @@
+search_result['78']=["topic_0000000000000026.html","EmailModel.OnPostSendVerificationEmailAsync Method","Handler for the POST request to resend the email verification.\r\nValidates the model state, confirms the email is set, and sends a verification email."];

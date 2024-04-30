@@ -1,0 +1,1 @@
+search_result['350']=["topic_00000000000000B4.html","LoginWithRecoveryCodeModel Class","Manages the login process using a recovery code for users with two-factor authentication enabled.\r\nThis API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used\r..."];

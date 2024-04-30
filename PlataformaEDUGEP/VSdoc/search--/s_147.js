@@ -1,0 +1,1 @@
+search_result['147']=["topic_000000000000004D.html","ManageNavPages Class","Provides navigation functionality for managing account-related pages.\r\nThis API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used\r\ndirectly from your code. Th..."];

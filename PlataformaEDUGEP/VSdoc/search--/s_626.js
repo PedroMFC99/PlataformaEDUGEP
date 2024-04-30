@@ -1,0 +1,1 @@
+search_result['626']=["topic_000000000000014E.html","FileAuditViewModel Class","A view model representing an audit record for file actions within the application.\r\nThis model is intended to provide a user-friendly view of the audit data, suitable for display in user interfaces."];

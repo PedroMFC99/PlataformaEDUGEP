@@ -1,0 +1,1 @@
+search_result['308']=["topic_000000000000009E.html","LoginModel Class","Provides the page model for the login process, including handling both local and external authentication methods.\r\nThis API supports the ASP.NET Core Identity default UI infrastructure and is not inte..."];

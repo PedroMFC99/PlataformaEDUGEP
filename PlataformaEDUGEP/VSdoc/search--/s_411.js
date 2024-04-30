@@ -1,0 +1,1 @@
+search_result['411']=["topic_00000000000000D3.html","ResendEmailConfirmationModel Class","Handles the request to resend an email confirmation. This page model is used within the ASP.NET Core Identity default UI infrastructure.\r\nThis API supports the Identity UI infrastructure and is not in..."];

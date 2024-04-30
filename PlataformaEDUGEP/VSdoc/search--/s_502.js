@@ -1,0 +1,1 @@
+search_result['502']=["topic_0000000000000104.html","HomeController.Error Method","Handles HTTP errors by displaying a custom error view."];

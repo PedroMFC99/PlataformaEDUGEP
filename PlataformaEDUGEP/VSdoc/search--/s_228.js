@@ -1,0 +1,1 @@
+search_result['228']=["topic_000000000000007B.html","TwoFactorAuthenticationModel.OnGetAsync Method","Handles the HTTP GET request. It loads the user\u0027s two-factor authentication status and settings."];

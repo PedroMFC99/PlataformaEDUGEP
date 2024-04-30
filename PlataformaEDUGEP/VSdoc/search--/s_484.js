@@ -1,0 +1,1 @@
+search_result['484']=["topic_00000000000000F7.html","FoldersController.DeleteConfirmed Method","Handles the confirmed deletion of a folder, removing it and any associated files."];

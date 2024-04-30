@@ -1,0 +1,1 @@
+var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001A0.html"],['15',"PlataformaEDUGEP.Areas.Identity.Pages.Account Namespace","topic_000000000000007D.html"],['61',"LoginModel Class","topic_000000000000009E.html"],['68',"Properties","topic_000000000000009E_props--.html"],['72',"ReturnUrl Property","topic_00000000000000A2.html"]];

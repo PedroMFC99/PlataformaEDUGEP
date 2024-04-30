@@ -1,0 +1,1 @@
+search_result['567']=["topic_000000000000012A.html","ApplicationDbContext Class","Represents the Entity Framework database context for the application, integrating Identity Framework for user management."];

@@ -1,0 +1,1 @@
+search_result['21']=["topic_000000000000000B.html","DeletePersonalDataModel Class","Manages the deletion of personal data for the logged-in user within the Identity area. This page model is part of the ASP.NET Core Identity default UI infrastructure and is not intended to be used\r\ndi..."];

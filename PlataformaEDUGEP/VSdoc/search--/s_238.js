@@ -1,0 +1,1 @@
+search_result['238']=["topic_0000000000000080.html","ConfirmEmailModel Class","Handles the email confirmation process for newly registered users.\r\nThis API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used\r\ndirectly from your code. This ..."];

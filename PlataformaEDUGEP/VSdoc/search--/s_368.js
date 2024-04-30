@@ -1,0 +1,1 @@
+search_result['368']=["topic_00000000000000BC.html","LogoutModel Class","Manages user logout processes.\r\nThis API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used\r\ndirectly from your code. This API may change or be removed in futu..."];

@@ -1,0 +1,1 @@
+search_result['227']=["topic_000000000000007A.html","TwoFactorAuthenticationModel.StatusMessage Property","Displays status messages in the user interface, reflecting the outcome of the user\u0027s actions related to 2FA settings."];

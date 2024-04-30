@@ -1,0 +1,1 @@
+var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001A0.html"],['405',"PlataformaEDUGEP.Enums Namespace","topic_0000000000000134.html"],['406',"RoleType Enumeration","topic_0000000000000135.html"]];

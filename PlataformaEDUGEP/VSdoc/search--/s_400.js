@@ -1,0 +1,1 @@
+search_result['400']=["topic_00000000000000CD.html","RegisterConfirmationModel Class","Handles account confirmation logic after a user registers.\r\nThis API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used\r\ndirectly from your code. This API may ..."];

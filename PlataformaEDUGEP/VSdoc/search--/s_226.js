@@ -1,0 +1,1 @@
+search_result['226']=["topic_0000000000000079.html","TwoFactorAuthenticationModel.IsMachineRemembered Property","Indicates whether the current client machine is remembered as trusted and doesn\u0027t require 2FA codes on login."];

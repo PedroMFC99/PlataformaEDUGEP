@@ -1,0 +1,1 @@
+search_result['100']=["topic_0000000000000032.html","ExternalLoginsModel Class","Manages the external logins for a user\u0027s account. This page model is part of the ASP.NET Core Identity default UI infrastructure\r\nand is not intended to be used directly from your code. This API suppo..."];

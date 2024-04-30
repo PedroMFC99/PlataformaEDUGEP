@@ -1,0 +1,1 @@
+search_result['427']=["topic_00000000000000D9.html","ResendEmailConfirmationModel.OnPostAsync Method","Handles the POST request to resend the email confirmation.\r\nIf the email is valid and the user exists, it will generate a new confirmation token and send an email."];

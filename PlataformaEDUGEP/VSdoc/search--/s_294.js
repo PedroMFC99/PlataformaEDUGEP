@@ -1,0 +1,1 @@
+search_result['294']=["topic_000000000000009A.html","ForgotPasswordConfirmation Class","Provides the page model for the confirmation view after a user has initiated a password reset process.\r\nThis page confirms that a password reset link has been sent to the user\u0027s email address."];

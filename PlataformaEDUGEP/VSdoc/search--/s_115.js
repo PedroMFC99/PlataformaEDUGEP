@@ -1,0 +1,1 @@
+search_result['115']=["topic_000000000000003C.html","GenerateRecoveryCodesModel Class","Manages the generation of new recovery codes for two-factor authentication (2FA) for a user\u0027s account.\r\nThis page model is part of the ASP.NET Core Identity default UI infrastructure and is not intend..."];

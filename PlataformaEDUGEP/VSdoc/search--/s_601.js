@@ -1,0 +1,1 @@
+search_result['601']=["topic_000000000000013F.html","ApplicationUser.FullName Property","Gets or sets the full name of the user, used for display purposes throughout the application."];

@@ -1,0 +1,1 @@
+search_result['216']=["topic_0000000000000074.html","TwoFactorAuthenticationModel Class","Manages two-factor authentication (2FA) settings for a user in an ASP.NET Core Identity system.\r\nThis page model supports the Identity UI infrastructure and is not intended to be used directly from yo..."];

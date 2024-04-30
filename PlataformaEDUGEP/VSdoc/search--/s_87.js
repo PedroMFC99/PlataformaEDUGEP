@@ -1,0 +1,1 @@
+search_result['87']=["topic_000000000000002A.html","EnableAuthenticatorModel.AuthenticatorUri Property","The URI to display a QR code for configuring an authenticator application."];

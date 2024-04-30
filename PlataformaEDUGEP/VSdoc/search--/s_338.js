@@ -1,0 +1,1 @@
+search_result['338']=["topic_00000000000000AD.html","LoginWith2faModel.RememberMe Property","Remembers the user on the current device if set to true. This property is used during the 2FA process."];

@@ -1,0 +1,1 @@
+search_result['273']=["topic_000000000000008F.html","InputModel.Email Property","Email address of the user. This property supports the ASP.NET Core Identity default UI infrastructure\r\n    and is used to facilitate the external login process."];

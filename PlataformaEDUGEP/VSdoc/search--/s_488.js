@@ -1,0 +1,1 @@
+search_result['488']=["topic_00000000000000FB.html","FoldersController.DeleteFromFavorites Method","Deletes a folder from the user\u0027s favorites and redirects to the Favorites view."];

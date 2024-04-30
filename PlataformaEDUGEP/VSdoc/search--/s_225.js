@@ -1,0 +1,1 @@
+search_result['225']=["topic_0000000000000078.html","TwoFactorAuthenticationModel.Is2faEnabled Property","Indicates whether 2FA is enabled for the user\u0027s account."];

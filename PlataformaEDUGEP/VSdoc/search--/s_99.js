@@ -1,0 +1,1 @@
+search_result['99']=["topic_0000000000000031.html","EnableAuthenticatorModel.OnPostAsync Method","Handles the POST request to enable the authenticator. Verifies the provided verification code and enables 2FA for the user."];

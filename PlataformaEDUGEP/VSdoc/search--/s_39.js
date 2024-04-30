@@ -1,0 +1,1 @@
+search_result['39']=["topic_0000000000000013.html","Disable2faModel Class","Manages the disabling of two-factor authentication (2FA) for a logged-in user within the Identity area.\r\nThis page model is part of the ASP.NET Core Identity default UI infrastructure and is not inten..."];
