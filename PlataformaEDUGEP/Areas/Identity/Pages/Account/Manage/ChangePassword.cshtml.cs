@@ -130,7 +130,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
 
             await _signInManager.RefreshSignInAsync(user);
             _logger.LogInformation("User changed their password successfully.");
-            StatusMessage = "A sua palavra-passe foi alterada.";
+            StatusMessage = "Your password has been changed.";
 
             return RedirectToPage();
         }

@@ -54,7 +54,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             /// The email address to resend the confirmation email to.
             /// This property must be a valid email address.
             /// </summary>
-            [Required(ErrorMessage = "O email é obrigatório.")]
+            [Required]
             [EmailAddress]
             public string Email { get; set; }
         }
@@ -95,10 +95,10 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
                 protocol: Request.Scheme);
             await _emailSender.SendEmailAsync(
                 Input.Email,
-                "Ativar a sua conta",
-                $"Por favor, ative a sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
+                "Confirm your email",
+                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-            ModelState.AddModelError(string.Empty, "Email de confirmação enviado. Por favor, verifique o seu email.");
+            ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
             return Page();
         }
     }
