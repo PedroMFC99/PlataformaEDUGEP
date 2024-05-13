@@ -21,6 +21,7 @@ namespace PlataformaEDUGEP.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileAuditService _fileAuditService;
+        private readonly string _uploadPath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="StoredFilesController"/> class.
@@ -37,6 +38,22 @@ namespace PlataformaEDUGEP.Controllers
             _env = env;
             _userManager = userManager;
             _fileAuditService = fileAuditService;
+
+            try
+            {
+                var uploadsPathSetting = _configuration["FileStorage:UploadsFolderPath"];
+                if (string.IsNullOrEmpty(uploadsPathSetting))
+                {
+                    throw new InvalidOperationException("Uploads folder path is not configured.");
+                }
+                _uploadPath = Path.Combine(_env.ContentRootPath, uploadsPathSetting);
+                Directory.CreateDirectory(_uploadPath);  // Safe to call multiple times for the same path
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it according to your error handling policies
+                Console.WriteLine($"Error initializing upload path: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -137,7 +154,7 @@ namespace PlataformaEDUGEP.Controllers
             }
 
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + storedFileName + fileExtension;
-            var filePath = Path.Combine(_env.WebRootPath, "uploads", uniqueFileName);
+            var filePath = Path.Combine(_uploadPath, uniqueFileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
@@ -173,7 +190,7 @@ namespace PlataformaEDUGEP.Controllers
                 return NotFound();
             }
 
-            var path = Path.Combine(_env.WebRootPath, "uploads", fileName);
+            var path = Path.Combine(_uploadPath, fileName);
 
             if (!System.IO.File.Exists(path))
             {
@@ -223,7 +240,7 @@ namespace PlataformaEDUGEP.Controllers
                 return NotFound();
             }
 
-            var path = Path.Combine(_env.WebRootPath, "uploads", fileName);
+            var path = Path.Combine(_uploadPath, fileName);
             if (!System.IO.File.Exists(path))
             {
                 return NotFound();
@@ -280,7 +297,7 @@ namespace PlataformaEDUGEP.Controllers
 
             // Fetch and pass folder list data to the view
             var folders = _context.Folder.ToList();
-            ViewBag.Folders = new SelectList(folders, "FolderId", "Name");
+            ViewBag.Folders = new SelectList(_uploadPath, "Name");
 
             return View(storedFile);
         }
@@ -332,10 +349,10 @@ namespace PlataformaEDUGEP.Controllers
 
                 // Construct the new file name using storedFileTitle and file extension
                 var uniqueFileName = Guid.NewGuid().ToString() + "_" + storedFileTitle + fileExtension;
-                var newFilePath = Path.Combine(_env.WebRootPath, "uploads", uniqueFileName);
+                var newFilePath = Path.Combine(_uploadPath, uniqueFileName);
 
                 // Delete the old file
-                var oldFilePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
+                var oldFilePath = Path.Combine(_uploadPath, storedFile.StoredFileName);
                 if (System.IO.File.Exists(oldFilePath))
                 {
                     System.IO.File.Delete(oldFilePath);
@@ -355,8 +372,8 @@ namespace PlataformaEDUGEP.Controllers
                 // If no new file is uploaded but the title is changed, generate a new file name with the old extension
                 var oldFileExtension = Path.GetExtension(storedFile.StoredFileName);
                 var newFileName = Guid.NewGuid().ToString() + "_" + storedFileTitle + oldFileExtension;
-                var newFilePath = Path.Combine(_env.WebRootPath, "uploads", newFileName);
-                var oldFilePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
+                var newFilePath = Path.Combine(_uploadPath, newFileName);
+                var oldFilePath = Path.Combine(_uploadPath, storedFile.StoredFileName);
 
                 // Rename the old file (if it still exists)
                 if (System.IO.File.Exists(oldFilePath))
@@ -443,7 +460,7 @@ namespace PlataformaEDUGEP.Controllers
             }
 
             // Build the path to the file on the server
-            var filePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
+            var filePath = Path.Combine(_uploadPath, storedFile.StoredFileName);
 
             // Check if the file exists and delete it
             if (System.IO.File.Exists(filePath))
@@ -484,7 +501,7 @@ namespace PlataformaEDUGEP.Controllers
             }
 
             // Build the path to the file on the server
-            var filePath = Path.Combine(_env.WebRootPath, "uploads", storedFile.StoredFileName);
+            var filePath = Path.Combine(_uploadPath, storedFile.StoredFileName);
 
             // Check if the file exists and delete it
             if (System.IO.File.Exists(filePath))
