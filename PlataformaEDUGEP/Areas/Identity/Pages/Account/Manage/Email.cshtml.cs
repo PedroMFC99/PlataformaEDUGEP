@@ -143,8 +143,8 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
                     protocol: Request.Scheme);
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Confirme o seu email",
+                    $"Por favor, confirme o seu email <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
 
                 StatusMessage = "Link de ativação para mudar de email foi enviado. Por favor, verifique o seu email.";
                 return RedirectToPage();
@@ -184,9 +184,9 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             await _emailSender.SendEmailAsync(
                 email,
                 "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                $"Por favor, ative a sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
 
-            StatusMessage = "Verification email sent. Please check your email.";
+            StatusMessage = "O email de verificação já foi enviado. Por favor, verifique o seu email.";
             return RedirectToPage();
         }
     }

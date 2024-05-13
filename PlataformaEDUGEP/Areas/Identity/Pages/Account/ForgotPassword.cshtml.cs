@@ -51,7 +51,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             /// <summary>
             /// Email address of the user who forgot their password.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "O email é obrigatório.")]
             [EmailAddress]
             public string Email { get; set; }
         }
@@ -84,8 +84,8 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Redefinir a sua palavra-passe",
+                    $"Por favor, redefina a sua palavra-passe <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }

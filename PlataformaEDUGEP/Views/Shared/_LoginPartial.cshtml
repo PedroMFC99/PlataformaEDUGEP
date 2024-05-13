@@ -3,65 +3,70 @@
 @inject UserManager<ApplicationUser> UserManager
 
 <script>
-    // Immediately invoked function to set theme before page content loads
+    // Set the theme before page content loads
     (function () {
         const savedTheme = localStorage.getItem('theme') || 'light'; // Default to light theme if not set
         document.body.setAttribute('data-bs-theme', savedTheme); // Apply the theme immediately
-
-        // Optional: Directly set classes on the moon/sun icons if they're part of the initial page load
-        // This might not be necessary if your icons are handled in the main JS block
     })();
 </script>
 
 <ul class="navbar-nav">
-
     @if (SignInManager.IsSignedIn(User))
     {
         ApplicationUser currentUser = await UserManager.FindByEmailAsync(User.Identity.Name);
-        string displayName = currentUser?.FullName ?? "User";
+        if (currentUser != null)
+        {
+            string displayName = currentUser.FullName ?? "User";
+            var roles = await UserManager.GetRolesAsync(currentUser);
+            var isTeacher = roles.Contains("Teacher");
+            var isStudent = roles.Contains("Student");
 
-        var roles = await UserManager.GetRolesAsync(currentUser);
-        var isTeacher = roles.Contains("Teacher");
-        var isStudent = roles.Contains("Student");
+            <!-- Display links for user with roles -->
+            <li class="nav-item">
+                <a class="nav-link" asp-area="" asp-controller="Folders" asp-action="Favorites" style="color: orangered;">
+                    <i class="fas fa-star"></i> Favoritos
+                </a>
+            </li>
 
-        <!-- Favorites link -->
-        <li class="nav-item">
-            <a class="nav-link" asp-area="" asp-controller="Folders" asp-action="Favorites" style="color: orangered;">
-                <i class="fas fa-star"></i> Favoritos
-            </a>
-        </li>
+            <!-- Theme toggle slider for all users -->
+            <li class="nav-item mt-2">
+                <div class="theme-slider-container">
+                    <span class="fas fa-sun"></span> <!-- Sun icon -->
+                    <label class="theme-switch" for="theme-slider">
+                        <input type="checkbox" id="theme-slider" class="theme-slider" />
+                        <div class="slider round"></div>
+                    </label>
+                    <span class="fas fa-moon"></span> <!-- Moon icon -->
+                </div>
+            </li>
 
-        <!-- Theme toggle slider for all users -->
-        <li class="nav-item mt-2">
-            <div class="theme-slider-container">
-                <span class="fas fa-sun"></span> <!-- Sun icon -->
-                <label class="theme-switch" for="theme-slider">
-                    <input type="checkbox" id="theme-slider" class="theme-slider" />
-                    <div class="slider round"></div>
-                </label>
-                <span class="fas fa-moon"></span> <!-- Moon icon -->
-            </div>
-        </li>
-
-        <!-- User-specific links -->
-        <li class="nav-item">
-            <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-                @if (isTeacher)
-                {
-                    <i class="fas fa-chalkboard-teacher"></i>
-                }
-                else if (isStudent)
-                {
-                    <i class="fas fa-user-graduate"></i>
-                }
-                else if (roles.Contains("Admin")) // Check if the user is an admin
-                {
-                    <i class="fas fa-user-shield"></i>
-                    // Admin icon
-                }
-                Olá, @displayName!
-            </a>
-        </li>
+            <!-- User-specific links -->
+            <li class="nav-item">
+                <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                    @if (isTeacher)
+                    {
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    }
+                    else if (isStudent)
+                    {
+                        <i class="fas fa-user-graduate"></i>
+                    }
+                    else if (roles.Contains("Admin")) // Check if the user is an admin
+                    {
+                        <i class="fas fa-user-shield"></i>
+                        // Admin icon
+                    }
+                    Olá, @displayName!
+                </a>
+            </li>
+        }
+        else
+        {
+            <!-- Handle null currentUser -->
+            <li class="nav-item">
+                <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            </li>
+        }
 
         <li class="nav-item">
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
@@ -80,6 +85,7 @@
         </li>
     }
 </ul>
+
 
 <script>
     (function () {
