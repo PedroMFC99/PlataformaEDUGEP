@@ -30,7 +30,18 @@ namespace PlataformaEDUGEP.Controllers
         /// <returns>The index view populated with counts of users, folders, files, and role-specific user counts.</returns>
         public IActionResult Index()
         {
+            // Get the total count of users
             var userCount = _context.Users.Count();
+
+            // Identifying the Admin role
+            var adminRole = _context.Roles.FirstOrDefault(r => r.Name == "Admin");
+            var adminCount = adminRole != null
+                ? _context.UserRoles.Count(ur => ur.RoleId == adminRole.Id)
+                : 0;
+
+            // Subtracting the admin count from the total user count
+            userCount -= adminCount;
+
             var folderCount = _context.Folder.Count();
             var fileCount = _context.StoredFile.Count();
 
@@ -45,6 +56,7 @@ namespace PlataformaEDUGEP.Controllers
                 ? _context.UserRoles.Count(ur => ur.RoleId == studentRole.Id)
                 : 0;
 
+            // Update the ViewBag to use the adjusted user count
             ViewBag.UserCount = userCount;
             ViewBag.FolderCount = folderCount;
             ViewBag.FileCount = fileCount;
