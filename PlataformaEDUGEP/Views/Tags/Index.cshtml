@@ -10,6 +10,8 @@
     <input type="search" id="searchInput" class="form-control" placeholder="Procurar etiquetas..." autocomplete="off">
 </div>
 
+<button id="clearFiltersButton" class="btn btn-secondary" style="display: none;" onclick="clearFilters()">Limpar filtros</button>
+
 <div class="d-flex justify-content-end mb-3">
     <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createTagModal">
         <i class="fas fa-plus"></i>
@@ -79,6 +81,59 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            let debounceTimer;
+
+            // Input event handling with debounce
+            $('#searchInput').on('input', function () {
+                const searchValue = $(this).val();
+                toggleClearFiltersButton();  // Toggle visibility of the clear button
+
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    updateTagList(searchValue);  // Update the tag list based on the search input
+                }, 150); // Adjust delay as needed
+            });
+
+            // Clear filters and reset the tag list
+            function clearFilters() {
+                $('#searchInput').val('');
+                updateTagList('');  // Load all tags as the filter is cleared
+                toggleClearFiltersButton();  // Ensure the button visibility is updated
+            }
+
+            // Update the tag list based on the provided search value
+            function updateTagList(searchValue) {
+                $.ajax({
+                    url: '@Url.Action("Index", "Tags")',
+                    type: 'GET',
+                    data: { search: searchValue },
+                    success: function (data) {
+                        $('#tagList').html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error loading tags: ", xhr.responseText);
+                    }
+                });
+            }
+
+            // Toggle the visibility of the clear filters button
+            function toggleClearFiltersButton() {
+                const hasValue = $('#searchInput').val().length > 0;
+                $('#clearFiltersButton').toggle(hasValue);
+            }
+
+            // Initialize the toggle state check for page load
+            toggleClearFiltersButton();
+
+            // Event binding for the clear button
+            $('#clearFiltersButton').click(function () {
+                clearFilters();
+            });
+        });
+    </script>
 
     <script>
         $(document).ready(function () {
