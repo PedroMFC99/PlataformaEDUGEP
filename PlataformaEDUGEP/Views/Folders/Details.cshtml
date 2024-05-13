@@ -65,8 +65,6 @@
     </dl>
 </div>
 
-<hr />
-
 <h4>Ficheiros</h4>
 
 @if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
@@ -412,46 +410,25 @@ else
 
     <script>
         $(document).ready(function () {
-            function initializeClearButton() {
-                var hasFileTitle = '@ViewBag.CurrentFileTitle';
-                var hasAddedBy = '@ViewBag.CurrentAddedBy';
-                if (hasFileTitle || hasAddedBy) {
+            // Function to check the value of the input fields and show/hide the clear button
+            function toggleClearButton() {
+                if ($('#fileTitleInput').val().length > 0 || $('#addedByInput').val().length > 0) {
                     $('#clearFiltersBtn').show();
                 } else {
                     $('#clearFiltersBtn').hide();
                 }
             }
 
-            initializeClearButton();
+            // Assign IDs to your input fields for easier selection
+            $('input[name="fileTitle"]').attr('id', 'fileTitleInput');
+            $('input[name="addedBy"]').attr('id', 'addedByInput');
 
-            // Handle the form submission process
-            $('form').on('submit', function (event) {
-                event.preventDefault();  // Prevent the form from submitting through the browser's default action
+            // Check initially if there's any need to show the clear button
+            toggleClearButton();
 
-                // Collect input values
-                var fileTitle = $('input[name="fileTitle"]').val();
-                var addedBy = $('input[name="addedBy"]').val();
-                var sortOrder = $('input[name="sortOrder"]').val();
-
-                // Construct a proper URL with query parameters
-                var query = $.param({
-                    fileTitle: fileTitle,
-                    addedBy: addedBy,
-                    sortOrder: sortOrder
-                });
-
-                // Redirect to the current page with new query parameters
-                window.location.href = '@Url.Action("Details", "Folders", new { id = Model.FolderId })' + '?' + query;
-            });
-
-            // Handle the clear filters button click
-            $('#clearFiltersBtn').click(function (e) {
-                e.preventDefault();  // Prevent default link behavior
-                $('input[name="fileTitle"]').val('');
-                $('input[name="addedBy"]').val('');
-                $(this).hide();
-                console.log('Filters cleared');
-                $('form').submit();  // Trigger the form submission
+            // Bind the input event to both fields to check for changes
+            $('#fileTitleInput, #addedByInput').on('input', function () {
+                toggleClearButton();
             });
         });
     </script>
