@@ -54,8 +54,8 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             /// The email address to resend the confirmation email to.
             /// This property must be a valid email address.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "O email é obrigatório.")]
+            [EmailAddress(ErrorMessage = "O email não é um endereço de e-mail válido.")]
             public string Email { get; set; }
         }
 

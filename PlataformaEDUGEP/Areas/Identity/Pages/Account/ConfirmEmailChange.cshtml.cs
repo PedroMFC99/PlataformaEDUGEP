@@ -63,15 +63,13 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             }
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-            var result = await _userManager.ChangeEmailAsync(user, email, code);
-            if (!result.Succeeded)
+            var changeEmailResult = await _userManager.ChangeEmailAsync(user, email, code);
+            if (!changeEmailResult.Succeeded)
             {
                 StatusMessage = "Ocorreu um erro ao mudar o email.";
                 return Page();
             }
 
-            // In the UI, email and user name are one and the same, so when we update the email
-            // we need to update the user name.
             var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
             if (!setUserNameResult.Succeeded)
             {

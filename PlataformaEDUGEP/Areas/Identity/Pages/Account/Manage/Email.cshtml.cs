@@ -74,8 +74,8 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             /// The new email to be set for the user, if they decide to change it.
             /// </summary>
             [Required(ErrorMessage = "O novo email é obrigatório.")]
-            [EmailAddress]
-            [Display(Name = "New email")]
+            [EmailAddress(ErrorMessage = "O email não é um endereço de e-mail válido.")]
+            [Display(Name = "Novo E-mail")]
             public string NewEmail { get; set; }
         }
 
@@ -143,8 +143,8 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
                     protocol: Request.Scheme);
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Confirmar o seu email",
+                    $"Por favor confirme o seu email <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
 
                 StatusMessage = "Link de ativação para mudar de email foi enviado. Por favor, verifique o seu email.";
                 return RedirectToPage();
@@ -184,9 +184,9 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
             await _emailSender.SendEmailAsync(
                 email,
                 "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                $"Por favor, confirme a sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
 
-            StatusMessage = "Verification email sent. Please check your email.";
+            StatusMessage = "Email de verificação enviado. Por favor, verifique o seu email";
             return RedirectToPage();
         }
     }

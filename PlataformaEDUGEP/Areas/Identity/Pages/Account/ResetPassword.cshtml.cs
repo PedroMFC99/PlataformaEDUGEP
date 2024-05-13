@@ -48,15 +48,15 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             /// The email address associated with the user account.
             /// This property must be a valid email address.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "O email é obrigatório.")]
+            [EmailAddress(ErrorMessage = "O email não é um endereço de e-mail válido.")]
             public string Email { get; set; }
 
             /// <summary>
             /// The new password for the user account.
             /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(20, ErrorMessage = "A palavra-passe deve ter no mínimo {2} e no máximo {1} carácteres de comprimento.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
@@ -65,7 +65,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             /// </summary>
             [DataType(DataType.Password)]
             [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Compare("Password", ErrorMessage = "A palavra-passe e a sua confirmação devem ser iguais.")]
             public string ConfirmPassword { get; set; }
 
             /// <summary>
