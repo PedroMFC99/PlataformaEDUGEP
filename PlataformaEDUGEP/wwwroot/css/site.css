@@ -236,29 +236,6 @@ input:checked + .slider:before {
     font-weight: 600;
 }
 
-.profile-nav {
-    background: #f7f7f7;
-    border-radius: 8px;
-    padding: 10px;
-}
-
-    .profile-nav .nav-link {
-        color: #333;
-        border-radius: 5px;
-        transition: background-color 0.3s ease, color 0.3s ease;
-    }
-
-        .profile-nav .nav-link:hover, .profile-nav .nav-link:focus {
-            background-color: #e2e2e2;
-            color: #0056b3;
-        }
-
-    .profile-nav .nav-item.active .nav-link {
-        color: #fff;
-        background-color: #007bff;
-    }
-
-
 
 
 

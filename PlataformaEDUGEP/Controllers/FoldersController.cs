@@ -152,16 +152,27 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize]
         public async Task<IActionResult> Details(int? id, string fileTitle, string addedBy, string sortOrder)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+            {
+                return NotFound();
+            }
 
             var folder = await _context.Folder
                 .Include(f => f.User)
-                .Include(f => f.StoredFiles).ThenInclude(sf => sf.User)
-                .Include(f => f.Tags)
+                .Include(f => f.StoredFiles).ThenInclude(sf => sf.User) // Include User for each StoredFile
+                .Include(f => f.Tags) // Include the tags
                 .FirstOrDefaultAsync(m => m.FolderId == id);
 
-            if (folder == null) return NotFound();
+            if (folder == null)
+            {
+                return NotFound();
+            }
 
+            // Fetch all folders for the dropdown list in the edit modal
+            var folders = await _context.Folder.Select(f => new { f.FolderId, f.Name }).ToListAsync();
+            ViewBag.FoldersJson = Newtonsoft.Json.JsonConvert.SerializeObject(folders);
+
+            // Apply filters based on search criteria, ensuring case-insensitive comparison
             if (!string.IsNullOrEmpty(fileTitle))
             {
                 folder.StoredFiles = folder.StoredFiles
