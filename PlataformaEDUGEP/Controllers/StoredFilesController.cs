@@ -33,12 +33,18 @@ namespace PlataformaEDUGEP.Controllers
         /// <param name="fileAuditService">Service for logging file-related actions.</param>
         public StoredFilesController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment env, UserManager<ApplicationUser> userManager, IFileAuditService fileAuditService)
         {
-            _context = context;
-            _configuration = configuration;
-            _env = env;
-            _userManager = userManager;
-            _fileAuditService = fileAuditService;
-            _uploadsFolderPath = Path.Combine(_env.ContentRootPath, _configuration.GetValue<string>("FileStorage:UploadsFolderPath"));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _env = env ?? throw new ArgumentNullException(nameof(env));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _fileAuditService = fileAuditService ?? throw new ArgumentNullException(nameof(fileAuditService));
+
+            var uploadsFolderPath = _configuration.GetSection("FileStorage:UploadsFolderPath").Value;
+            if (string.IsNullOrEmpty(uploadsFolderPath))
+            {
+                throw new ArgumentNullException(nameof(uploadsFolderPath), "Uploads folder path cannot be null or empty.");
+            }
+            _uploadsFolderPath = Path.Combine(_env.ContentRootPath, uploadsFolderPath);
         }
 
         /// <summary>
@@ -137,7 +143,7 @@ namespace PlataformaEDUGEP.Controllers
                 return RedirectToAction("Error", "Home");
             }
 
-            // Here you directly use the pre-calculated path from the controller constructor
+            // Use the pre-calculated path from the controller constructor
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + storedFileName + fileExtension;
             var filePath = Path.Combine(_uploadsFolderPath, uniqueFileName);
 
@@ -243,8 +249,8 @@ namespace PlataformaEDUGEP.Controllers
             int underscoreIndex = fileName.IndexOf('_');
             if (underscoreIndex == -1 || underscoreIndex >= fileName.Length - 1)
             {
-                // Handle the error or adjust the logic
-                return NotFound(); // or another appropriate action
+                // Handle the error
+                return NotFound();
             }
 
             var originalFileName = fileName.Substring(underscoreIndex + 1);
