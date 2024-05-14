@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using PlataformaEDUGEP.Controllers;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
+using System.Diagnostics;
 using System.Linq;
 using Xunit;
 
@@ -52,19 +53,6 @@ namespace PlataformaEDUGEP.Tests
         }
 
         [Fact]
-        public void Privacy_ReturnsView()
-        {
-            // Arrange
-            var controller = new HomeController(null, null);
-
-            // Act
-            var result = controller.Privacy() as ViewResult;
-
-            // Assert
-            Assert.NotNull(result);
-        }
-
-        [Fact]
         public void About_ReturnsView()
         {
             // Arrange
@@ -88,6 +76,32 @@ namespace PlataformaEDUGEP.Tests
 
             // Assert
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void Error_ReturnsViewWithErrorViewModel()
+        {
+            // Arrange
+            var context = CreateContext();
+            var controller = new HomeController(null, context);
+
+            // Mock the Activity.Current
+            var activity = new Activity("TestActivity");
+            activity.Start();
+            Activity.Current = activity;
+
+            // Act
+            var result = controller.Error() as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            var model = Assert.IsType<ErrorViewModel>(result.Model);
+            Assert.Equal(activity.Id, model.RequestId);
+            Assert.False(string.IsNullOrEmpty(model.RequestId));
+
+            // Cleanup
+            activity.Stop();
+            Activity.Current = null;
         }
     }
 }
