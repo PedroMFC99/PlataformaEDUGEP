@@ -143,19 +143,19 @@ namespace PlataformaEDUGEP.Tests
 
             // Assert
             var fileResult = Assert.IsType<FileStreamResult>(result);
-            Assert.Equal("text/plain", fileResult.ContentType); // Adjust the expected content type based on the file extension
-            Assert.Equal(fileName, fileResult.FileDownloadName); // Ensure correct file name
+            Assert.Equal("text/plain", fileResult.ContentType);
+            Assert.Equal(fileName, fileResult.FileDownloadName);
 
             // Cleanup
-            fileResult.FileStream.Dispose();  // Ensure the stream is disposed before deleting the file
+            fileResult.FileStream.Dispose();
             try
             {
-                File.Delete(fullPath);  // Attempt to delete the file
+                File.Delete(fullPath);
             }
             catch (IOException ex)
             {
                 Console.WriteLine($"Error cleaning up the file: {ex.Message}");
-                throw;  // Re-throw to fail the test if cleanup fails
+                throw;
             }
         }
 

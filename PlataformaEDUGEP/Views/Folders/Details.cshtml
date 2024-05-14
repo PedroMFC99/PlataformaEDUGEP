@@ -121,7 +121,7 @@
                         <!-- Link to preview the file -->
                         <a href="@Url.Action("PreviewFile", "StoredFiles", new { fileName = file.StoredFileName })" target="_blank">Preview</a>
                         <!-- Optionally, a direct download link -->
-                        <a href="@Url.Action("DownloadFile", "StoredFiles", new { fileName = file.StoredFileName })" class="ml-2">Download</a>
+                        <a href="@Url.Action("DownloadFile", "StoredFiles", new { fileName = file.StoredFileName })" class="ms-3">Download</a>
                     </td>
                     <td>@file.UploadDate.ToString("dd/MM/yyyy HH:mm")</td>
                     <td>@file.User.FullName</td>
