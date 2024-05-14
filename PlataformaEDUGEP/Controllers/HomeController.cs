@@ -67,15 +67,6 @@ namespace PlataformaEDUGEP.Controllers
         }
 
         /// <summary>
-        /// Displays the Privacy policy page.
-        /// </summary>
-        /// <returns>The Privacy view.</returns>
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// Displays the About page.
         /// </summary>
         /// <returns>The About view.</returns>
