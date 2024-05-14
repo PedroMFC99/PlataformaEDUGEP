@@ -5,6 +5,7 @@ using PlataformaEDUGEP;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
 using PlataformaEDUGEP.Services;
+using PlataformaEDUGEP.Utilities;
 using WebPWrecover.Services;
 
 // Initialize a new instance of the WebApplication builder with the program's command-line arguments.
@@ -22,7 +23,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddErrorDescriber<CustomIdentityErrorDescriber>();
 
 // Adds MVC services to the service container with support for controllers and views.
 builder.Services.AddControllersWithViews();

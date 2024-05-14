@@ -55,7 +55,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             /// <summary>
             /// The new password for the user account.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "A palavra-passe é obrigatória.")]
             [StringLength(20, ErrorMessage = "A palavra-passe deve ter no mínimo {2} e no máximo {1} carácteres de comprimento.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             public string Password { get; set; }

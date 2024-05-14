@@ -130,7 +130,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             [Required(ErrorMessage = "A confirmação da palavra-passe é obrigatória.")]
             [DataType(DataType.Password)]
             [Display(Name = "Confirmar palavra-passe")]
-            [Compare("Password", ErrorMessage = "A password e a password de confirmação têm de ser iguais.")]
+            [Compare("Password", ErrorMessage = "A Palavra-passe e a sua confirmação têm de ser iguais.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -205,8 +205,8 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Verify your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Ative a sua conta",
+                        $"Por favor, ative a sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

@@ -183,8 +183,8 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
                 protocol: Request.Scheme);
             await _emailSender.SendEmailAsync(
                 email,
-                "Confirm your email",
-                $"Por favor, confirme a sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
+                "Ative a sua conta",
+                $"Por favor, ative a sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
 
             StatusMessage = "Email de verificação enviado. Por favor, verifique o seu email";
             return RedirectToPage();
