@@ -62,7 +62,13 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
             var result = await _userManager.ConfirmEmailAsync(user, code);
-            StatusMessage = result.Succeeded ? "Obrigado por ativar a sua conta." : "Ocorreu um erro ao confirmar o seu e-mail.";
+
+            // Generate the login URL dynamically
+            string loginUrl = Url.Page("/Account/Login", new { area = "Identity" });
+            StatusMessage = result.Succeeded
+                ? $"Obrigado por ativar a sua conta. <a href='{loginUrl}'>Clique aqui para fazer login</a>."
+                : "Ocorreu um erro ao confirmar o seu e-mail.";
+
             return Page();
         }
     }

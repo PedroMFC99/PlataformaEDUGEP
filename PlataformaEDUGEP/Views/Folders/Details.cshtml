@@ -136,18 +136,25 @@
                         }
                     </td>
                     <td>
-                        <!-- Edit Link -->
-                        <button type="button" class="btn btn-sm btn-primary edit-file-btn"
-                                data-bs-toggle="modal" data-bs-target="#editFileModal"
-                                data-id="@file.StoredFileId" data-folder-id="@file.FolderId"
-                                data-title="@file.StoredFileTitle">
-                            <!-- Add data-title here -->
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <!-- Delete Button triggers Modal -->
-                        <button class="btn btn-sm btn-danger delete-file-btn" data-id="@file.StoredFileId" data-bs-toggle="modal" data-bs-target="#confirmDeleteFileModal">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        @if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
+                        {
+                            <!-- Edit Link -->
+                            <button type="button" class="btn btn-sm btn-primary edit-file-btn"
+                                    data-bs-toggle="modal" data-bs-target="#editFileModal"
+                                    data-id="@file.StoredFileId" data-folder-id="@file.FolderId"
+                                    data-title="@file.StoredFileTitle">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <!-- Delete Button triggers Modal -->
+                            <button class="btn btn-sm btn-danger delete-file-btn" data-id="@file.StoredFileId" data-bs-toggle="modal" data-bs-target="#confirmDeleteFileModal">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        }
+                        else
+                        {
+                            <!-- Placeholder icon for students -->
+                            <i class="fas fa-lock text-muted ms-3" data-toggle="tooltip" title="Não tem permissões para manipular ficheiros"></i>
+                        }
                     </td>
                 </tr>
             }
@@ -437,6 +444,7 @@ else
 
     <script>
         $(document).ready(function () {
+            // Initialize Bootstrap tooltips
             $('[data-toggle="tooltip"]').tooltip();
         });
     </script>

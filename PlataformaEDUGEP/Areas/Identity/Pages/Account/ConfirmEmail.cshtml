@@ -5,7 +5,8 @@
 }
 
 <div class="text-center">
-        <h1>@ViewData["Title"]</h1>
-        <partial name="_StatusMessage" model="Model.StatusMessage" />
+    <h1>@ViewData["Title"]</h1>
+    <div class="alert alert-success">
+        @Html.Raw(Model.StatusMessage)
+    </div>
 </div>
-
