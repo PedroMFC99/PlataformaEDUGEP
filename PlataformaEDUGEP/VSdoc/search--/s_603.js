@@ -1,1 +1,1 @@
-search_result['603']=["topic_0000000000000141.html","ApplicationUser.Role Property","Gets or sets the role of the user within the application, determining permissions and access."];
+search_result['603']=["topic_0000000000000141.html","ApplicationUser.LikedFolders Property","Gets or sets the collection of folders that the user has marked as liked, which can enhance personalized experiences."];

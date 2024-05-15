@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="GENERATOR" content="VSdocman - documentation generator; https://www.helixoft.com" />
 	<link rel="icon" href="favicon.ico">
-	<title>TimeZoneHelper.ConvertUtcToLondonTime Method</title>
+	<title>CustomIdentityErrorDescriber.PasswordRequiresUpper Method</title>
 
 	<link rel="stylesheet" type="text/css" href="msdn2019/toc.css" />
 	<script src="msdn2019/toc.js"></script>
@@ -74,11 +74,11 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
   </div>
 
 <div id="mainBody">
-		<h1 class="title">TimeZoneHelper.ConvertUtcToLondonTime Method</h1>
+		<h1 class="title">CustomIdentityErrorDescriber.PasswordRequiresUpper Method</h1>
         
 		<div class="metadata">
         Namespace:
-<a href="topic_000000000000019A.html">PlataformaEDUGEP.AuxilliaryClasses</a>
+<a href="topic_0000000000000199.html">PlataformaEDUGEP.Utilities</a>
 
 
 
@@ -89,7 +89,8 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
        
        
-        <summary-info>Converts a UTC DateTime to London time.</summary-info>
+        <summary-info>Returns an <a target="_top" href=".html" onclick="this.target='';return true;">IdentityError</a> indicating a password validation failure
+due to the lack of an uppercase character.</summary-info>
 
 
 
@@ -139,7 +140,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeVB">
-					<pre xml:space="preserve" class="brush: vb">Public Shared Function ConvertUtcToLondonTime( _&nbsp;<br />   ByVal <i>utcTime</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.datetime">Date</a> _&nbsp;<br />) As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.datetime">Date</a></pre>			
+					<pre xml:space="preserve" class="brush: vb">Public Overrides Function PasswordRequiresUpper() As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.identityerror">IdentityError</a></pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -178,7 +179,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCsharp">
-					<pre xml:space="preserve" class="brush: csharp">public static <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.datetime">DateTime</a> ConvertUtcToLondonTime(&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.datetime">DateTime</a> <i>utcTime</i>&nbsp;<br />)</pre>			
+					<pre xml:space="preserve" class="brush: csharp">public override <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.identityerror">IdentityError</a> PasswordRequiresUpper()</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -218,7 +219,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCpp">
-					<pre xml:space="preserve" class="brush: cpp">public: &nbsp;<br />static <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.datetime">DateTime</a> ConvertUtcToLondonTime(&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.datetime">DateTime</a> <i>utcTime</i>&nbsp;<br />) </pre>			
+					<pre xml:space="preserve" class="brush: cpp">public: &nbsp;<br /><a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.identityerror">IdentityError</a>^ PasswordRequiresUpper() </pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -257,7 +258,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeJScript">
-					<pre xml:space="preserve" class="brush: js">public static function ConvertUtcToLondonTime(&nbsp;<br />    <i>utcTime</i> : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.datetime">DateTime</a>&nbsp;<br />) : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.datetime">DateTime</a>;</pre>			
+					<pre xml:space="preserve" class="brush: js">public function PasswordRequiresUpper() : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.identityerror">IdentityError</a>;</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -268,28 +269,12 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 	</div>
 
 
-<h4 class="subHeading">
-	Parameters</h4><dl paramName="utcTime" class="parameterList">
-	<dt>
-		<span class="parameter">
-			utcTime
-		</span>
-	</dt>
-	<dd>
-		<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.datetime">DateTime</a> 
-	</dd>
-</dl>
-<p>
-	The UTC DateTime to convert. 
-</p>
-
-<p />
 
 	<h4 class="subHeading">
 		Return Value</h4>
-	<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.datetime">DateTime</a> 
+	<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.identityerror">IdentityError</a> 
 		<p>
-		The DateTime converted to London time. 
+		An <a target="_top" href=".html" onclick="this.target='';return true;">IdentityError</a> indicating the error. 
 	</p>
 	
 
@@ -313,17 +298,6 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
 
 
-<div class="section_container">
-	<div class="section_heading">
-		<span><a href="javascript:void(0)" title="Collapse" onclick="toggleSection(this);">Remarks</a></span>
-		<div>&nbsp;</div>
-	</div>
-
-	<div id="remarksSection" class="section">	
-			This method uses the TimeZoneInfo class to find the London time zone and convert the provided UTC DateTime to that time zone.
-It is useful for displaying times to users in London's local time regardless of the server's time zone.
-	</div>					
-</div>
 
 
 
@@ -390,11 +364,11 @@ It is useful for displaying times to users in London's local time regardless of 
 
 	<div id="seeAlsoSection" class="section">	
 		<div>
-			<a href="topic_000000000000019B.html">TimeZoneHelper Class</a><br />
+			<a href="topic_000000000000019A.html">CustomIdentityErrorDescriber Class</a><br />
 
 
 
-<a href="topic_000000000000019A.html">PlataformaEDUGEP.AuxilliaryClasses Namespace</a><br />
+<a href="topic_0000000000000199.html">PlataformaEDUGEP.Utilities Namespace</a><br />
 
 
 			

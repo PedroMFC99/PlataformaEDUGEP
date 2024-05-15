@@ -39,7 +39,7 @@ namespace PlataformaEDUGEP.Services
         /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task RecordDeletionAsync(StoredFile storedFile, string userId)
         {
-            await RecordActionAsync(storedFile, userId, "Remoção");
+            await RecordActionAsync(storedFile, userId, "Exclusão");
         }
 
         /// <summary>

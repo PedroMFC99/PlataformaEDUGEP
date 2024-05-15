@@ -1,1 +1,1 @@
-search_result['675']=["topic_000000000000016B.html","FolderAuditViewModel.FolderId Property","Gets or sets the identifier of the folder on which the action was taken."];
+search_result['675']=["topic_000000000000016B.html","FolderAuditViewModel.FolderName Property","Gets or sets the name of the folder at the time the action was taken."];

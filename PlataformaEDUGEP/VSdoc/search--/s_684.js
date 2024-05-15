@@ -1,1 +1,1 @@
-search_result['684']=["topic_000000000000016F.html","FolderLike.User Property","Gets or sets the user who liked the folder."];
+search_result['684']=["topic_000000000000016F.html","FolderLike.FolderId Property","Gets or sets the identifier of the folder that was liked."];

@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="GENERATOR" content="VSdocman - documentation generator; https://www.helixoft.com" />
 	<link rel="icon" href="favicon.ico">
-	<title>StoredFilesController Constructor</title>
+	<title>StoredFilesController.Index Method</title>
 
 	<link rel="stylesheet" type="text/css" href="msdn2019/toc.css" />
 	<script src="msdn2019/toc.js"></script>
@@ -74,7 +74,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
   </div>
 
 <div id="mainBody">
-		<h1 class="title">StoredFilesController Constructor</h1>
+		<h1 class="title">StoredFilesController.Index Method</h1>
         
 		<div class="metadata">
         Namespace:
@@ -89,7 +89,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
        
        
-        <summary-info>Initializes a new instance of the <a target="_top" href="topic_0000000000000110.html" onclick="this.target='';return true;">StoredFilesController</a> class.</summary-info>
+        <summary-info>Displays the index page listing all stored files.</summary-info>
 
 
 
@@ -139,7 +139,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeVB">
-					<pre xml:space="preserve" class="brush: vb">Public Sub New( _&nbsp;<br />   ByVal <i>context</i> As <a target="_top" href="topic_000000000000012A.html" onclick="this.target='';return true;">ApplicationDbContext</a>, _&nbsp;<br />   ByVal <i>configuration</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.iconfiguration">IConfiguration</a>, _&nbsp;<br />   ByVal <i>env</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhostenvironment">IWebHostEnvironment</a>, _&nbsp;<br />   ByVal <i>userManager</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.usermanager-1">UserManager</a>(Of <a target="_top" href="topic_000000000000013E.html" onclick="this.target='';return true;">ApplicationUser</a>), _&nbsp;<br />   ByVal <i>fileAuditService</i> As <a target="_top" href="topic_0000000000000194.html" onclick="this.target='';return true;">IFileAuditService</a> _&nbsp;<br />)</pre>			
+					<pre xml:space="preserve" class="brush: vb">&lt;Authorize()&gt; _&nbsp;<br />Public Function Index() As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">Task</a>(Of <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.iactionresult">IActionResult</a>)</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -178,7 +178,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCsharp">
-					<pre xml:space="preserve" class="brush: csharp">public StoredFilesController(&nbsp;<br />   <a target="_top" href="topic_000000000000012A.html" onclick="this.target='';return true;">ApplicationDbContext</a> <i>context</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.iconfiguration">IConfiguration</a> <i>configuration</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhostenvironment">IWebHostEnvironment</a> <i>env</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.usermanager-1">UserManager</a>&lt;<a target="_top" href="topic_000000000000013E.html" onclick="this.target='';return true;">ApplicationUser</a>&gt; <i>userManager</i>,&nbsp;<br />   <a target="_top" href="topic_0000000000000194.html" onclick="this.target='';return true;">IFileAuditService</a> <i>fileAuditService</i>&nbsp;<br />)</pre>			
+					<pre xml:space="preserve" class="brush: csharp">[Authorize()]&nbsp;<br />public <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.iactionresult">IActionResult</a>&gt; Index()</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -218,7 +218,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCpp">
-					<pre xml:space="preserve" class="brush: cpp">public: &nbsp;<br />StoredFilesController(&nbsp;<br />   <a target="_top" href="topic_000000000000012A.html" onclick="this.target='';return true;">ApplicationDbContext</a>^ <i>context</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.iconfiguration">IConfiguration</a>^ <i>configuration</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhostenvironment">IWebHostEnvironment</a>^ <i>env</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.usermanager-1">UserManager</a>&lt;<a target="_top" href="topic_000000000000013E.html" onclick="this.target='';return true;">ApplicationUser</a>^&gt;^ <i>userManager</i>,&nbsp;<br />   <a target="_top" href="topic_0000000000000194.html" onclick="this.target='';return true;">IFileAuditService</a>^ <i>fileAuditService</i>&nbsp;<br />) </pre>			
+					<pre xml:space="preserve" class="brush: cpp">[Authorize()]&nbsp;<br />public: &nbsp;<br /><a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.iactionresult">IActionResult</a>^&gt;^ Index() </pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -268,75 +268,14 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 	</div>
 
 
-<h4 class="subHeading">
-	Parameters</h4><dl paramName="context" class="parameterList">
-	<dt>
-		<span class="parameter">
-			context
-		</span>
-	</dt>
-	<dd>
-		<a target="_top" href="topic_000000000000012A.html" onclick="this.target='';return true;">ApplicationDbContext</a> 
-	</dd>
-</dl>
-<p>
-	Database context. 
-</p>
-<dl paramName="configuration" class="parameterList">
-	<dt>
-		<span class="parameter">
-			configuration
-		</span>
-	</dt>
-	<dd>
-		<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.iconfiguration">IConfiguration</a> 
-	</dd>
-</dl>
-<p>
-	Application configuration. 
-</p>
-<dl paramName="env" class="parameterList">
-	<dt>
-		<span class="parameter">
-			env
-		</span>
-	</dt>
-	<dd>
-		<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhostenvironment">IWebHostEnvironment</a> 
-	</dd>
-</dl>
-<p>
-	Web hosting environment. 
-</p>
-<dl paramName="userManager" class="parameterList">
-	<dt>
-		<span class="parameter">
-			userManager
-		</span>
-	</dt>
-	<dd>
-		<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.usermanager-1">UserManager</a>&lt;<a target="_top" href="topic_000000000000013E.html" onclick="this.target='';return true;">ApplicationUser</a>&gt; 
-	</dd>
-</dl>
-<p>
-	User manager for handling user-related operations. 
-</p>
-<dl paramName="fileAuditService" class="parameterList">
-	<dt>
-		<span class="parameter">
-			fileAuditService
-		</span>
-	</dt>
-	<dd>
-		<a target="_top" href="topic_0000000000000194.html" onclick="this.target='';return true;">IFileAuditService</a> 
-	</dd>
-</dl>
-<p>
-	Service for logging file-related actions. 
-</p>
 
-<p />
-
+	<h4 class="subHeading">
+		Return Value</h4>
+	<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.mvc.iactionresult">IActionResult</a>&gt; 
+		<p>
+		The index view. 
+	</p>
+	
 
 
 
@@ -424,7 +363,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
 	<div id="seeAlsoSection" class="section">	
 		<div>
-			<a href="topic_0000000000000110.html">StoredFilesController Class</a><br />
+			<a href="topic_000000000000010F.html">StoredFilesController Class</a><br />
 
 
 

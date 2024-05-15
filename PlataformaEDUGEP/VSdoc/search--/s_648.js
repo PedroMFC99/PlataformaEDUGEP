@@ -1,1 +1,1 @@
-search_result['648']=["topic_000000000000015A.html","Folder.ModificationDate Property","Gets or sets the date and time the folder was last modified."];
+search_result['648']=["topic_000000000000015A.html","Folder.IsHidden Property","Gets or sets a value indicating whether the folder is hidden from students."];

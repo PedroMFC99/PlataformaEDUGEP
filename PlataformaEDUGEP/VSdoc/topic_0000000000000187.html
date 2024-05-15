@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="GENERATOR" content="VSdocman - documentation generator; https://www.helixoft.com" />
 	<link rel="icon" href="favicon.ico">
-	<title>EmailSender Class</title>
+	<title>EmailSender Constructor</title>
 
 	<link rel="stylesheet" type="text/css" href="msdn2019/toc.css" />
 	<script src="msdn2019/toc.js"></script>
@@ -74,11 +74,11 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
   </div>
 
 <div id="mainBody">
-		<h1 class="title">EmailSender Class</h1>
+		<h1 class="title">EmailSender Constructor</h1>
         
 		<div class="metadata">
         Namespace:
-<a href="topic_0000000000000184.html">WebPWrecover.Services</a>
+<a href="topic_0000000000000183.html">WebPWrecover.Services</a>
 
 
 
@@ -89,7 +89,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
        
        
-        <summary-info>Service for sending emails through SendGrid.</summary-info>
+        <summary-info>Initializes a new instance of the <a target="_top" href="topic_0000000000000186.html" onclick="this.target='';return true;">EmailSender</a> class.</summary-info>
 
 
 
@@ -139,7 +139,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeVB">
-					<pre xml:space="preserve" class="brush: vb">Public Class EmailSender&nbsp;<br />    Implements <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.ui.services.iemailsender">IEmailSender</a></pre>			
+					<pre xml:space="preserve" class="brush: vb">Public Sub New( _&nbsp;<br />   ByVal <i>optionsAccessor</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.options.ioptions-1">IOptions</a>(Of <a target="_top" href="topic_0000000000000184.html" onclick="this.target='';return true;">AuthMessageSenderOptions</a>), _&nbsp;<br />   ByVal <i>logger</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>(Of <a target="_top" href="topic_0000000000000186.html" onclick="this.target='';return true;">EmailSender</a>) _&nbsp;<br />)</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -178,7 +178,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCsharp">
-					<pre xml:space="preserve" class="brush: csharp">public class EmailSender : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.ui.services.iemailsender">IEmailSender</a></pre>			
+					<pre xml:space="preserve" class="brush: csharp">public EmailSender(&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.options.ioptions-1">IOptions</a>&lt;<a target="_top" href="topic_0000000000000184.html" onclick="this.target='';return true;">AuthMessageSenderOptions</a>&gt; <i>optionsAccessor</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a target="_top" href="topic_0000000000000186.html" onclick="this.target='';return true;">EmailSender</a>&gt; <i>logger</i>&nbsp;<br />)</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -218,7 +218,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCpp">
-					<pre xml:space="preserve" class="brush: cpp">public ref class EmailSender  : public <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.ui.services.iemailsender">IEmailSender</a>^</pre>			
+					<pre xml:space="preserve" class="brush: cpp">public: &nbsp;<br />EmailSender(&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.options.ioptions-1">IOptions</a>&lt;<a target="_top" href="topic_0000000000000184.html" onclick="this.target='';return true;">AuthMessageSenderOptions</a>^&gt;^ <i>optionsAccessor</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a target="_top" href="topic_0000000000000186.html" onclick="this.target='';return true;">EmailSender</a>^&gt;^ <i>logger</i>&nbsp;<br />) </pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -257,7 +257,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeJScript">
-					<pre xml:space="preserve" class="brush: js">public class EmailSender&nbsp;<br />   implements <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.ui.services.iemailsender">IEmailSender</a></pre>			
+					<pre xml:space="preserve" class="brush: js">JScript does not support generic types and methods.</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -268,6 +268,36 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 	</div>
 
 
+<h4 class="subHeading">
+	Parameters</h4><dl paramName="optionsAccessor" class="parameterList">
+	<dt>
+		<span class="parameter">
+			optionsAccessor
+		</span>
+	</dt>
+	<dd>
+		<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.options.ioptions-1">IOptions</a>&lt;<a target="_top" href="topic_0000000000000184.html" onclick="this.target='';return true;">AuthMessageSenderOptions</a>&gt; 
+	</dd>
+</dl>
+<p>
+	The configuration options for SendGrid. 
+</p>
+<dl paramName="logger" class="parameterList">
+	<dt>
+		<span class="parameter">
+			logger
+		</span>
+	</dt>
+	<dd>
+		<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a target="_top" href="topic_0000000000000186.html" onclick="this.target='';return true;">EmailSender</a>&gt; 
+	</dd>
+</dl>
+<p>
+	The logger used to log information about email operations. 
+</p>
+
+<p />
+
 
 
 
@@ -284,200 +314,6 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
 	</div>
 </div>
-
-
-
-<div class="section_container">
-	<div class="section_heading">
-		<span><a href="javascript:void(0)" title="Collapse" onclick="toggleSection(this);">Constructors</a></span>
-		<div>&nbsp;</div>
-	</div>
-
-	<div id="ConstructorsSection" class="section">	
-  <table class="memberListTable">
-    <tr>
-      <th></th>
-      <th>
-        Name
-      </th>
-      <th>
-        Description
-      </th>
-    </tr>
-
-
-	
-			<tr class="
-	
-	
-	">
-	  <td>
-    <img alt="Public constructor" title="Public constructor" src="msdn2019/pubmethod.png"></img>
-
-	
-	    
-	  </td>
-	  <td>
-	    <a href="topic_0000000000000188.html">EmailSender(IOptions&lt;AuthMessageSenderOptions&gt;, ILogger&lt;EmailSender&gt;)</a>
-
-	  </td>
-	  <td>
-	
-	Initializes a new instance of the <a target="_top" href="topic_0000000000000187.html" onclick="this.target='';return true;">EmailSender</a> class.
-	
-		</td>
-	</tr>
-	
-
-
-  </table>
-
-  <a href="#mainBody">
-    Top
-  </a>
-
-	</div>					
-</div>
-
-<div class="section_container">
-	<div class="section_heading">
-		<span><a href="javascript:void(0)" title="Collapse" onclick="toggleSection(this);">Properties</a></span>
-		<div>&nbsp;</div>
-	</div>
-
-	<div id="PropertiesSection" class="section">	
-  <table class="memberListTable">
-    <tr>
-      <th></th>
-      <th>
-        Name
-      </th>
-      <th>
-        Description
-      </th>
-    </tr>
-
-
-	
-		<tr class="
-
-
-">
-	<td>
-<img alt="Public property" title="Public property" src="msdn2019/pubproperty.png"></img>
-
-
-    
-	</td>
-	<td>
-	<a href="topic_0000000000000189.html">Options</a>
-
-	</td>
-	<td>
-
-The SendGrid API key retrieved from application settings, used for sending emails.
-
-	</td>
-</tr>
-	
-
-
-  </table>
-
-  <a href="#mainBody">
-    Top
-  </a>
-
-	</div>					
-</div>
-
-
-
-
-
-
-<div class="section_container">
-	<div class="section_heading">
-		<span><a href="javascript:void(0)" title="Collapse" onclick="toggleSection(this);">Methods</a></span>
-		<div>&nbsp;</div>
-	</div>
-
-	<div id="MethodsSection" class="section">	
-  <table class="memberListTable">
-    <tr>
-      <th></th>
-      <th>
-        Name
-      </th>
-      <th>
-        Description
-      </th>
-    </tr>
-
-
-
-
-	<tr class="
-
-
-">
-	<td>
-<img alt="Public method" title="Public method" src="msdn2019/pubmethod.png"></img>
-
-
-    
-	</td>
-	<td>
-	<a href="topic_000000000000018A.html">SendEmailAsync(string, string, string)</a>
-
-	</td>
-	<td>
-
-Asynchronously sends an email using the specified SendGrid API key.
-
-	</td>
-</tr>
-
-
-
-
-
-
-  </table>
-
-  <a href="#mainBody">
-    Top
-  </a>
-
-	</div>					
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-<!-- Classes -->
-
-<!-- Classes End -->
-
-<!-- Standard Modules -->
-
-<!-- Standard Modules End -->
-
-  
-
-
-
 
 
 
@@ -541,7 +377,6 @@ Asynchronously sends an email using the specified SendGrid API key.
 	</div>					
 </div>
 
-
 <div class="section_container">
 	<div class="section_heading">
 		<span><a href="javascript:void(0)" title="Collapse" onclick="toggleSection(this);">See Also</a></span>
@@ -550,10 +385,14 @@ Asynchronously sends an email using the specified SendGrid API key.
 
 	<div id="seeAlsoSection" class="section">	
 		<div>
-	<a href="topic_0000000000000184.html">WebPWrecover.Services Namespace</a><br />
+			<a href="topic_0000000000000186.html">EmailSender Class</a><br />
 
 
-	
+
+<a href="topic_0000000000000183.html">WebPWrecover.Services Namespace</a><br />
+
+
+			
 
 		</div>
 	</div>					

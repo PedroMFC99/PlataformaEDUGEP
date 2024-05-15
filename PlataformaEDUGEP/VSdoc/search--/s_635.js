@@ -1,1 +1,1 @@
-search_result['635']=["topic_0000000000000152.html","FileAuditViewModel.ActionType Property","Gets or sets the type of action that was taken on the file."];
+search_result['635']=["topic_0000000000000152.html","FileAuditViewModel.StoredFileTitle Property","Gets or sets the title of the file at the time of the audit."];

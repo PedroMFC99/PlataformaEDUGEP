@@ -1,1 +1,1 @@
-search_result['694']=["topic_0000000000000174.html","Profile.User Property","Gets or sets the ApplicationUser associated with this profile."];
+search_result['694']=["topic_0000000000000174.html","StoredFile Class","Represents a file stored in the system, detailing its metadata and associations."];

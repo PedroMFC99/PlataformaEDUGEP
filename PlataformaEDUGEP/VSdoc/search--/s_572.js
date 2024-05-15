@@ -1,1 +1,1 @@
-search_result['572']=["topic_000000000000012A_vars--.html","ApplicationDbContext Fields",""];
+search_result['572']=["topic_000000000000012A.html","ApplicationDbContext Constructor","Initializes a new instance of ApplicationDbContext with the specified options."];

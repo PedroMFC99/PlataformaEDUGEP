@@ -1,1 +1,1 @@
-search_result['509']=["topic_0000000000000106_vars--.html","ProfilesController Fields",""];
+search_result['509']=["topic_0000000000000106.html","ProfilesController Constructor","Initializes a new instance of ProfilesController with necessary dependencies."];

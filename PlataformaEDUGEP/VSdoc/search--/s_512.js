@@ -1,1 +1,1 @@
-search_result['512']=["topic_0000000000000109.html","ProfilesController.Details Method","Displays details for a specific profile."];
+search_result['512']=["topic_0000000000000109.html","ProfilesController.Create  Method","Displays a form to create a new profile."];

@@ -1,1 +1,1 @@
-search_result['636']=["topic_0000000000000153.html","FileAuditViewModel.StoredFileTitle Property","Gets or sets the title of the file at the time of the audit."];
+search_result['636']=["topic_0000000000000153.html","FileAuditViewModel.FolderName Property","Gets or sets the name of the folder in which the audited file was located."];

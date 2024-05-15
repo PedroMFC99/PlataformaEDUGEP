@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="GENERATOR" content="VSdocman - documentation generator; https://www.helixoft.com" />
 	<link rel="icon" href="favicon.ico">
-	<title>EmailSender.Options Property</title>
+	<title>EmailSender.SendEmailAsync Method</title>
 
 	<link rel="stylesheet" type="text/css" href="msdn2019/toc.css" />
 	<script src="msdn2019/toc.js"></script>
@@ -74,11 +74,11 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
   </div>
 
 <div id="mainBody">
-		<h1 class="title">EmailSender.Options Property</h1>
+		<h1 class="title">EmailSender.SendEmailAsync Method</h1>
         
 		<div class="metadata">
         Namespace:
-<a href="topic_0000000000000184.html">WebPWrecover.Services</a>
+<a href="topic_0000000000000183.html">WebPWrecover.Services</a>
 
 
 
@@ -89,7 +89,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
        
        
-        <summary-info>The SendGrid API key retrieved from application settings, used for sending emails.</summary-info>
+        <summary-info>Asynchronously sends an email using the specified SendGrid API key.</summary-info>
 
 
 
@@ -139,7 +139,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeVB">
-					<pre xml:space="preserve" class="brush: vb">Public ReadOnly Property Options() As <a target="_top" href="topic_0000000000000185.html" onclick="this.target='';return true;">AuthMessageSenderOptions</a></pre>			
+					<pre xml:space="preserve" class="brush: vb">Public Function SendEmailAsync( _&nbsp;<br />   ByVal <i>toEmail</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>, _&nbsp;<br />   ByVal <i>subject</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>, _&nbsp;<br />   ByVal <i>message</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a> _&nbsp;<br />) As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a></pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -178,7 +178,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCsharp">
-					<pre xml:space="preserve" class="brush: csharp">public <a target="_top" href="topic_0000000000000185.html" onclick="this.target='';return true;">AuthMessageSenderOptions</a> Options {get;}</pre>			
+					<pre xml:space="preserve" class="brush: csharp">public <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> SendEmailAsync(&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">string</a> <i>toEmail</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">string</a> <i>subject</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">string</a> <i>message</i>&nbsp;<br />)</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -218,7 +218,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCpp">
-					<pre xml:space="preserve" class="brush: cpp">public: &nbsp;<br />property <a target="_top" href="topic_0000000000000185.html" onclick="this.target='';return true;">AuthMessageSenderOptions</a>^ Options {&nbsp;<br /> <a target="_top" href="topic_0000000000000185.html" onclick="this.target='';return true;">AuthMessageSenderOptions</a>^ get( );&nbsp;<br />}</pre>			
+					<pre xml:space="preserve" class="brush: cpp">public: &nbsp;<br /><a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a>^ SendEmailAsync(&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>^ <i>toEmail</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>^ <i>subject</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>^ <i>message</i>&nbsp;<br />) </pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -257,7 +257,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeJScript">
-					<pre xml:space="preserve" class="brush: js">public function get Options() : <a target="_top" href="topic_0000000000000185.html" onclick="this.target='';return true;">AuthMessageSenderOptions</a>;</pre>			
+					<pre xml:space="preserve" class="brush: js">public function SendEmailAsync(&nbsp;<br />    <i>toEmail</i> : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>,&nbsp;<br />    <i>subject</i> : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>,&nbsp;<br />    <i>message</i> : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>&nbsp;<br />) : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a>;</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -268,10 +268,55 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 	</div>
 
 
+<h4 class="subHeading">
+	Parameters</h4><dl paramName="toEmail" class="parameterList">
+	<dt>
+		<span class="parameter">
+			toEmail
+		</span>
+	</dt>
+	<dd>
+		<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">string</a> 
+	</dd>
+</dl>
+<p>
+	The recipient's email address. 
+</p>
+<dl paramName="subject" class="parameterList">
+	<dt>
+		<span class="parameter">
+			subject
+		</span>
+	</dt>
+	<dd>
+		<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">string</a> 
+	</dd>
+</dl>
+<p>
+	The subject of the email. 
+</p>
+<dl paramName="message" class="parameterList">
+	<dt>
+		<span class="parameter">
+			message
+		</span>
+	</dt>
+	<dd>
+		<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">string</a> 
+	</dd>
+</dl>
+<p>
+	The message body of the email, both in plain text and HTML format. 
+</p>
+
+<p />
 
 	<h4 class="subHeading">
-		Property Value</h4>
-	<a target="_top" href="topic_0000000000000185.html" onclick="this.target='';return true;">AuthMessageSenderOptions</a> 
+		Return Value</h4>
+	<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> 
+		<p>
+		A task that represents the asynchronous operation, containing information about the email operation success. 
+	</p>
 	
 
 
@@ -292,6 +337,38 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
 
 
+<div class="section_container">
+	<div class="section_heading">
+		<span><a href="javascript:void(0)" title="Collapse" onclick="toggleSection(this);">Exceptions</a></span>
+		<div>&nbsp;</div>
+	</div>
+
+	<div id="exceptionsSection" class="section">	
+	<table>
+		<tr>
+			<th>
+				Exception type
+			</th>
+			<th>
+				Condition
+			</th>
+		</tr>
+		<tr>
+			<td>
+				<p>
+<a href="#">Exception</a>
+				</p>
+			</td>
+			<td>
+				<p>
+					Thrown when the SendGrid API key is not set. 
+				</p>
+			</td>
+		</tr>
+			
+	</table>
+	</div>
+</div>
 
 
 
@@ -360,11 +437,11 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
 	<div id="seeAlsoSection" class="section">	
 		<div>
-			<a href="topic_0000000000000187.html">EmailSender Class</a><br />
+			<a href="topic_0000000000000186.html">EmailSender Class</a><br />
 
 
 
-<a href="topic_0000000000000184.html">WebPWrecover.Services Namespace</a><br />
+<a href="topic_0000000000000183.html">WebPWrecover.Services Namespace</a><br />
 
 
 			

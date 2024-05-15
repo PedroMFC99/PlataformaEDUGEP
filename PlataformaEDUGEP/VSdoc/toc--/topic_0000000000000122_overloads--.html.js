@@ -1,0 +1,1 @@
+var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001AB.html"],['314',"PlataformaEDUGEP.Controllers Namespace","topic_00000000000000EB.html"],['374',"TagsController Class","topic_000000000000011E.html"],['376',"Methods","topic_000000000000011E_methods--.html"],['377',"Create Method","topic_0000000000000122_overloads--.html"]];

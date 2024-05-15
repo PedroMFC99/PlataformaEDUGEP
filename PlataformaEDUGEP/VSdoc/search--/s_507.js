@@ -1,1 +1,1 @@
-search_result['507']=["topic_0000000000000106_methods--.html","ProfilesController Methods",""];
+search_result['507']=["topic_0000000000000105_props--.html","ProfilesController Properties",""];

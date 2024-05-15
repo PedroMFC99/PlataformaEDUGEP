@@ -1,1 +1,1 @@
-search_result['744']=["topic_000000000000018D.html","FileAuditService Constructor","Initializes a new instance of the FileAuditService class."];
+search_result['744']=["topic_000000000000018D.html","FileAuditService.RecordCreationAsync Method","Records the creation of a file in the audit log."];

@@ -1,1 +1,1 @@
-search_result['763']=["topic_0000000000000196.html","IFileAuditService.RecordDeletionAsync Method","Asynchronously records the deletion of a file."];
+search_result['763']=["topic_0000000000000196.html","IFileAuditService.RecordEditAsync Method","Asynchronously records the editing of a file."];

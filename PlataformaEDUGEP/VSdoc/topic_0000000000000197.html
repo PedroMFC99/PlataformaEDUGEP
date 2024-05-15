@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="GENERATOR" content="VSdocman - documentation generator; https://www.helixoft.com" />
 	<link rel="icon" href="favicon.ico">
-	<title>IFileAuditService.RecordEditAsync Method</title>
+	<title>IFolderAuditService Interface</title>
 
 	<link rel="stylesheet" type="text/css" href="msdn2019/toc.css" />
 	<script src="msdn2019/toc.js"></script>
@@ -74,11 +74,11 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
   </div>
 
 <div id="mainBody">
-		<h1 class="title">IFileAuditService.RecordEditAsync Method</h1>
+		<h1 class="title">IFolderAuditService Interface</h1>
         
 		<div class="metadata">
         Namespace:
-<a href="topic_000000000000018B.html">PlataformaEDUGEP.Services</a>
+<a href="topic_000000000000018A.html">PlataformaEDUGEP.Services</a>
 
 
 
@@ -89,7 +89,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
        
        
-        <summary-info>Asynchronously records the editing of a file.</summary-info>
+        <summary-info>Defines a service contract for recording audit trails for folder-related actions.</summary-info>
 
 
 
@@ -139,7 +139,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeVB">
-					<pre xml:space="preserve" class="brush: vb">Function RecordEditAsync( _&nbsp;<br />   ByVal <i>storedFile</i> As <a target="_top" href="topic_0000000000000175.html" onclick="this.target='';return true;">StoredFile</a>, _&nbsp;<br />   ByVal <i>userId</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a> _&nbsp;<br />) As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a></pre>			
+					<pre xml:space="preserve" class="brush: vb">Public Interface IFolderAuditService</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -178,7 +178,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCsharp">
-					<pre xml:space="preserve" class="brush: csharp"><a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> RecordEditAsync(&nbsp;<br />   <a target="_top" href="topic_0000000000000175.html" onclick="this.target='';return true;">StoredFile</a> <i>storedFile</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">string</a> <i>userId</i>&nbsp;<br />)</pre>			
+					<pre xml:space="preserve" class="brush: csharp">public interface IFolderAuditService</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -218,7 +218,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCpp">
-					<pre xml:space="preserve" class="brush: cpp">&nbsp;<br /><a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a>^ RecordEditAsync(&nbsp;<br />   <a target="_top" href="topic_0000000000000175.html" onclick="this.target='';return true;">StoredFile</a>^ <i>storedFile</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>^ <i>userId</i>&nbsp;<br />) </pre>			
+					<pre xml:space="preserve" class="brush: cpp">public interface class IFolderAuditService</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -257,7 +257,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeJScript">
-					<pre xml:space="preserve" class="brush: js">function RecordEditAsync(&nbsp;<br />    <i>storedFile</i> : <a target="_top" href="topic_0000000000000175.html" onclick="this.target='';return true;">StoredFile</a>,&nbsp;<br />    <i>userId</i> : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>&nbsp;<br />) : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a>;</pre>			
+					<pre xml:space="preserve" class="brush: js">public interface IFolderAuditService</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -268,43 +268,6 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 	</div>
 
 
-<h4 class="subHeading">
-	Parameters</h4><dl paramName="storedFile" class="parameterList">
-	<dt>
-		<span class="parameter">
-			storedFile
-		</span>
-	</dt>
-	<dd>
-		<a target="_top" href="topic_0000000000000175.html" onclick="this.target='';return true;">StoredFile</a> 
-	</dd>
-</dl>
-<p>
-	The file that was edited. 
-</p>
-<dl paramName="userId" class="parameterList">
-	<dt>
-		<span class="parameter">
-			userId
-		</span>
-	</dt>
-	<dd>
-		<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">string</a> 
-	</dd>
-</dl>
-<p>
-	The ID of the user who edited the file. 
-</p>
-
-<p />
-
-	<h4 class="subHeading">
-		Return Value</h4>
-	<a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> 
-		<p>
-		A task that represents the asynchronous operation of recording the file edit. 
-	</p>
-	
 
 
 
@@ -321,6 +284,98 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
 	</div>
 </div>
+
+
+
+
+
+
+
+
+
+
+<div class="section_container">
+	<div class="section_heading">
+		<span><a href="javascript:void(0)" title="Collapse" onclick="toggleSection(this);">Methods</a></span>
+		<div>&nbsp;</div>
+	</div>
+
+	<div id="MethodsSection" class="section">	
+  <table class="memberListTable">
+    <tr>
+      <th></th>
+      <th>
+        Name
+      </th>
+      <th>
+        Description
+      </th>
+    </tr>
+
+
+
+
+	<tr class="
+
+
+">
+	<td>
+<img alt="Public method" title="Public method" src="msdn2019/pubmethod.png"></img>
+
+
+    
+	</td>
+	<td>
+	<a href="topic_0000000000000198.html">LogAuditAsync(string, string, int, string)</a>
+
+	</td>
+	<td>
+
+Asynchronously logs an audit for a folder-related action.
+
+	</td>
+</tr>
+
+
+
+
+
+
+  </table>
+
+  <a href="#mainBody">
+    Top
+  </a>
+
+	</div>					
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+<!-- Classes -->
+
+<!-- Classes End -->
+
+<!-- Standard Modules -->
+
+<!-- Standard Modules End -->
+
+  
+
+
+
 
 
 
@@ -392,14 +447,10 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
 	<div id="seeAlsoSection" class="section">	
 		<div>
-			<a href="topic_0000000000000194.html">IFileAuditService Interface</a><br />
+	<a href="topic_000000000000018A.html">PlataformaEDUGEP.Services Namespace</a><br />
 
 
-
-<a href="topic_000000000000018B.html">PlataformaEDUGEP.Services Namespace</a><br />
-
-
-			
+	
 
 		</div>
 	</div>					

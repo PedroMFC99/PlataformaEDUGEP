@@ -1,1 +1,1 @@
-search_result['555']=["topic_0000000000000122.html","TagsController.Details Method","Displays details for a specific tag."];
+search_result['555']=["topic_0000000000000122.html","TagsController.Create  Method","Provides a view to create a new tag."];

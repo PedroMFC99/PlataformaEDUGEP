@@ -1,1 +1,1 @@
-c['502']=[['503',"FolderAuditService Constructor","topic_0000000000000192.html",0],['504',"Methods","topic_0000000000000191_methods--.html",1]];
+c['502']=[['503',"RecordCreationAsync Method","topic_0000000000000194.html",0],['504',"RecordDeletionAsync Method","topic_0000000000000195.html",0],['505',"RecordEditAsync Method","topic_0000000000000196.html",0]];

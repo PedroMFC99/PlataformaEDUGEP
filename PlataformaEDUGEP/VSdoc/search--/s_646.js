@@ -1,1 +1,1 @@
-search_result['646']=["topic_0000000000000158.html","Folder.User Property","Gets or sets the user who owns or created the folder."];
+search_result['646']=["topic_0000000000000158.html","Folder.CreationDate Property","Gets or sets the date and time the folder was created."];

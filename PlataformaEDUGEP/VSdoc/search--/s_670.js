@@ -1,1 +1,1 @@
-search_result['670']=["topic_0000000000000166_vars--.html","FolderAuditViewModel Fields",""];
+search_result['670']=["topic_0000000000000166.html","FolderAuditViewModel.FolderAuditId Property","Gets or sets the identifier for the folder audit record."];

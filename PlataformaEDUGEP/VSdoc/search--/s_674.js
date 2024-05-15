@@ -1,1 +1,1 @@
-search_result['674']=["topic_000000000000016A.html","FolderAuditViewModel.ActionTimestamp Property","Gets or sets the timestamp when the action was performed."];
+search_result['674']=["topic_000000000000016A.html","FolderAuditViewModel.FolderId Property","Gets or sets the identifier of the folder on which the action was taken."];

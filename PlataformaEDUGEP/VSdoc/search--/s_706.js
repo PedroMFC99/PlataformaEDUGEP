@@ -1,1 +1,1 @@
-search_result['706']=["topic_000000000000017B.html","StoredFile.FolderId Property","Gets or sets the identifier of the folder containing this file."];
+search_result['706']=["topic_000000000000017B.html","StoredFile.Folder Property","Gets or sets the folder that contains this file."];

@@ -1,1 +1,1 @@
-search_result['561']=["topic_0000000000000125_overloads--.html","TagsController.Edit Method","Provides a view to edit an existing tag."];
+search_result['561']=["topic_0000000000000125.html","TagsController.Edit (Int32, Tag) Method","Handles the update of an existing tag."];

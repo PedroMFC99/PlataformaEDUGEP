@@ -1,1 +1,1 @@
-search_result['533']=["topic_0000000000000114_overloads--.html","StoredFilesController.Create Method","Displays the view to create a new stored file."];
+search_result['533']=["topic_0000000000000114.html","StoredFilesController.Create (IFormFile, String, Nullable\u0026lt;Int32\u0026gt;) Method","Processes the request to create a new stored file."];

@@ -69,7 +69,7 @@ namespace PlataformaEDUGEP.Tests
             // Assert
             var audit = await _context.FileAudits.FirstOrDefaultAsync();
             Assert.NotNull(audit);
-            Assert.Equal("Remoção", audit.ActionType);
+            Assert.Equal("Exclusão", audit.ActionType);
             Assert.Equal("Delete Document", audit.StoredFileTitle);
             Assert.Equal("Test Folder", audit.FolderName);
         }

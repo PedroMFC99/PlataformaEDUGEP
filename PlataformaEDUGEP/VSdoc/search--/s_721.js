@@ -1,1 +1,1 @@
-search_result['721']=["topic_0000000000000185.html","AuthMessageSenderOptions Class","Represents configuration settings for authentication message sending services."];
+search_result['721']=["topic_0000000000000184_attached_props--.html","AuthMessageSenderOptions Attached Properties",""];

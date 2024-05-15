@@ -1,1 +1,1 @@
-search_result['563']=["topic_0000000000000126_overloads--.html","TagsController.Edit Method","Handles the update of an existing tag."];
+search_result['563']=["topic_0000000000000126.html","TagsController.Delete Method","Displays a confirmation dialog for deleting a tag."];

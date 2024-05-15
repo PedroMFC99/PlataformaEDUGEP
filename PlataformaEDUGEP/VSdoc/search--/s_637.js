@@ -1,1 +1,1 @@
-search_result['637']=["topic_0000000000000154.html","FileAuditViewModel.FolderName Property","Gets or sets the name of the folder in which the audited file was located."];
+search_result['637']=["topic_0000000000000154.html","Folder Class","Represents a folder within the system, which can contain files and be liked or tagged by users."];

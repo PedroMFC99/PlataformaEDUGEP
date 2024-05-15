@@ -1,1 +1,1 @@
-search_result['522']=["topic_000000000000010F.html","ProfilesController.DeleteConfirmed Method","Processes the deletion of a profile after confirmation."];
+search_result['522']=["topic_000000000000010F.html","StoredFilesController Class","Controller responsible for handling operations related to stored files."];

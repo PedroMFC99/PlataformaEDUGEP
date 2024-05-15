@@ -1,1 +1,1 @@
-var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001A0.html"],['392',"PlataformaEDUGEP.Data Namespace","topic_0000000000000129.html"],['393',"ApplicationDbContext Class","topic_000000000000012A.html"],['403',"Methods","topic_000000000000012A_methods--.html"],['404',"OnModelCreating Method","topic_0000000000000133.html"]];
+var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001AB.html"],['400',"PlataformaEDUGEP.Enums Namespace","topic_0000000000000133.html"]];

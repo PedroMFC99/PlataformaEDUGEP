@@ -1,1 +1,1 @@
-search_result['573']=["topic_000000000000012B.html","ApplicationDbContext Constructor","Initializes a new instance of ApplicationDbContext with the specified options."];
+search_result['573']=["topic_000000000000012B.html","ApplicationDbContext.Folder Property","Gets or sets the database set for folders."];

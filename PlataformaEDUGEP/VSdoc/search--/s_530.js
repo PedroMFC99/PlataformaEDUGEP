@@ -1,1 +1,1 @@
-search_result['530']=["topic_0000000000000112.html","StoredFilesController.Index Method","Displays the index page listing all stored files."];
+search_result['530']=["topic_0000000000000112.html","StoredFilesController.Details Method","Displays the details of a specific stored file."];

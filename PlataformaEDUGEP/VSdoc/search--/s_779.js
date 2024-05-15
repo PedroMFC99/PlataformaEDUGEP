@@ -1,1 +1,1 @@
-search_result['779']=["topic_000000000000019C.html","TimeZoneHelper.ConvertUtcToLondonTime Method","Converts a UTC DateTime to London time."];
+search_result['779']=["topic_000000000000019C.html","CustomIdentityErrorDescriber.PasswordRequiresUpper Method","Returns an IdentityError indicating a password validation failure\r\ndue to the lack of an uppercase character."];

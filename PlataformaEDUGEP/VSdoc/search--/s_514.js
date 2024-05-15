@@ -1,1 +1,1 @@
-search_result['514']=["topic_000000000000010A_overloads--.html","ProfilesController.Create Method","Displays a form to create a new profile."];
+search_result['514']=["topic_000000000000010A.html","ProfilesController.Create (Profile) Method","Processes the creation of a profile."];

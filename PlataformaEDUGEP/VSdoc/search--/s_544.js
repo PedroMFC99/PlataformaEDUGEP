@@ -1,1 +1,1 @@
-search_result['544']=["topic_000000000000011C.html","StoredFilesController.AjaxDeleteFile Method","Handles the deletion of a file via an AJAX request."];
+search_result['544']=["topic_000000000000011C.html","StoredFilesController.FileAuditLog Method","Displays a log of all file audits, with options for filtering and sorting."];

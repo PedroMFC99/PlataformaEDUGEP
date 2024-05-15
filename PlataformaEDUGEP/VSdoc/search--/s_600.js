@@ -1,1 +1,1 @@
-search_result['600']=["topic_000000000000013E_vars--.html","ApplicationUser Fields",""];
+search_result['600']=["topic_000000000000013E.html","ApplicationUser.FullName Property","Gets or sets the full name of the user, used for display purposes throughout the application."];

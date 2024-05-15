@@ -1,1 +1,1 @@
-search_result['772']=["topic_000000000000019A.html","PlataformaEDUGEP.AuxilliaryClasses Namespace",""];
+search_result['772']=["topic_000000000000019A.html","CustomIdentityErrorDescriber Class","Provides custom error descriptions for identity-related errors."];

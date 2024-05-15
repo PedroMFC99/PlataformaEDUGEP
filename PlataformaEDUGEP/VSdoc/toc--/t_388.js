@@ -1,1 +1,1 @@
-c['388']=[['389',"Edit(Nullable\u003cInt32\u003e) Method","topic_0000000000000125.html",0],['390',"Edit(int, Tag) Method","topic_0000000000000126.html",0]];
+c['388']=[['389',"ApplicationDbContext Constructor","topic_000000000000012A.html",0],['390',"Properties","topic_0000000000000129_props--.html",1],['398',"Methods","topic_0000000000000129_methods--.html",1]];

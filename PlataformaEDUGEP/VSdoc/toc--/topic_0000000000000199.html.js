@@ -1,1 +1,1 @@
-var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001A0.html"],['495',"PlataformaEDUGEP.Services Namespace","topic_000000000000018B.html"],['511',"IFolderAuditService Interface","topic_0000000000000198.html"],['512',"Methods","topic_0000000000000198_methods--.html"],['513',"LogAuditAsync Method","topic_0000000000000199.html"]];
+var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001AB.html"],['509',"PlataformaEDUGEP.Utilities Namespace","topic_0000000000000199.html"]];

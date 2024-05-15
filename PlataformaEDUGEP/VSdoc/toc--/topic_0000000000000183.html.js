@@ -1,1 +1,1 @@
-var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001A0.html"],['413',"PlataformaEDUGEP.Models Namespace","topic_000000000000013D.html"],['490',"Tag Class","topic_0000000000000180.html"],['491',"Properties","topic_0000000000000180_props--.html"],['492',"Folders Property","topic_0000000000000183.html"]];
+var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001AB.html"],['526',"WebPWrecover.Services Namespace","topic_0000000000000183.html"]];

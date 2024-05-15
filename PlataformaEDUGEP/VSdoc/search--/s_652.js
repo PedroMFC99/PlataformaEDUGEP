@@ -1,1 +1,1 @@
-search_result['652']=["topic_000000000000015E.html","Folder.Tags Property","Gets or sets the collection of tags associated with the folder."];
+search_result['652']=["topic_000000000000015E.html","FolderAudit Class","Represents an audit record for folder-related actions performed within the system.\r\nThis class is used to log and monitor operations such as creation, modification, or deletion of folders."];

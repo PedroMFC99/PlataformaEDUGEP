@@ -1,1 +1,1 @@
-search_result['734']=["topic_0000000000000188.html","EmailSender Constructor","Initializes a new instance of the EmailSender class."];
+search_result['734']=["topic_0000000000000188.html","EmailSender.Options Property","The SendGrid API key retrieved from application settings, used for sending emails."];

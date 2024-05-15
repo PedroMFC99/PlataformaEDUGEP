@@ -1,1 +1,1 @@
-search_result['604']=["topic_0000000000000142.html","ApplicationUser.LikedFolders Property","Gets or sets the collection of folders that the user has marked as liked, which can enhance personalized experiences."];
+search_result['604']=["topic_0000000000000142.html","ErrorViewModel Class","Represents the model for handling errors within the application.\r\nThis model is typically used to pass error information to the view."];

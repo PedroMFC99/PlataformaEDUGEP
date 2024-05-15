@@ -1,1 +1,1 @@
-var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001A0.html"],['318',"PlataformaEDUGEP.Controllers Namespace","topic_00000000000000EB.html"],['361',"StoredFilesController Class","topic_0000000000000110.html"]];
+var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001AB.html"],['314',"PlataformaEDUGEP.Controllers Namespace","topic_00000000000000EB.html"],['356',"StoredFilesController Class","topic_000000000000010F.html"],['357',"StoredFilesController Constructor","topic_0000000000000110.html"]];

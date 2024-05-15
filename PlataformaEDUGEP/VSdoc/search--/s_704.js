@@ -1,1 +1,1 @@
-search_result['704']=["topic_0000000000000179.html","StoredFile.UploadDate Property","Gets or sets the date and time the file was uploaded."];
+search_result['704']=["topic_0000000000000179.html","StoredFile.FileData Property","Gets or sets the form file data, not mapped to the database, used for file upload operations."];

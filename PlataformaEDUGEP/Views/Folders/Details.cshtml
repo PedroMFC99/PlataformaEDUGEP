@@ -323,9 +323,7 @@ else
 
     <script>
         $(document).ready(function () {
-            // Example of populating the folder dropdown
-            // Assuming `folders` is available and contains your folders data
-            var folders = @Html.Raw(ViewBag.FoldersJson); // Make sure to encode your folders data into a ViewBag in your controller
+            var folders = @Html.Raw(ViewBag.FoldersJson); 
             folders.forEach(function (folder) {
                 $('#editFolderId').append(new Option(folder.Name, folder.FolderId));
             });
@@ -376,7 +374,7 @@ else
                 error: function (xhr, status, error) {
                     var errorMessage = xhr.status + ': ' + xhr.statusText;
                     console.log('Error - ' + errorMessage);
-                    // It might be helpful to show this error in a user-friendly manner
+                    // Show this error in a user-friendly manner
                     alert('Error - ' + errorMessage);
                 }
             });
@@ -428,7 +426,7 @@ else
                 }
             }
 
-            // Assign IDs to your input fields for easier selection
+            // Assign IDs to input fields for easier selection
             $('input[name="fileTitle"]').attr('id', 'fileTitleInput');
             $('input[name="addedBy"]').attr('id', 'addedByInput');
 

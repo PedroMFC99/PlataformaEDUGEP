@@ -1,1 +1,1 @@
-search_result['594']=["topic_000000000000013D.html","PlataformaEDUGEP.Models Namespace",""];
+search_result['594']=["topic_000000000000013D.html","ApplicationUser Class","Represents a user of the application, extending the IdentityUser with custom properties specific to this platform."];

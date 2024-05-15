@@ -1,1 +1,1 @@
-search_result['710']=["topic_000000000000017F.html","StoredFile.LastEditorFullName Property","Gets or sets the full name of the last editor of the file."];
+search_result['710']=["topic_000000000000017F.html","Tag Class","Represents a tag that can be assigned to folders to categorize or describe them."];

@@ -1,1 +1,1 @@
-search_result['726']=["topic_0000000000000185_vars--.html","AuthMessageSenderOptions Fields",""];
+search_result['726']=["topic_0000000000000185.html","AuthMessageSenderOptions.SendGridKey Property","Gets or sets the API key for SendGrid, used for sending emails."];

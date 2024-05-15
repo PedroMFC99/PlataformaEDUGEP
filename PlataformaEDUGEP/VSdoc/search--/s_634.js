@@ -1,1 +1,1 @@
-search_result['634']=["topic_0000000000000151.html","FileAuditViewModel.UserName Property","Gets or sets the name of the user who performed the action."];
+search_result['634']=["topic_0000000000000151.html","FileAuditViewModel.ActionType Property","Gets or sets the type of action that was taken on the file."];

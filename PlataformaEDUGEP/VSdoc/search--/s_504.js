@@ -1,1 +1,1 @@
-search_result['504']=["topic_0000000000000106.html","ProfilesController Class","Manages user profiles within the application, providing methods for CRUD operations and details viewing."];
+search_result['504']=["topic_0000000000000105_attached_props--.html","ProfilesController Attached Properties",""];

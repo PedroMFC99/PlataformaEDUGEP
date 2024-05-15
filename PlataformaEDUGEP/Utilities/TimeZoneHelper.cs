@@ -1,4 +1,4 @@
-﻿namespace PlataformaEDUGEP.AuxilliaryClasses
+﻿namespace PlataformaEDUGEP.Utilities
 {
     /// <summary>
     /// Provides methods for time zone conversion.

@@ -1,1 +1,1 @@
-search_result['693']=["topic_0000000000000173.html","Profile.Id Property","Gets or sets the identifier for the Profile."];
+search_result['693']=["topic_0000000000000173.html","Profile.User Property","Gets or sets the ApplicationUser associated with this profile."];

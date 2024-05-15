@@ -1,1 +1,1 @@
-search_result['717']=["topic_0000000000000181.html","Tag.TagId Property","Gets or sets the unique identifier for the tag."];
+search_result['717']=["topic_0000000000000181.html","Tag.Name Property","Gets or sets the name of the tag."];

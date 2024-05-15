@@ -1,1 +1,1 @@
-search_result['649']=["topic_000000000000015B.html","Folder.IsHidden Property","Gets or sets a value indicating whether the folder is hidden from students."];
+search_result['649']=["topic_000000000000015B.html","Folder.StoredFiles Property","Gets or sets the collection of files stored within the folder."];

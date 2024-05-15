@@ -1,1 +1,1 @@
-search_result['620']=["topic_0000000000000148.html","FileAudit.Timestamp Property","Gets or sets the timestamp when the action was performed."];
+search_result['620']=["topic_0000000000000148.html","FileAudit.UserId Property","Gets or sets the user identifier of the user who performed the action."];

@@ -1,1 +1,1 @@
-search_result['661']=["topic_0000000000000162.html","FolderAudit.ActionType Property","Gets or sets the type of action that was performed on the folder."];
+search_result['661']=["topic_0000000000000162.html","FolderAudit.ActionTimestamp Property","Gets or sets the timestamp when the action was performed."];

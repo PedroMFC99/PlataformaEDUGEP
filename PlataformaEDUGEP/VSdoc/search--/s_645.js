@@ -1,1 +1,1 @@
-search_result['645']=["topic_0000000000000157.html","Folder.Name Property","Gets or sets the name of the folder."];
+search_result['645']=["topic_0000000000000157.html","Folder.User Property","Gets or sets the user who owns or created the folder."];

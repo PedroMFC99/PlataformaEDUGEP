@@ -1,1 +1,1 @@
-search_result['510']=["topic_0000000000000107.html","ProfilesController Constructor","Initializes a new instance of ProfilesController with necessary dependencies."];
+search_result['510']=["topic_0000000000000107.html","ProfilesController.Index Method","Displays the main view of profiles listing all available profiles."];

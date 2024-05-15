@@ -1,1 +1,1 @@
-search_result['770']=["topic_0000000000000198_vars--.html","IFolderAuditService Fields",""];
+search_result['770']=["topic_0000000000000198.html","IFolderAuditService.LogAuditAsync Method","Asynchronously logs an audit for a folder-related action."];

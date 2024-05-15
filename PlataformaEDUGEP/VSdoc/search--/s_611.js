@@ -1,1 +1,1 @@
-search_result['611']=["topic_0000000000000144.html","ErrorViewModel.RequestId Property","Gets or sets the unique request ID associated with the error, if any."];
+search_result['611']=["topic_0000000000000144.html","ErrorViewModel.ShowRequestId Property","Determines whether the request ID should be shown in the error view."];

@@ -1,1 +1,1 @@
-search_result['500']=["topic_0000000000000102.html","HomeController.Privacy Method","Displays the Privacy policy page."];
+search_result['500']=["topic_0000000000000102.html","HomeController.About Method","Displays the About page."];

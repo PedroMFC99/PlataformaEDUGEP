@@ -1,1 +1,1 @@
-search_result['660']=["topic_0000000000000161.html","FolderAudit.UserId Property","Gets or sets the identifier of the user who performed the action."];
+search_result['660']=["topic_0000000000000161.html","FolderAudit.ActionType Property","Gets or sets the type of action that was performed on the folder."];

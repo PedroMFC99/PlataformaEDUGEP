@@ -1,1 +1,1 @@
-search_result['676']=["topic_000000000000016C.html","FolderAuditViewModel.FolderName Property","Gets or sets the name of the folder at the time the action was taken."];
+search_result['676']=["topic_000000000000016C.html","FolderLike Class","Represents a record of a user\u0027s \"like\" action on a specific folder within the application.\r\nThis class facilitates tracking user interactions with folders, enhancing features such as the user list of ..."];

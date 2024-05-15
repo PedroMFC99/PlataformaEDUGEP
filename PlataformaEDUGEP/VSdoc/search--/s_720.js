@@ -1,1 +1,1 @@
-search_result['720']=["topic_0000000000000184.html","WebPWrecover.Services Namespace",""];
+search_result['720']=["topic_0000000000000184.html","AuthMessageSenderOptions Class","Represents configuration settings for authentication message sending services."];

@@ -1,1 +1,1 @@
-search_result['520']=["topic_000000000000010D_overloads--.html","ProfilesController.Edit Method","Processes the update of a profile."];
+search_result['520']=["topic_000000000000010D.html","ProfilesController.Delete Method","Displays a confirmation dialog for deleting a profile."];

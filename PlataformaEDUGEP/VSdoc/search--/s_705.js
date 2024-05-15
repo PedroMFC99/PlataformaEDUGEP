@@ -1,1 +1,1 @@
-search_result['705']=["topic_000000000000017A.html","StoredFile.FileData Property","Gets or sets the form file data, not mapped to the database, used for file upload operations."];
+search_result['705']=["topic_000000000000017A.html","StoredFile.FolderId Property","Gets or sets the identifier of the folder containing this file."];

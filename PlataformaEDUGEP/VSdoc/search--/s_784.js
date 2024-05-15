@@ -1,1 +1,1 @@
-search_result['784']=["topic_000000000000019E_methods--.html","Configurations Methods",""];
+search_result['784']=["topic_00000000000001A1.html","CustomIdentityErrorDescriber.DuplicateUserName Method","Returns an IdentityError indicating a duplicate user name."];

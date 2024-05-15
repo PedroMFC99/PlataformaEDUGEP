@@ -1,1 +1,1 @@
-var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001A0.html"],['413',"PlataformaEDUGEP.Models Namespace","topic_000000000000013D.html"],['478',"StoredFile Class","topic_0000000000000175.html"],['479',"Properties","topic_0000000000000175_props--.html"],['483',"LastEditorFullName Property","topic_000000000000017F.html"]];
+var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001AB.html"],['408',"PlataformaEDUGEP.Models Namespace","topic_000000000000013C.html"],['485',"Tag Class","topic_000000000000017F.html"]];

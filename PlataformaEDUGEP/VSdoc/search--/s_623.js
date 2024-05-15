@@ -1,1 +1,1 @@
-search_result['623']=["topic_000000000000014B.html","FileAudit.FileId Property","Gets or sets the file identifier of the file on which the action was performed."];
+search_result['623']=["topic_000000000000014B.html","FileAudit.StoredFileTitle Property","Gets or sets the title of the file at the time the audit was recorded."];

@@ -1,1 +1,1 @@
-search_result['677']=["topic_000000000000016D.html","FolderLike Class","Represents a record of a user\u0027s \"like\" action on a specific folder within the application.\r\nThis class facilitates tracking user interactions with folders, enhancing features such as the user list of ..."];
+search_result['677']=["topic_000000000000016C_attached_props--.html","FolderLike Attached Properties",""];

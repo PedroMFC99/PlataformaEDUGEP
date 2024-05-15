@@ -1,1 +1,1 @@
-search_result['686']=["topic_0000000000000171.html","FolderLike.Folder Property","Gets or sets the folder that was liked."];
+search_result['686']=["topic_0000000000000171.html","Profile Class","Represents a profile associated with a user in the application.\r\nThis class may be used to extend user information and customization beyond the basic ApplicationUser properties."];

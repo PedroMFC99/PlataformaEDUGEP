@@ -1,1 +1,1 @@
-search_result['664']=["topic_0000000000000165.html","FolderAudit.FolderName Property","Gets or sets the name of the folder at the time the action was taken."];
+search_result['664']=["topic_0000000000000165.html","FolderAuditViewModel Class","A view model representing a user-friendly version of a folder audit record for display in the application interface.\r\nThis model is designed to simplify the presentation of folder audit details to use..."];

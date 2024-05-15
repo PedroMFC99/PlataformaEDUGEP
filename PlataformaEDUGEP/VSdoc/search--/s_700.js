@@ -1,1 +1,1 @@
-search_result['700']=["topic_0000000000000175_vars--.html","StoredFile Fields",""];
+search_result['700']=["topic_0000000000000175.html","StoredFile.StoredFileId Property","Gets or sets the identifier for the stored file."];

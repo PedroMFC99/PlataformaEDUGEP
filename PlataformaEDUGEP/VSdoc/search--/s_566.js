@@ -1,1 +1,1 @@
-search_result['566']=["topic_0000000000000129.html","PlataformaEDUGEP.Data Namespace",""];
+search_result['566']=["topic_0000000000000129.html","ApplicationDbContext Class","Represents the Entity Framework database context for the application, integrating Identity Framework for user management."];

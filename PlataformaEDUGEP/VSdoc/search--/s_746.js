@@ -1,1 +1,1 @@
-search_result['746']=["topic_000000000000018F.html","FileAuditService.RecordDeletionAsync Method","Records the deletion of a file in the audit log."];
+search_result['746']=["topic_000000000000018F.html","FileAuditService.RecordEditAsync Method","Records the editing of a file in the audit log."];

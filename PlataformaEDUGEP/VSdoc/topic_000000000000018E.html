@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="GENERATOR" content="VSdocman - documentation generator; https://www.helixoft.com" />
 	<link rel="icon" href="favicon.ico">
-	<title>FileAuditService.RecordCreationAsync Method</title>
+	<title>FileAuditService.RecordDeletionAsync Method</title>
 
 	<link rel="stylesheet" type="text/css" href="msdn2019/toc.css" />
 	<script src="msdn2019/toc.js"></script>
@@ -74,11 +74,11 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
   </div>
 
 <div id="mainBody">
-		<h1 class="title">FileAuditService.RecordCreationAsync Method</h1>
+		<h1 class="title">FileAuditService.RecordDeletionAsync Method</h1>
         
 		<div class="metadata">
         Namespace:
-<a href="topic_000000000000018B.html">PlataformaEDUGEP.Services</a>
+<a href="topic_000000000000018A.html">PlataformaEDUGEP.Services</a>
 
 
 
@@ -89,7 +89,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
        
        
-        <summary-info>Records the creation of a file in the audit log.</summary-info>
+        <summary-info>Records the deletion of a file in the audit log.</summary-info>
 
 
 
@@ -139,7 +139,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeVB">
-					<pre xml:space="preserve" class="brush: vb">Public Function RecordCreationAsync( _&nbsp;<br />   ByVal <i>storedFile</i> As <a target="_top" href="topic_0000000000000175.html" onclick="this.target='';return true;">StoredFile</a>, _&nbsp;<br />   ByVal <i>userId</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a> _&nbsp;<br />) As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a></pre>			
+					<pre xml:space="preserve" class="brush: vb">Public Function RecordDeletionAsync( _&nbsp;<br />   ByVal <i>storedFile</i> As <a target="_top" href="topic_0000000000000174.html" onclick="this.target='';return true;">StoredFile</a>, _&nbsp;<br />   ByVal <i>userId</i> As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a> _&nbsp;<br />) As <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a></pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -178,7 +178,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCsharp">
-					<pre xml:space="preserve" class="brush: csharp">public <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> RecordCreationAsync(&nbsp;<br />   <a target="_top" href="topic_0000000000000175.html" onclick="this.target='';return true;">StoredFile</a> <i>storedFile</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">string</a> <i>userId</i>&nbsp;<br />)</pre>			
+					<pre xml:space="preserve" class="brush: csharp">public <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> RecordDeletionAsync(&nbsp;<br />   <a target="_top" href="topic_0000000000000174.html" onclick="this.target='';return true;">StoredFile</a> <i>storedFile</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">string</a> <i>userId</i>&nbsp;<br />)</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -218,7 +218,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeCpp">
-					<pre xml:space="preserve" class="brush: cpp">public: &nbsp;<br /><a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a>^ RecordCreationAsync(&nbsp;<br />   <a target="_top" href="topic_0000000000000175.html" onclick="this.target='';return true;">StoredFile</a>^ <i>storedFile</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>^ <i>userId</i>&nbsp;<br />) </pre>			
+					<pre xml:space="preserve" class="brush: cpp">public: &nbsp;<br /><a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a>^ RecordDeletionAsync(&nbsp;<br />   <a target="_top" href="topic_0000000000000174.html" onclick="this.target='';return true;">StoredFile</a>^ <i>storedFile</i>,&nbsp;<br />   <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>^ <i>userId</i>&nbsp;<br />) </pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -257,7 +257,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 				</div>
 				
 				<div class="codeSnippetCode codeJScript">
-					<pre xml:space="preserve" class="brush: js">public function RecordCreationAsync(&nbsp;<br />    <i>storedFile</i> : <a target="_top" href="topic_0000000000000175.html" onclick="this.target='';return true;">StoredFile</a>,&nbsp;<br />    <i>userId</i> : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>&nbsp;<br />) : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a>;</pre>			
+					<pre xml:space="preserve" class="brush: js">public function RecordDeletionAsync(&nbsp;<br />    <i>storedFile</i> : <a target="_top" href="topic_0000000000000174.html" onclick="this.target='';return true;">StoredFile</a>,&nbsp;<br />    <i>userId</i> : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.string">String</a>&nbsp;<br />) : <a target="_top" href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a>;</pre>			
 				</div>
 				<div class="codeSnippetCode codeNA">
 					<pre xml:space="preserve">This language is not supported or no code example is available.</pre>			
@@ -276,11 +276,11 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 		</span>
 	</dt>
 	<dd>
-		<a target="_top" href="topic_0000000000000175.html" onclick="this.target='';return true;">StoredFile</a> 
+		<a target="_top" href="topic_0000000000000174.html" onclick="this.target='';return true;">StoredFile</a> 
 	</dd>
 </dl>
 <p>
-	The file that was created. 
+	The file that was deleted. 
 </p>
 <dl paramName="userId" class="parameterList">
 	<dt>
@@ -293,7 +293,7 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 	</dd>
 </dl>
 <p>
-	The ID of the user who created the file. 
+	The ID of the user who deleted the file. 
 </p>
 
 <p />
@@ -392,11 +392,11 @@ document.write(getCssCustomProperty('--headerTopCustomLineHtml'));
 
 	<div id="seeAlsoSection" class="section">	
 		<div>
-			<a href="topic_000000000000018C.html">FileAuditService Class</a><br />
+			<a href="topic_000000000000018B.html">FileAuditService Class</a><br />
 
 
 
-<a href="topic_000000000000018B.html">PlataformaEDUGEP.Services Namespace</a><br />
+<a href="topic_000000000000018A.html">PlataformaEDUGEP.Services Namespace</a><br />
 
 
 			

@@ -1,1 +1,1 @@
-var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001A0.html"],['514',"WebPWrecover.Services Namespace","topic_0000000000000184.html"],['518',"EmailSender Class","topic_0000000000000187.html"],['522',"Methods","topic_0000000000000187_methods--.html"],['523',"SendEmailAsync Method","topic_000000000000018A.html"]];
+var breadcrumbs=[['-1',"",""],['2',"PlataformaEDUGEP Reference","topic_00000000000001AB.html"],['490',"PlataformaEDUGEP.Services Namespace","topic_000000000000018A.html"]];

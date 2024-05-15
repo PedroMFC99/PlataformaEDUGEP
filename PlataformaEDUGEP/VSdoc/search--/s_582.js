@@ -1,1 +1,1 @@
-search_result['582']=["topic_0000000000000134.html","PlataformaEDUGEP.Enums Namespace",""];
+search_result['582']=["topic_0000000000000134.html","RoleType Enumeration","Defines the roles available within the application, categorizing users based on their responsibilities and access levels."];

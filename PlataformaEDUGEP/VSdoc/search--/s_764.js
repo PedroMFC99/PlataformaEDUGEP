@@ -1,1 +1,1 @@
-search_result['764']=["topic_0000000000000197.html","IFileAuditService.RecordEditAsync Method","Asynchronously records the editing of a file."];
+search_result['764']=["topic_0000000000000197.html","IFolderAuditService Interface","Defines a service contract for recording audit trails for folder-related actions."];
