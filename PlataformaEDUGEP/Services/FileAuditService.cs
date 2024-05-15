@@ -1,4 +1,4 @@
-﻿using PlataformaEDUGEP.AuxilliaryClasses;
+﻿using PlataformaEDUGEP.Utilities;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
 

@@ -5,7 +5,7 @@ using Xunit;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
 using PlataformaEDUGEP.Services;
-using PlataformaEDUGEP.AuxilliaryClasses;
+using PlataformaEDUGEP.Utilities;
 
 namespace PlataformaEDUGEP.Tests
 {
