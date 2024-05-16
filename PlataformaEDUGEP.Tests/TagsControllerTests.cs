@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using PlataformaEDUGEP.Controllers;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
@@ -16,6 +19,7 @@ namespace PlataformaEDUGEP.Tests
     {
         private readonly ApplicationDbContext _context;
         private readonly TagsController _controller;
+        private readonly Mock<ICompositeViewEngine> _mockViewEngine;
 
         public TagsControllerTests()
         {
@@ -25,8 +29,21 @@ namespace PlataformaEDUGEP.Tests
 
             _context = new ApplicationDbContext(options);
 
+            // Initialize the mock view engine
+            _mockViewEngine = new Mock<ICompositeViewEngine>();
+            _mockViewEngine
+                .Setup(engine => engine.FindView(It.IsAny<ActionContext>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns((ActionContext context, string viewName, bool isMainPage) =>
+                {
+                    if (viewName == "NonExistentView")
+                    {
+                        return ViewEngineResult.NotFound(viewName, new List<string> { "NonExistentView" });
+                    }
+                    return ViewEngineResult.Found(viewName, Mock.Of<IView>());
+                });
+
             // Initialize the controller and set up a default context
-            _controller = new TagsController(_context);
+            _controller = new TagsController(_context, _mockViewEngine.Object);
             _controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()
@@ -156,6 +173,50 @@ namespace PlataformaEDUGEP.Tests
             var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Index", redirectToActionResult.ActionName);
             Assert.False(_context.Tags.Any(t => t.TagId == tagIdToDelete));
+        }
+
+        [Fact]
+        public void Create_Get_ViewDoesNotExist_ReturnsRedirectToError404()
+        {
+            // Arrange
+            _mockViewEngine
+                .Setup(engine => engine.FindView(It.IsAny<ActionContext>(), "Create", false))
+                .Returns(ViewEngineResult.NotFound("Create", new List<string> { "Create" }));
+
+            // Act
+            var result = _controller.Create();
+
+            // Assert
+            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Error404", redirectToActionResult.ActionName);
+            Assert.Equal("Home", redirectToActionResult.ControllerName);
+        }
+
+        [Fact]
+        public async Task Edit_Post_InvalidId_ReturnsNotFound()
+        {
+            // Arrange
+            var nonExistentTagId = 999;
+            var tag = new Tag { TagId = nonExistentTagId, Name = "Updated Tag" };
+
+            // Act
+            var result = await _controller.Edit(nonExistentTagId, tag);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task Delete_TagNotFound_ReturnsNotFound()
+        {
+            // Arrange
+            var nonExistentTagId = 999;
+
+            // Act
+            var result = await _controller.Delete(nonExistentTagId);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
         }
     }
 }

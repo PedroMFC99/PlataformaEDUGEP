@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.EntityFrameworkCore;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
@@ -12,14 +13,17 @@ namespace PlataformaEDUGEP.Controllers
     public class TagsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ICompositeViewEngine _viewEngine;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TagsController"/> class.
         /// </summary>
         /// <param name="context">The database context used for tag management.</param>
-        public TagsController(ApplicationDbContext context)
+        /// <param name="viewEngine">The view engine used to check for view existence.</param>
+        public TagsController(ApplicationDbContext context, ICompositeViewEngine viewEngine)
         {
             _context = context;
+            _viewEngine = viewEngine;
         }
 
         /// <summary>
@@ -69,12 +73,18 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
+            if (!ViewExists("Create"))
+            {
+                return RedirectToAction("Error404", "Home");
+            }
+
             if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
                 return PartialView("_CreateTagPartial"); // Return partial view for AJAX requests
             }
             return View();
         }
+
 
         /// <summary>
         /// Handles the creation of a new tag.
@@ -229,5 +239,17 @@ namespace PlataformaEDUGEP.Controllers
         {
             return await _context.Tags.AnyAsync(e => e.TagId == id);
         }
+
+        /// <summary>
+        /// Checks if a view with the specified name exists.
+        /// </summary>
+        /// <param name="name">The name of the view to check for existence.</param>
+        /// <returns>A boolean value indicating whether the view exists (true) or not (false).</returns>
+        private bool ViewExists(string name)
+        {
+            var result = _viewEngine.FindView(ControllerContext, name, false);
+            return result.Success;
+        }
+
     }
 }

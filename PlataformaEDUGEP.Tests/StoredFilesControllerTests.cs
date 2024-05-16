@@ -86,18 +86,6 @@ namespace PlataformaEDUGEP.Tests
         }
 
         [Fact]
-        public async Task Index_ReturnsViewWithAllStoredFiles()
-        {
-            // Act
-            var result = await _controller.Index();
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsAssignableFrom<IEnumerable<StoredFile>>(viewResult.Model);
-            Assert.Single(model); // Check if there is exactly one stored file
-        }
-
-        [Fact]
         public async Task Details_IdIsNull_ReturnsNotFoundResult()
         {
             // Act

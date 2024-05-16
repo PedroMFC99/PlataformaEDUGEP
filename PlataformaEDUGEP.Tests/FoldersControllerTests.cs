@@ -275,5 +275,45 @@ namespace PlataformaEDUGEP.Tests
             Assert.Single(model); // Expecting one result that matches "EdTech"
             Assert.Contains(model, f => f.Name == "EdTech Innovations");
         }
+
+        [Fact]
+        public async Task Create_ValidDataWithTags_ReturnsRedirectToIndex()
+        {
+            // Arrange
+            var newFolder = new Folder { Name = "New Folder", IsHidden = false };
+            var selectedTagIds = new int[] { 1, 2 };
+
+            // Add tags to the context
+            _context.Tags.AddRange(
+                new Tag { TagId = 1, Name = "Tag1" },
+                new Tag { TagId = 2, Name = "Tag2" }
+            );
+            _context.SaveChanges();
+
+            // Mock UserManager to return the user ID
+            var userId = "user1";
+            _mockUserManager.Setup(um => um.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+
+            // Add user to the context
+            var user = new ApplicationUser { Id = userId, UserName = "testUser", FullName = "Test User" };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            // Act
+            var result = await _controller.Create(newFolder, selectedTagIds);
+
+            // Assert
+            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Index", redirectToActionResult.ActionName);
+
+            var createdFolder = _context.Folder.Include(f => f.Tags).FirstOrDefault(f => f.Name == "New Folder");
+            Assert.NotNull(createdFolder);
+            Assert.Equal("New Folder", createdFolder.Name);
+            Assert.Equal(userId, createdFolder.User.Id);
+            Assert.Equal(2, createdFolder.Tags.Count); // Ensure the folder is associated with the selected tags
+            Assert.Contains(createdFolder.Tags, t => t.TagId == 1);
+            Assert.Contains(createdFolder.Tags, t => t.TagId == 2);
+        }
+
     }
 }

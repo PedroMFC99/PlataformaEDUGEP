@@ -48,17 +48,6 @@ namespace PlataformaEDUGEP.Controllers
         }
 
         /// <summary>
-        /// Displays the index page listing all stored files.
-        /// </summary>
-        /// <returns>The index view.</returns>
-        [Authorize]
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.StoredFile.Include(s => s.Folder);
-            return View(await applicationDbContext.ToListAsync());
-        }
-
-        /// <summary>
         /// Displays the details of a specific stored file.
         /// </summary>
         /// <param name="id">The ID of the stored file.</param>

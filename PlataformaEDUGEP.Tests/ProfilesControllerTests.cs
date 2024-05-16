@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
@@ -8,6 +9,7 @@ using PlataformaEDUGEP.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -37,6 +39,10 @@ namespace PlataformaEDUGEP.Tests
 
             // Initialize controller with mocked UserManager and actual DbContext
             _controller = new ProfilesController(_context, _userManagerMock.Object);
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext()
+            };
         }
 
         private void SeedDatabase()
@@ -57,18 +63,6 @@ namespace PlataformaEDUGEP.Tests
         }
 
         [Fact]
-        public async Task Index_ReturnsAViewResult_WithAListOfProfiles()
-        {
-            // Act
-            var result = await _controller.Index();
-
-            // Assert
-            var viewResult = Assert.IsType<ViewResult>(result);
-            var model = Assert.IsAssignableFrom<IEnumerable<Profile>>(viewResult.Model);
-            Assert.Equal(2, model.Count()); // Verifying that exactly two profiles are returned
-        }
-
-        [Fact]
         public async Task Details_IdIsNull_ReturnsNotFoundResult()
         {
             // Act
@@ -79,48 +73,19 @@ namespace PlataformaEDUGEP.Tests
         }
 
         [Fact]
-        public async Task Create_Post_ValidData_ReturnsRedirectToActionResult()
+        public async Task Details_UserNotFound_ReturnsNotFoundResult()
         {
             // Arrange
-            var newUser = new ApplicationUser { Id = "c3", UserName = "user3", FullName = "User Three" };
-            var newProfile = new Profile { Id = 3, User = newUser };
+            var nonExistentUserId = "non-existent";
+
+            // Setup the mock to return null when the user is not found
+            _userManagerMock.Setup(x => x.FindByIdAsync(nonExistentUserId)).ReturnsAsync((ApplicationUser)null);
 
             // Act
-            var result = await _controller.Create(newProfile);
+            var result = await _controller.Details(nonExistentUserId);
 
             // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-        }
-
-        [Fact]
-        public async Task Edit_Post_ValidData_ReturnsRedirectToActionResult()
-        {
-            // Arrange
-            var profileToUpdate = _context.Profile.Find(1);
-            profileToUpdate.User.FullName = "Updated Name";
-
-            // Act
-            var result = await _controller.Edit(profileToUpdate.Id, profileToUpdate);
-
-            // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-        }
-
-        [Fact]
-        public async Task DeleteConfirmed_ValidId_RemovesProfileAndRedirects()
-        {
-            // Arrange
-            var profileIdToDelete = 1;
-
-            // Act
-            var result = await _controller.DeleteConfirmed(profileIdToDelete);
-
-            // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName);
-            Assert.False(_context.Profile.Any(p => p.Id == profileIdToDelete));
+            Assert.IsType<NotFoundResult>(result);
         }
 
         public void Dispose()
