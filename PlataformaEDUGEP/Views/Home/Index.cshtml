@@ -2,6 +2,14 @@
     ViewData["Title"] = "Home Page";
 }
 
+@if (TempData["AccountDeleted"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["AccountDeleted"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <div class="text-center">
     <h1 class="display-4" style="color: #001DB3;">Bem-vindo</h1>
     <img src="https://i.ytimg.com/vi/3mi99F3HASE/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCnCUiF3Ex-hSI4risP8hX5h52XMA" alt="Plataforma EDUGEP" style="max-width:100%;height:auto;">

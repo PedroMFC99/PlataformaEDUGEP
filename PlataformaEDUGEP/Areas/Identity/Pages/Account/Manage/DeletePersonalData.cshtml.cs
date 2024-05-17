@@ -122,6 +122,8 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
 
             _logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
 
+            TempData["AccountDeleted"] = "A sua conta foi apagada com sucesso.";
+
             return Redirect("~/");
         }
     }
