@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
 
 namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
@@ -22,6 +23,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<DeletePersonalDataModel> _logger;
+        private readonly ApplicationDbContext _context;
 
         /// <summary>
         /// Constructor initializing services and utilities for handling user management and sign-in operations.
@@ -32,11 +34,13 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
         public DeletePersonalDataModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<DeletePersonalDataModel> logger)
+            ILogger<DeletePersonalDataModel> logger,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            _context = context;
         }
 
         /// <summary>
@@ -98,6 +102,14 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account.Manage
                     return Page();
                 }
             }
+
+            // Set UserId to null in the Folder table
+            var folders = _context.Folder.Where(f => f.User.Id == user.Id);
+            foreach (var folder in folders)
+            {
+                folder.User = null;
+            }
+            await _context.SaveChangesAsync();
 
             var result = await _userManager.DeleteAsync(user);
             var userId = await _userManager.GetUserIdAsync(user);

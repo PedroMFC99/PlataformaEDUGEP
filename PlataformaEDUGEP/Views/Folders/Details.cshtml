@@ -60,7 +60,14 @@
             Criado por:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.FullName)
+            @if (Model.User != null)
+            {
+                @Html.DisplayFor(model => model.User.FullName)
+            }
+            else
+            {
+                <span>[Utilizador desconhecido]</span>
+            }
         </dd>
     </dl>
 </div>
