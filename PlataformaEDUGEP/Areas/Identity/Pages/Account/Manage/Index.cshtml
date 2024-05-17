@@ -3,6 +3,12 @@
 @{
     ViewData["Title"] = "Perfil";
     ViewData["ActivePage"] = ManageNavPages.Index;
+
+    // Check and modify the StatusMessage to remove the link if it exists
+    if (Model.StatusMessage?.Contains("Clique aqui para fazer login") == true)
+    {
+        Model.StatusMessage = "Obrigado por ativar a sua conta.";
+    }
 }
 
 <h3 class="text-center" style="color:#001DB3;">@ViewData["Title"]</h3>

@@ -46,6 +46,11 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
         public InputModel Input { get; set; }
 
         /// <summary>
+        /// The message to be displayed to the user.
+        /// </summary>
+        public string Message { get; set; }
+
+        /// <summary>
         /// Represents the input model for the form to resend an email confirmation.
         /// </summary>
         public class InputModel
@@ -79,26 +84,31 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             }
 
             var user = await _userManager.FindByEmailAsync(Input.Email);
-            if (user == null)
+            if (user != null)
             {
-                ModelState.AddModelError(string.Empty, "Verificação de email enviada. Por favor, verifique o seu email.");
-                return Page();
+                if (!await _userManager.IsEmailConfirmedAsync(user))
+                {
+                    var userId = await _userManager.GetUserIdAsync(user);
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new { userId = userId, code = code },
+                        protocol: Request.Scheme);
+                    await _emailSender.SendEmailAsync(
+                        Input.Email,
+                        "Ative a sua conta",
+                        $"Por favor, ative a sua conta <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicando aqui</a>.");
+                }
+                else
+                {
+                    // Log that an already confirmed email tried to resend confirmation (debugging purposes).
+                }
             }
 
-            var userId = await _userManager.GetUserIdAsync(user);
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            var callbackUrl = Url.Page(
-                "/Account/ConfirmEmail",
-                pageHandler: null,
-                values: new { userId = userId, code = code },
-                protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
-                Input.Email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-            ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+            // Always display the same confirmation message
+            Message = "Foi enviado um e-mail para ativar a sua conta. Por favor, verifique o seu email.";
             return Page();
         }
     }

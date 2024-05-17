@@ -111,7 +111,7 @@ namespace PlataformaEDUGEP.Areas.Identity.Pages.Account
             /// Email of the user.
             /// </summary>
             [Required(ErrorMessage = "O email é obrigatório.")]
-            [EmailAddress]
+            [EmailAddress(ErrorMessage = "O Email que introduziu não é um endereço de e-mail válido.")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 

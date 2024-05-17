@@ -7,6 +7,12 @@
 <div class="container" style="background: url('@Url.Content("~/images/identity-background-form.jpg")') no-repeat center center; background-size: cover; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
     <div class="row justify-content-center">
         <div class="col-md-6" style="background: rgba(255, 255, 255, 0.8); padding: 20px; border-radius: 5px;">
+            <div class="text-center text-success mt-3">
+                @if (Model.Message != null)
+                {
+                    <p>@Model.Message</p>
+                }
+            </div>
             <h3 class="text-center">@ViewData["Title"]</h3>
             <hr />
             <form method="post">
@@ -16,6 +22,7 @@
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <button type="submit" class="w-100 btn btn-lg btn-primary">Reenviar</button>
+                
             </form>
         </div>
     </div>

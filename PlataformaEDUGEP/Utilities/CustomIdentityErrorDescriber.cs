@@ -102,7 +102,7 @@ namespace PlataformaEDUGEP.Utilities
             return new IdentityError
             {
                 Code = nameof(DuplicateUserName),
-                Description = $"O nome de utilizador '{userName}' já está em uso."
+                Description = $"O e-mail que introduziu '{userName}' já está em uso."
             };
         }
 
