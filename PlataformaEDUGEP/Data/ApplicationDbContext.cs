@@ -79,9 +79,20 @@ namespace PlataformaEDUGEP.Data
             modelBuilder.Entity<Folder>()
                 .HasMany(f => f.Tags)
                 .WithMany(t => t.Folders)
-                .UsingEntity(j => j.ToTable("FolderTags")); // This creates a join table named FolderTags
+                .UsingEntity(j => j.ToTable("FolderTags"));
 
+            // Configure the relationships to set foreign keys to null on delete
+            modelBuilder.Entity<StoredFile>()
+                .HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
 
+            modelBuilder.Entity<Folder>()
+                .HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
 
     }

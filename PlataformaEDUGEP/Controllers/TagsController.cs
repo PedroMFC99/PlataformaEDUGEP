@@ -73,14 +73,9 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            if (!ViewExists("Create"))
-            {
-                return RedirectToAction("Error404", "Home");
-            }
-
             if (HttpContext.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                return PartialView("_CreateTagPartial"); // Return partial view for AJAX requests
+                return PartialView("_CreateTagPartial");
             }
             return View();
         }

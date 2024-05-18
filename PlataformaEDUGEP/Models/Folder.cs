@@ -17,6 +17,8 @@ namespace PlataformaEDUGEP.Models
         [Key]
         public int FolderId { get; set; }
 
+        public string? UserId { get; set; }
+
         /// <summary>
         /// Gets or sets the name of the folder.
         /// </summary>

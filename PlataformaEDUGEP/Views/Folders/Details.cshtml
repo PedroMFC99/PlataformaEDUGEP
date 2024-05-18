@@ -131,15 +131,28 @@
                         <a href="@Url.Action("DownloadFile", "StoredFiles", new { fileName = file.StoredFileName })" class="ms-2">Download</a>
                     </td>
                     <td>@file.UploadDate.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@file.User.FullName</td>
                     <td>
-                        @if (!string.IsNullOrEmpty(file.LastEditorFullName))
+                        @if (file.User != null)
                         {
-                            <i class="fas fa-edit"></i> @file.LastEditorFullName
+                            @file.User.FullName
                         }
                         else
                         {
-                            <text>N/A</text>
+                            <span>[Utilizador desconhecido]</span>
+                        }
+                    </td>
+                    <td>
+                        @if (string.IsNullOrEmpty(file.LastEditorFullName))
+                        {
+                            <span>N/A</span>
+                        }
+                        else if (file.LastEditorFullName == "[Utilizador desconhecido]")
+                        {
+                            <span>[Utilizador desconhecido]</span>
+                        }
+                        else
+                        {
+                            <i class="fas fa-edit"></i> @file.LastEditorFullName
                         }
                     </td>
                     <td>

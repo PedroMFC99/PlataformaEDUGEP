@@ -79,7 +79,7 @@ namespace PlataformaEDUGEP.Models
         /// <value>
         /// The user ID of the user who uploaded the file.
         /// </value>
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the user who uploaded the file.
@@ -87,7 +87,7 @@ namespace PlataformaEDUGEP.Models
         /// <value>
         /// The user object associated with the uploader of the file.
         /// </value>
-        public virtual ApplicationUser User { get; set; }
+        public virtual ApplicationUser? User { get; set; }
 
         /// <summary>
         /// Gets or sets the full name of the last editor of the file.

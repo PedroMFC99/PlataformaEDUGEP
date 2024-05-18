@@ -176,20 +176,14 @@ namespace PlataformaEDUGEP.Tests
         }
 
         [Fact]
-        public void Create_Get_ViewDoesNotExist_ReturnsRedirectToError404()
+        public void Create_Get_ReturnsViewResult()
         {
-            // Arrange
-            _mockViewEngine
-                .Setup(engine => engine.FindView(It.IsAny<ActionContext>(), "Create", false))
-                .Returns(ViewEngineResult.NotFound("Create", new List<string> { "Create" }));
-
             // Act
             var result = _controller.Create();
 
             // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Error404", redirectToActionResult.ActionName);
-            Assert.Equal("Home", redirectToActionResult.ControllerName);
+            var viewResult = Assert.IsType<ViewResult>(result);
+            Assert.Null(viewResult.ViewName);
         }
 
         [Fact]
