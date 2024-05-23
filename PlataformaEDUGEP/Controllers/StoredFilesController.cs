@@ -43,13 +43,6 @@ namespace PlataformaEDUGEP.Controllers
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _fileAuditService = fileAuditService ?? throw new ArgumentNullException(nameof(fileAuditService));
             _blobStorageService = blobStorageService ?? throw new ArgumentNullException(nameof(blobStorageService));
-
-            var uploadsFolderPath = _configuration.GetSection("FileStorage:UploadsFolderPath").Value;
-            if (string.IsNullOrEmpty(uploadsFolderPath))
-            {
-                throw new ArgumentNullException(nameof(uploadsFolderPath), "Uploads folder path cannot be null or empty.");
-            }
-            _uploadsFolderPath = Path.Combine(_env.ContentRootPath, uploadsFolderPath);
         }
 
         /// <summary>
