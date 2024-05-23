@@ -28,6 +28,7 @@ namespace PlataformaEDUGEP.Tests
         private readonly Mock<IFileAuditService> _fileAuditServiceMock;
         private readonly Mock<IConfiguration> _configurationMock;
         private readonly Mock<IWebHostEnvironment> _envMock;
+        private readonly Mock<IBlobStorageService> _blobStorageServiceMock;
         private readonly string _uploadsFolderPath;
 
         public StoredFilesControllerTests()
@@ -60,16 +61,29 @@ namespace PlataformaEDUGEP.Tests
 
             _configurationMock = new Mock<IConfiguration>();
             _configurationMock.Setup(c => c.GetSection("FileStorage:UploadsFolderPath").Value).Returns("uploads");
+            _configurationMock.Setup(c => c.GetSection("FileStorage:BlobContainerName").Value).Returns("test-container");
+
+            // Mock da seção AllowedFileUploads:Extensions manualmente
+            var allowedFileUploadsSectionMock = new Mock<IConfigurationSection>();
+            allowedFileUploadsSectionMock.Setup(a => a.Value)
+                .Returns("{ \".pdf\": 10485760, \".png\": 5242880, \".jpg\": 5242880 }");
+
+            var sectionMock = new Mock<IConfigurationSection>();
+            sectionMock.Setup(x => x.GetChildren())
+                .Returns(new List<IConfigurationSection> { allowedFileUploadsSectionMock.Object });
+
+            _configurationMock.Setup(c => c.GetSection("AllowedFileUploads:Extensions")).Returns(sectionMock.Object);
 
             _envMock = new Mock<IWebHostEnvironment>();
             _envMock.Setup(e => e.ContentRootPath).Returns("C:\\Temp");
 
+            _blobStorageServiceMock = new Mock<IBlobStorageService>();
+
             _uploadsFolderPath = Path.Combine("C:\\Temp", "uploads");
 
-            // Ensure the uploads folder exists
             Directory.CreateDirectory(_uploadsFolderPath);
 
-            _controller = new StoredFilesController(_context, _configurationMock.Object, _envMock.Object, _userManagerMock.Object, _fileAuditServiceMock.Object)
+            _controller = new StoredFilesController(_context, _configurationMock.Object, _envMock.Object, _userManagerMock.Object, _fileAuditServiceMock.Object, _blobStorageServiceMock.Object)
             {
                 ControllerContext = new ControllerContext()
                 {
@@ -88,113 +102,70 @@ namespace PlataformaEDUGEP.Tests
         [Fact]
         public async Task Details_IdIsNull_ReturnsNotFoundResult()
         {
-            // Act
             var result = await _controller.Details(null);
-
-            // Assert
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
         public async Task DownloadFile_FileNameIsNull_ReturnsNotFoundResult()
         {
-            // Act
             var result = await _controller.DownloadFile(null);
-
-            // Assert
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
         public async Task DownloadFile_FileDoesNotExist_ReturnsNotFoundResult()
         {
-            // Act
+            _blobStorageServiceMock.Setup(x => x.DownloadFileAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((Stream)null);
             var result = await _controller.DownloadFile("nonexistentfile.txt");
-
-            // Assert
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
         public async Task DownloadFile_FileExists_ReturnsFileResult()
         {
-            // Arrange
             var fileName = "testfile.txt";
-            var fullPath = Path.Combine(_uploadsFolderPath, fileName);
-            Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+            var fileStream = new MemoryStream(Encoding.UTF8.GetBytes("Hello World"));
 
-            // Ensure the file is created and immediately closed
-            await File.WriteAllTextAsync(fullPath, "Hello World");
+            _blobStorageServiceMock.Setup(x => x.DownloadFileAsync(It.IsAny<string>(), fileName)).ReturnsAsync(fileStream);
 
-            // Act
             var result = await _controller.DownloadFile(fileName);
 
-            // Assert
             var fileResult = Assert.IsType<FileStreamResult>(result);
-            Assert.Equal("text/plain", fileResult.ContentType);
-            Assert.Equal(fileName, fileResult.FileDownloadName);
-
-            // Cleanup
-            fileResult.FileStream.Dispose();
-            try
-            {
-                File.Delete(fullPath);
-            }
-            catch (IOException ex)
-            {
-                Console.WriteLine($"Error cleaning up the file: {ex.Message}");
-                throw;
-            }
+            Assert.Equal("text/plain", fileResult.ContentType); // Ajustado para "text/plain"
+            Assert.Equal(fileName.Substring(fileName.IndexOf('_') + 1), fileResult.FileDownloadName);
         }
 
         [Fact]
         public async Task PreviewFile_ValidFile_ReturnsFileContentResult()
         {
-            // Arrange
-            var fileName = "guid_testfile.txt"; // Ensure the file name has an underscore for parsing
+            var fileName = "guid_testfile.txt";
+            var fileContent = Encoding.UTF8.GetBytes("Sample content");
+            var memoryStream = new MemoryStream(fileContent);
 
-            var uploadsPath = Path.Combine("C:\\Temp", "uploads");
-            var fullPath = Path.Combine(uploadsPath, fileName);
-            Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+            _blobStorageServiceMock.Setup(x => x.DownloadFileAsync(It.IsAny<string>(), fileName)).ReturnsAsync(memoryStream);
 
-            // Ensure the file is created and immediately closed
-            await File.WriteAllTextAsync(fullPath, "Sample content");
-
-            // Act
             var result = await _controller.PreviewFile(fileName);
 
-            // Assert
-            var fileResult = Assert.IsType<FileContentResult>(result);
-            Assert.Equal("text/plain", fileResult.ContentType); // Adjust to "text/plain"
-            Assert.Equal("Sample content", Encoding.UTF8.GetString(fileResult.FileContents));
-
-            // Cleanup
-            File.Delete(fullPath);
+            var fileResult = Assert.IsType<FileStreamResult>(result);
+            Assert.Equal("text/plain", fileResult.ContentType); // Ajustado para "text/plain"
         }
 
         [Fact]
         public async Task PreviewFile_FileDoesNotExist_ReturnsNotFoundResult()
         {
-            // Arrange
             var fileName = "nonexistentfile.txt";
+            _blobStorageServiceMock.Setup(x => x.DownloadFileAsync(It.IsAny<string>(), fileName)).ReturnsAsync((Stream)null);
 
-            // Act
             var result = await _controller.PreviewFile(fileName);
-
-            // Assert
             Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
         public void Create_InvalidFolderId_ReturnsErrorView()
         {
-            // Arrange
             var invalidFolderId = 999;
-
-            // Act
             var result = _controller.Create(invalidFolderId);
-
-            // Assert
             var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
             Assert.Equal("Error404", redirectToActionResult.ActionName);
             Assert.Equal("Home", redirectToActionResult.ControllerName);
@@ -202,7 +173,6 @@ namespace PlataformaEDUGEP.Tests
 
         public void Dispose()
         {
-            // Clean up the uploads folder after tests
             if (Directory.Exists(_uploadsFolderPath))
             {
                 Directory.Delete(_uploadsFolderPath, true);

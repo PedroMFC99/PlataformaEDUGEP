@@ -7,47 +7,62 @@ using PlataformaEDUGEP.Models;
 using PlataformaEDUGEP.Services;
 using PlataformaEDUGEP.Utilities;
 using WebPWrecover.Services;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.Logging;
 
-// Initialize a new instance of the WebApplication builder with the program's command-line arguments.
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Load the appropriate appsettings file based on the environment
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddEnvironmentVariables();
 
-// Configures the database context to use a SQL Server database.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
+// Determine the connection string to use based on the environment
+var connectionString = builder.Environment.IsDevelopment()
+    ? builder.Configuration.GetConnectionString("LocalConnection")
+    : builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Configures the identity system for handling user authentication and authorization.
+// Configura a identidade
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultUI()
     .AddDefaultTokenProviders()
     .AddErrorDescriber<CustomIdentityErrorDescriber>();
 
-// Adds MVC services to the service container with support for controllers and views.
 builder.Services.AddControllersWithViews();
 
-// Dependency injection for audit services.
+// Serviços de auditoria
 builder.Services.AddScoped<IFolderAuditService, FolderAuditService>();
 builder.Services.AddScoped<IFileAuditService, FileAuditService>();
 
-// Configure identity options for user lockout settings.
+// Configuração do serviço BlobServiceClient para o Azure Blob Storage
+builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetValue<string>("FileStorage:BlobStorageConnectionString")));
+
+// Adicionar o serviço de gerenciamento de arquivos do Blob Storage
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
+
 builder.Services.Configure<IdentityOptions>(opts => {
     opts.Lockout.AllowedForNewUsers = true;
     opts.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(2);
     opts.Lockout.MaxFailedAccessAttempts = 3;
 });
 
-// Configures the email sender service using SendGrid.
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 
-// Builds the application.
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
@@ -59,7 +74,6 @@ else
     app.UseHsts();
 }
 
-// Custom error handling for 404 status codes.
 app.UseStatusCodePagesWithReExecute("/Home/Error404");
 
 app.UseHttpsRedirection();
@@ -70,21 +84,17 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Configures route mapping for MVC controllers.
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
-// Execute configuration tasks on application startup.
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
-
-// Access IConfiguration from the service provider
 var configuration = services.GetRequiredService<IConfiguration>();
+var logger = services.GetRequiredService<ILogger<Program>>();
 
-// Initialize roles and admin user on application startup.
-await Configurations.CreateStartingRoles(services, configuration);
+logger.LogInformation("Starting role and admin user initialization.");
+await Configurations.CreateStartingRoles(services, configuration, logger);
 
-// Starts the application.
 app.Run();

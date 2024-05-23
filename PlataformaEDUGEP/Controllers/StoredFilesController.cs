@@ -8,6 +8,8 @@ using Microsoft.Net.Http.Headers;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
 using PlataformaEDUGEP.Services;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace PlataformaEDUGEP.Controllers
 {
@@ -21,6 +23,7 @@ namespace PlataformaEDUGEP.Controllers
         private readonly IWebHostEnvironment _env;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFileAuditService _fileAuditService;
+        private readonly IBlobStorageService _blobStorageService;
         private readonly string _uploadsFolderPath;
 
         /// <summary>
@@ -31,13 +34,15 @@ namespace PlataformaEDUGEP.Controllers
         /// <param name="env">Web hosting environment.</param>
         /// <param name="userManager">User manager for handling user-related operations.</param>
         /// <param name="fileAuditService">Service for logging file-related actions.</param>
-        public StoredFilesController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment env, UserManager<ApplicationUser> userManager, IFileAuditService fileAuditService)
+        /// <param name="blobStorageService">Service for handling blob storage operations.</param>
+        public StoredFilesController(ApplicationDbContext context, IConfiguration configuration, IWebHostEnvironment env, UserManager<ApplicationUser> userManager, IFileAuditService fileAuditService, IBlobStorageService blobStorageService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _env = env ?? throw new ArgumentNullException(nameof(env));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _fileAuditService = fileAuditService ?? throw new ArgumentNullException(nameof(fileAuditService));
+            _blobStorageService = blobStorageService ?? throw new ArgumentNullException(nameof(blobStorageService));
 
             var uploadsFolderPath = _configuration.GetSection("FileStorage:UploadsFolderPath").Value;
             if (string.IsNullOrEmpty(uploadsFolderPath))
@@ -71,7 +76,7 @@ namespace PlataformaEDUGEP.Controllers
             return View(storedFile);
         }
 
-         /// <summary>
+        /// <summary>
         /// Displays the view to create a new stored file.
         /// </summary>
         /// <param name="folderId">The ID of the folder where the file will be stored.</param>
@@ -79,22 +84,17 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize(Roles = "Admin, Teacher")]
         public IActionResult Create(int? folderId)
         {
-            // Check if folderId is provided
             if (!folderId.HasValue)
             {
-                // Redirect to Error404 page if no folderId is provided
                 return RedirectToAction("Error404", "Home");
             }
 
-            // Check if the folder exists
             var folderExists = _context.Folder.Any(f => f.FolderId == folderId.Value);
             if (!folderExists)
             {
-                // Redirect to Error404 page if the folder does not exist
                 return RedirectToAction("Error404", "Home");
             }
 
-            // Proceed as normal if the folder exists
             var model = new StoredFile { FolderId = folderId.Value };
             return View(model);
         }
@@ -132,19 +132,11 @@ namespace PlataformaEDUGEP.Controllers
                 return RedirectToAction("Error", "Home");
             }
 
-            // Use the pre-calculated path from the controller constructor
             var uniqueFileName = Guid.NewGuid().ToString() + "_" + storedFileName + fileExtension;
-            var filePath = Path.Combine(_uploadsFolderPath, uniqueFileName);
 
-            // Check if the directory exists; if not, create it
-            if (!Directory.Exists(_uploadsFolderPath))
+            using (var stream = fileData.OpenReadStream())
             {
-                Directory.CreateDirectory(_uploadsFolderPath);
-            }
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await fileData.CopyToAsync(stream);
+                await _blobStorageService.UploadFileAsync(_configuration.GetValue<string>("FileStorage:BlobContainerName"), uniqueFileName, stream);
             }
 
             var storedFile = new StoredFile
@@ -176,17 +168,16 @@ namespace PlataformaEDUGEP.Controllers
                 return NotFound();
             }
 
-            var path = Path.Combine(_uploadsFolderPath, fileName);
+            var stream = await _blobStorageService.DownloadFileAsync(_configuration.GetValue<string>("FileStorage:BlobContainerName"), fileName);
 
-            if (!System.IO.File.Exists(path))
+            if (stream == null)
             {
                 return NotFound();
             }
 
-            var contentType = GetContentType(path);
+            var contentType = GetContentType(fileName);
             HttpContext.Response.ContentType = contentType;
 
-            // Extract the original file name for the Content-Disposition header
             var originalFileName = fileName.Substring(fileName.IndexOf('_') + 1);
             ContentDispositionHeaderValue contentDisposition = new ContentDispositionHeaderValue("attachment")
             {
@@ -194,9 +185,7 @@ namespace PlataformaEDUGEP.Controllers
             };
             Response.Headers[HeaderNames.ContentDisposition] = contentDisposition.ToString();
 
-            // Stream the file directly to the response
-            var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
-            return File(fileStream, contentType, originalFileName);
+            return File(stream, contentType, originalFileName);
         }
 
         /// <summary>
@@ -226,41 +215,23 @@ namespace PlataformaEDUGEP.Controllers
                 return NotFound();
             }
 
-            var filePathBase = _configuration.GetValue<string>("FileStorage:UploadsFolderPath");
+            var stream = await _blobStorageService.DownloadFileAsync(_configuration.GetValue<string>("FileStorage:BlobContainerName"), fileName);
 
-            var path = Path.Combine(_uploadsFolderPath, fileName);
-            if (!System.IO.File.Exists(path))
+            if (stream == null)
             {
                 return NotFound();
             }
 
-            // Check if the fileName contains '_'
-            int underscoreIndex = fileName.IndexOf('_');
-            if (underscoreIndex == -1 || underscoreIndex >= fileName.Length - 1)
-            {
-                // Handle the error
-                return NotFound();
-            }
-
-            var originalFileName = fileName.Substring(underscoreIndex + 1);
-
-            var memoryStream = new MemoryStream();
-            using (var stream = new FileStream(path, FileMode.Open))
-            {
-                await stream.CopyToAsync(memoryStream);
-            }
-            memoryStream.Position = 0;
-
-            string contentType = GetContentType(path);
+            var originalFileName = fileName.Substring(fileName.IndexOf('_') + 1);
+            var contentType = GetContentType(fileName);
             var contentDisposition = new ContentDispositionHeaderValue("inline")
             {
                 FileName = originalFileName
             }.ToString();
 
             Response.Headers[HeaderNames.ContentDisposition] = contentDisposition;
-            return File(memoryStream.ToArray(), contentType);
+            return File(stream, contentType);
         }
-
 
         /// <summary>
         /// Displays the view for editing an existing stored file.
@@ -283,7 +254,6 @@ namespace PlataformaEDUGEP.Controllers
                 return NotFound();
             }
 
-            // Fetch and pass folder list data to the view
             var folders = _context.Folder.ToList();
             ViewBag.Folders = new SelectList(folders, "FolderId", "Name");
 
@@ -323,84 +293,57 @@ namespace PlataformaEDUGEP.Controllers
             var user = await _userManager.GetUserAsync(User);
             var editorFullName = user?.FullName;
 
-            // Load allowed extensions and sizes from configuration
             var allowedExtensions = _configuration.GetSection("AllowedFileUploads:Extensions").Get<Dictionary<string, long>>();
-
-            if (newFileData != null)
-            {
-                var fileExtension = Path.GetExtension(newFileData.FileName).ToLower();
-                if (!allowedExtensions.ContainsKey(fileExtension) || newFileData.Length > allowedExtensions[fileExtension])
-                {
-                    ModelState.AddModelError("newFileData", "The file type is not allowed or exceeds the maximum allowed size.");
-                    return View(storedFile);
-                }
-
-                // Construct the new file name using storedFileTitle and file extension
-                var uniqueFileName = Guid.NewGuid().ToString() + "_" + storedFileTitle + fileExtension;
-                var newFilePath = Path.Combine(_uploadsFolderPath, uniqueFileName);
-
-                // Delete the old file
-                var oldFilePath = Path.Combine(_uploadsFolderPath, storedFile.StoredFileName);
-                if (System.IO.File.Exists(oldFilePath))
-                {
-                    System.IO.File.Delete(oldFilePath);
-                }
-
-                // Save the new file
-                using (var stream = new FileStream(newFilePath, FileMode.Create))
-                {
-                    await newFileData.CopyToAsync(stream);
-                }
-
-                // Update the StoredFile entity with the new file name
-                storedFile.StoredFileName = uniqueFileName;
-            }
-            else
-            {
-                var filePathBase = _configuration.GetValue<string>("FileStorage:UploadsFolderPath");
-
-                // If no new file is uploaded but the title is changed, generate a new file name with the old extension
-                var oldFileExtension = Path.GetExtension(storedFile.StoredFileName);
-                var newFileName = Guid.NewGuid().ToString() + "_" + storedFileTitle + oldFileExtension;
-                var newFilePath = Path.Combine(_uploadsFolderPath, newFileName);
-                var oldFilePath = Path.Combine(_uploadsFolderPath, storedFile.StoredFileName);
-
-                // Rename the old file (if it still exists)
-                if (System.IO.File.Exists(oldFilePath))
-                {
-                    System.IO.File.Move(oldFilePath, newFilePath);
-                }
-
-                // Update the file name in the database to reflect the new title
-                storedFile.StoredFileName = newFileName;
-            }
-
-            // Update other properties
-            storedFile.StoredFileTitle = storedFileTitle;
-            storedFile.LastEditorFullName = editorFullName;
-            storedFile.UploadDate = DateTime.Now;
-            storedFile.FolderId = folderId;
 
             try
             {
-                _context.Update(storedFile);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                if (!StoredFileExists(storedFile.StoredFileId))
+                if (newFileData != null)
                 {
-                    return NotFound();
+                    var fileExtension = Path.GetExtension(newFileData.FileName).ToLower();
+                    if (!allowedExtensions.ContainsKey(fileExtension) || newFileData.Length > allowedExtensions[fileExtension])
+                    {
+                        ModelState.AddModelError("newFileData", "The file type is not allowed or exceeds the maximum allowed size.");
+                        return View(storedFile);
+                    }
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + storedFileTitle + fileExtension;
+
+                    await _blobStorageService.DeleteFileAsync(_configuration.GetValue<string>("FileStorage:BlobContainerName"), storedFile.StoredFileName);
+
+                    using (var stream = newFileData.OpenReadStream())
+                    {
+                        await _blobStorageService.UploadFileAsync(_configuration.GetValue<string>("FileStorage:BlobContainerName"), uniqueFileName, stream);
+                    }
+
+                    storedFile.StoredFileName = uniqueFileName;
                 }
                 else
                 {
-                    return Json(new { success = false, message = $"An error occurred while updating the file: {ex.Message}" });
+                    var oldFileExtension = Path.GetExtension(storedFile.StoredFileName);
+                    var newFileName = Guid.NewGuid().ToString() + "_" + storedFileTitle + oldFileExtension;
+
+                    await _blobStorageService.CopyFileAsync(_configuration.GetValue<string>("FileStorage:BlobContainerName"), storedFile.StoredFileName, newFileName);
+                    await _blobStorageService.DeleteFileAsync(_configuration.GetValue<string>("FileStorage:BlobContainerName"), storedFile.StoredFileName);
+
+                    storedFile.StoredFileName = newFileName;
                 }
+
+                storedFile.StoredFileTitle = storedFileTitle;
+                storedFile.LastEditorFullName = editorFullName;
+                storedFile.UploadDate = DateTime.Now;
+                storedFile.FolderId = folderId;
+
+                _context.Update(storedFile);
+                await _context.SaveChangesAsync();
+
+                await _fileAuditService.RecordEditAsync(storedFile, userId);
+
+                return Json(new { success = true, message = "File updated successfully." });
             }
-
-            await _fileAuditService.RecordEditAsync(storedFile, userId);
-
-            return Json(new { success = true, message = "File updated successfully." });
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while updating the file." });
+            }
         }
 
         /// <summary>
@@ -449,25 +392,13 @@ namespace PlataformaEDUGEP.Controllers
                 return RedirectToAction("Error", "Home");
             }
 
-            var filePathBase = _configuration.GetValue<string>("FileStorage:UploadsFolderPath");
+            await _blobStorageService.DeleteFileAsync(_configuration.GetValue<string>("FileStorage:BlobContainerName"), storedFile.StoredFileName);
 
-            // Build the path to the file on the server
-            var filePath = Path.Combine(_uploadsFolderPath, storedFile.StoredFileName);
-
-            // Check if the file exists and delete it
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
-
-            // Record the file deletion action
             await _fileAuditService.RecordDeletionAsync(storedFile, userId);
 
-            // Continue with the existing code to remove the record from the database
             _context.StoredFile.Remove(storedFile);
             await _context.SaveChangesAsync();
 
-            // Redirect to the Details page of the associated folder
             return RedirectToAction("Details", "Folders", new { id = storedFile.FolderId });
         }
 
@@ -492,21 +423,10 @@ namespace PlataformaEDUGEP.Controllers
                 return RedirectToAction("Error", "Home");
             }
 
-            var filePathBase = _configuration.GetValue<string>("FileStorage:UploadsFolderPath");
+            await _blobStorageService.DeleteFileAsync(_configuration.GetValue<string>("FileStorage:BlobContainerName"), storedFile.StoredFileName);
 
-            // Build the path to the file on the server
-            var filePath = Path.Combine(_uploadsFolderPath, storedFile.StoredFileName);
-
-            // Check if the file exists and delete it
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
-
-            // Record the file deletion action
             await _fileAuditService.RecordDeletionAsync(storedFile, userId);
 
-            // Remove the record from the database
             _context.StoredFile.Remove(storedFile);
             await _context.SaveChangesAsync();
 
@@ -577,18 +497,14 @@ namespace PlataformaEDUGEP.Controllers
             int totalRecords = await auditsQuery.CountAsync();
             var audits = await auditsQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            // ViewData for pagination
             ViewData["TotalPages"] = (int)Math.Ceiling((double)totalRecords / pageSize);
             ViewData["CurrentPage"] = page;
 
-            // Check if it's an AJAX request
             if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {
-                // Return only the partial view for the file audit log table
                 return PartialView("_FileAuditLogTablePartial", audits);
             }
 
-            // For non-AJAX requests, return the full view
             return View(audits);
         }
 
@@ -602,19 +518,14 @@ namespace PlataformaEDUGEP.Controllers
         {
             try
             {
-                // Fetch all records
                 var allAudits = await _context.FileAudits.ToListAsync();
-                // Remove all fetched records
                 _context.FileAudits.RemoveRange(allAudits);
-                // Save changes to the database
                 await _context.SaveChangesAsync();
 
-                // Optionally return a success message or redirect
                 return Json(new { success = true, message = "All records deleted successfully." });
             }
             catch (Exception ex)
             {
-                // Handle exceptions, e.g., log them and return an error response
                 return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
         }
@@ -627,7 +538,7 @@ namespace PlataformaEDUGEP.Controllers
         [Authorize]
         private bool StoredFileExists(int id)
         {
-          return (_context.StoredFile?.Any(e => e.StoredFileId == id)).GetValueOrDefault();
+            return (_context.StoredFile?.Any(e => e.StoredFileId == id)).GetValueOrDefault();
         }
     }
 }
