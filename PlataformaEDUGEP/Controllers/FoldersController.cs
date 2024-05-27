@@ -3,9 +3,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Azure.Storage.Blobs;
 using PlataformaEDUGEP.Data;
 using PlataformaEDUGEP.Models;
 using PlataformaEDUGEP.Services;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
+using PlataformaEDUGEP.Utilities;
 
 namespace PlataformaEDUGEP.Controllers
 {
@@ -18,6 +24,7 @@ namespace PlataformaEDUGEP.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IFolderAuditService _folderAuditService;
         private readonly IWebHostEnvironment _env;
+        private readonly BlobServiceClient _blobServiceClient;
 
         /// <summary>
         /// Constructor for the FoldersController.
@@ -26,12 +33,14 @@ namespace PlataformaEDUGEP.Controllers
         /// <param name="userManager">Manager for handling user-related operations.</param>
         /// <param name="folderAuditService">Service for logging folder-related actions.</param>
         /// <param name="env">Provides information about the web hosting environment.</param>
-        public FoldersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IFolderAuditService folderAuditService, IWebHostEnvironment env)
+        /// <param name="blobServiceClient">Client for accessing Azure Blob Storage.</param>
+        public FoldersController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IFolderAuditService folderAuditService, IWebHostEnvironment env, BlobServiceClient blobServiceClient)
         {
             _context = context;
             _userManager = userManager;
             _folderAuditService = folderAuditService;
             _env = env;
+            _blobServiceClient = blobServiceClient;
         }
 
         /// <summary>
@@ -242,9 +251,9 @@ namespace PlataformaEDUGEP.Controllers
                 var userId = _userManager.GetUserId(User); // Get the current user's ID
                 folder.User = await _context.Users.FindAsync(userId); // Find the ApplicationUser by userId
 
-                // Set CreationDate and ModificationDate to now
-                folder.CreationDate = DateTime.Now;
-                folder.ModificationDate = DateTime.Now;
+                // Set CreationDate and ModificationDate to now, converted to London time
+                folder.CreationDate = TimeZoneHelper.ConvertUtcToLondonTime(DateTime.UtcNow);
+                folder.ModificationDate = TimeZoneHelper.ConvertUtcToLondonTime(DateTime.UtcNow);
 
                 // Before adding the folder, associate it with selected tags
                 if (SelectedTagIds != null && SelectedTagIds.Length > 0)
@@ -335,8 +344,8 @@ namespace PlataformaEDUGEP.Controllers
 
                     folderToUpdate.Name = folder.Name;
                     folderToUpdate.IsHidden = folder.IsHidden;
-                    // Update the ModificationDate to now
-                    folderToUpdate.ModificationDate = DateTime.Now;
+                    // Update the ModificationDate to now, converted to London time
+                    folderToUpdate.ModificationDate = TimeZoneHelper.ConvertUtcToLondonTime(DateTime.UtcNow);
 
                     // Update tags
                     folderToUpdate.Tags.Clear();
@@ -406,14 +415,12 @@ namespace PlataformaEDUGEP.Controllers
                 return NotFound();
             }
 
-            // Delete the files associated with the folder from the filesystem
+            // Delete the files associated with the folder from the blob storage
+            var containerClient = _blobServiceClient.GetBlobContainerClient("uploads");
             foreach (var file in folder.StoredFiles)
             {
-                var filePath = Path.Combine(_env.WebRootPath, "uploads", file.StoredFileName);
-                if (System.IO.File.Exists(filePath))
-                {
-                    System.IO.File.Delete(filePath);
-                }
+                var blobClient = containerClient.GetBlobClient(file.StoredFileName);
+                await blobClient.DeleteIfExistsAsync();
 
                 // Optionally, log each file deletion
             }

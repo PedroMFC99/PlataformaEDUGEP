@@ -10,6 +10,7 @@ using PlataformaEDUGEP.Models;
 using PlataformaEDUGEP.Services;
 using System.IO;
 using System.Threading.Tasks;
+using PlataformaEDUGEP.Utilities;
 
 namespace PlataformaEDUGEP.Controllers
 {
@@ -136,7 +137,7 @@ namespace PlataformaEDUGEP.Controllers
             {
                 StoredFileName = uniqueFileName,
                 StoredFileTitle = storedFileName,
-                UploadDate = DateTime.Now,
+                UploadDate = TimeZoneHelper.ConvertUtcToLondonTime(DateTime.UtcNow),
                 FolderId = folderId.Value,
                 UserId = userId
             };
@@ -323,7 +324,7 @@ namespace PlataformaEDUGEP.Controllers
 
                 storedFile.StoredFileTitle = storedFileTitle;
                 storedFile.LastEditorFullName = editorFullName;
-                storedFile.UploadDate = DateTime.Now;
+                storedFile.UploadDate = TimeZoneHelper.ConvertUtcToLondonTime(DateTime.UtcNow);
                 storedFile.FolderId = folderId;
 
                 _context.Update(storedFile);

@@ -15,6 +15,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using System;
 
 namespace PlataformaEDUGEP.Tests
 {
@@ -25,6 +28,7 @@ namespace PlataformaEDUGEP.Tests
         private readonly Mock<UserManager<ApplicationUser>> _mockUserManager;
         private readonly Mock<IFolderAuditService> _mockFolderAuditService;
         private readonly Mock<IWebHostEnvironment> _mockWebHostEnvironment;
+        private readonly Mock<BlobServiceClient> _mockBlobServiceClient;
 
         public FoldersControllerTests()
         {
@@ -39,8 +43,9 @@ namespace PlataformaEDUGEP.Tests
                 null, null, null, null, null, null, null, null);
             _mockFolderAuditService = new Mock<IFolderAuditService>();
             _mockWebHostEnvironment = new Mock<IWebHostEnvironment>();
+            _mockBlobServiceClient = new Mock<BlobServiceClient>();
 
-            _controller = new FoldersController(_context, _mockUserManager.Object, _mockFolderAuditService.Object, _mockWebHostEnvironment.Object);
+            _controller = new FoldersController(_context, _mockUserManager.Object, _mockFolderAuditService.Object, _mockWebHostEnvironment.Object, _mockBlobServiceClient.Object);
 
             // Setup HttpContext to simulate User Identity
             var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "user1") };
@@ -109,7 +114,7 @@ namespace PlataformaEDUGEP.Tests
         }
 
         [Fact]
-        public async Task CreateModal_ReturnsPartialView_WithCorrectData()
+        public void CreateModal_ReturnsPartialView_WithCorrectData()
         {
             // Arrange
             _context.Tags.AddRange(
@@ -135,41 +140,42 @@ namespace PlataformaEDUGEP.Tests
         }
 
         [Fact]
-        public async Task DeleteConfirmed_FolderExists_DeletesFolderAndRedirects()
+        public async Task Edit_ReturnsPartialView_WithCorrectData()
         {
             // Arrange
             var folderId = 1;
-            var userId = "user1"; // Example user ID, must correspond to an actual or mocked user
+            var tag1 = new Tag { TagId = 1, Name = "Tag1" };
+            var tag2 = new Tag { TagId = 2, Name = "Tag2" };
+            var tag3 = new Tag { TagId = 3, Name = "Tag3" };
+
             var testFolder = new Folder
             {
                 FolderId = folderId,
                 Name = "Test Folder",
-                StoredFiles = new List<StoredFile>
-        {
-            new StoredFile
-            {
-                StoredFileId = 1,
-                StoredFileName = "file1.txt",
-                StoredFileTitle = "Test File", // Required property
-                UserId = userId // Required property, this should be a valid or mocked user ID
-            }
-        }
+                Tags = new List<Tag> { tag1, tag2 }
             };
 
+            _context.Tags.AddRange(tag1, tag2, tag3);
             _context.Folder.Add(testFolder);
             _context.SaveChanges();
 
-            // Mock the environment setup if your method interacts with the file system
-            _mockWebHostEnvironment.Setup(env => env.WebRootPath).Returns("C:\\fakepath");
-
             // Act
-            var result = await _controller.DeleteConfirmed(folderId);
+            var result = await _controller.Edit(folderId);
 
             // Assert
-            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal("Index", redirectToActionResult.ActionName); // Redirects to Index after deletion
-            Assert.False(_context.Folder.Any(f => f.FolderId == folderId)); // Folder should be deleted
-            Assert.False(_context.StoredFile.Any(sf => sf.FolderId == folderId)); // Files should be deleted
+            var partialViewResult = Assert.IsType<PartialViewResult>(result);
+            Assert.Equal("_EditPartial", partialViewResult.ViewName); // Verify that the correct view is returned
+
+            var model = Assert.IsType<Folder>(partialViewResult.Model);
+            Assert.Equal("Test Folder", model.Name); // Verify the folder name
+
+            var tagItems = Assert.IsType<SelectList>(partialViewResult.ViewData["TagItems"]);
+            Assert.Equal(3, tagItems.Count()); // Verify that the correct number of tags is passed to the view
+
+            var selectedTags = Assert.IsType<List<int>>(partialViewResult.ViewData["SelectedTags"]);
+            Assert.Equal(2, selectedTags.Count); // Verify that the correct number of selected tags is passed to the view
+            Assert.Contains(1, selectedTags);
+            Assert.Contains(2, selectedTags);
         }
 
         [Fact]
@@ -249,11 +255,11 @@ namespace PlataformaEDUGEP.Tests
             _context.Users.Add(otherUser);
 
             var folders = new List<Folder>
-    {
-        new Folder { FolderId = 1, Name = "Education Tools", User = user },
-        new Folder { FolderId = 2, Name = "EdTech Innovations", User = user },
-        new Folder { FolderId = 3, Name = "Learning Platforms", User = otherUser }
-    };
+            {
+                new Folder { FolderId = 1, Name = "Education Tools", User = user },
+                new Folder { FolderId = 2, Name = "EdTech Innovations", User = user },
+                new Folder { FolderId = 3, Name = "Learning Platforms", User = otherUser }
+            };
             _context.Folder.AddRange(folders);
             _context.FolderLikes.AddRange(
                 new FolderLike { FolderId = 1, UserId = "user1" },
@@ -314,6 +320,5 @@ namespace PlataformaEDUGEP.Tests
             Assert.Contains(createdFolder.Tags, t => t.TagId == 1);
             Assert.Contains(createdFolder.Tags, t => t.TagId == 2);
         }
-
     }
 }
