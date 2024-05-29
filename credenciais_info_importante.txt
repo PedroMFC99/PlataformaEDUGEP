@@ -1,0 +1,73 @@
+---------- Github Repositório -----------------------------------
+
+https://github.com/PedroMFC99/PlataformaEDUGEP
+
+1. Clonar o repositório no Visual Studio
+2. Correr o programa
+3. Instalar pacotes que sejam necessários
+4. Consola (introduzir comandos) -> Add-Migration Initial & Update-Database)
+
+
+---------- Gmail Credenciais (para gestão de emails)------------------------------
+
+  User: plataformagestaoedugepnoreply@gmail.com
+
+  Password: PLATEDUGEP2024
+
+
+---------- SendGrid Credenciais (para gestão da API do envio de emails) ----------------------------
+
+  User: plataformagestaoedugepnoreply@gmail.com
+
+  Password: Estagio.Edugep.1234!
+
+  Número de Telemóvel (alterar)
+
+  API KEY -> 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
+
+
+----------- secrets.json (PlataformaEDUGEP -> Gerenciar segredos do usuário) ------------------------
+
+1. Copiar e colar este código
+
+{
+  "SendGridKey": "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",
+  "SpecialCode": "!%Professores_Edugep_a1b2c3%@",
+  "AdminUserInfo": {
+    "Email": "plataformagestaoedugepnoreply@gmail.com",
+    "Password": "@%SetubalEdugep2024@%",
+    "FullName": "Administrador"
+  }
+}
+
+
+---------- Azure Info - ver tutorial (powerpoint) - Credenciais importantes para anotar --------------------------------------
+
+---> Serviço de aplicações tipo Linux (recomendado para menor custo)
+
+*** SQL Database Server Credenciais ***
+
+User ID: projgestaoedugep 
+Password: projedugep2024@
+
+*** Blob Storage Credenciais (a criação deste recurso não consta no tutorial (powerpoint) ***
+
+Conta de armazenamento: projedugepstorage
+
+Serviços Aplicacionais -> Escolher projeto -> Variáveis de Ambiente (introduzir todas as variáveis do ficheiro secrets.json)
+
+Exemplo-> Nome: AdminUserInfo:Email ou AdminUserInfo__Email (Linux)           Valor: plataformagestaoedugepnoreply@gmail.com
+	  Nome: SpecialCode                                                   Valor: !%Professores_Edugep_a1b2c3%@
+	  etc.
+
+Importante (Serviços Aplicacionais): -> configurações -> permitir SCM e FTP
+
+Importante (SQL Server) -> rede -> regras de firewall - clicar em adicionar o seu endereço ipv4 de cliente
+
+Mudar o tier do serviço de aplicações para B1 e ativar "Always On" para o website ficar sempre ativo
+
+
+----------- appsettings.json ------------------------------------------------------------------------------------
+
+*** Alterar DefaultConnection (User ID & Password - ver no Azure) & BlobStorageConnectionString (AccountKey - ver no Azure)  ***
+
