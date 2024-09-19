@@ -1,6 +1,9 @@
-Projeto cujo conceito baseia-se na junção do streaming de música + experiência de redes sociais.
+Este projeto teve como finalidade a conceção e desenvolvimento de uma plataforma web de gestão de documentos para ser utilizada em contexto educacional, tendo como base a 
+aplicação prática dos conhecimentos adquiridos durante o curso, agora num contexto profissional.
 
-Projeto desenvolvido de forma compreensiva com base na aplicação dos conceitos de Software Release Life Cycle (SRLC):
- - Metodologia Agile Scrum,
+Foram aplicados os conceitos de Software Release Life Cycle (SRLC):
+ - Metodologia em Cascata,
  - Ferramentas da Atlassian (JIRA e Confluence),
- - Utilização da framework .NET e API do Spotify.
+ - Utilização da framework .NET,
+ - Azure,
+ - etc.
